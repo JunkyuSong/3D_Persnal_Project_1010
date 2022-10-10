@@ -20,6 +20,7 @@
 #include "Magician.h"
 #include "Cane.h"
 #include "Cane_Sword.h"
+#include "Axe.h"
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice(pDevice)
@@ -215,6 +216,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CCane_Sword::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Weapon_Axe"),
+		CAxe::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 
 	///* For.Prototype_GameObject_Sky */
 	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Sky"),
@@ -290,6 +295,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		return E_FAIL;
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Weapon_Cane_Sword"),
 		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Monster/", "Cane_Sword.dat"))))
+		return E_FAIL;
+
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Weapon_Axe"),
+		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Player/SkillWeapon/", "Axe.fbx"))))
 		return E_FAIL;
 
 	///* For.Prototype_Component_VIBuffer_Cube */

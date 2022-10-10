@@ -37,6 +37,7 @@ HRESULT CSaber::Initialize(void * pArg)
 
 void CSaber::Tick(_float fTimeDelta)
 {
+
 	m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 
 	if (m_bColliderOn)

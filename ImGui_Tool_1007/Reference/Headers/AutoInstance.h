@@ -23,3 +23,4 @@ private:
 	T* m_Instance;
 };
 
+#define	AUTOINSTANCE(T, N)	CAutoInstance<T> N(T::Get_Instance());

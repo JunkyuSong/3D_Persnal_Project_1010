@@ -18,7 +18,6 @@ BEGIN(Client)
 class CMagician final : public CMonster
 {
 public:
-	enum DIRECT { DIR_F, DIR_B, DIR_R, DIR_L, DIR_FR, DIR_BR, DIR_FL, DIR_BL, DIR_END };
 	enum STATE {
 		Magician_Idle, Magician_Idle2,
 		Hurt_Short, Hurt_Long,
@@ -68,7 +67,8 @@ public:
 
 		STATE_END
 	};
-
+private:
+	enum DIRECT { DIR_F, DIR_B, DIR_R, DIR_L, DIR_FR, DIR_BR, DIR_FL, DIR_BL, DIR_END };
 	enum PART { PART_CANE, PART_CANESWORD, PART_END };
 	enum CANESWORD { CANESWORD_R, CANESWORD_L, CANESWORD_END };
 

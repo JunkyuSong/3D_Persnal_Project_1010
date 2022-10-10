@@ -12,6 +12,8 @@ CPlayer::CPlayer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 	, m_ePass(PASS_NONPICK)
 {
+	for (auto& _pHand : m_pHands)
+		_pHand = nullptr;
 }
 
 CPlayer::CPlayer(const CPlayer & rhs)
@@ -19,9 +21,9 @@ CPlayer::CPlayer(const CPlayer & rhs)
 	, m_ePass(rhs.m_ePass)
 	, m_AnimPos(rhs.m_AnimPos)
 	, m_PreAnimPos(rhs.m_PreAnimPos)
-	, m_pSockets(rhs.m_pSockets)
-	, m_pParts(rhs.m_pParts)
 {
+	for (auto& _pHand : m_pHands)
+		_pHand = nullptr;
 }
 
 HRESULT CPlayer::Initialize_Prototype()
@@ -29,11 +31,7 @@ HRESULT CPlayer::Initialize_Prototype()
 	XMStoreFloat4(&m_AnimPos, XMVectorSet(0.f, 0.f, 0.f,1.f));
 	m_PreAnimPos = m_AnimPos;
 
-	for (int i = 0; i < PART_END; ++i)
-	{
-		m_pSockets.push_back(nullptr);
-		m_pParts.push_back(nullptr);
-	}
+
 	return S_OK;
 }
 
@@ -41,7 +39,8 @@ HRESULT CPlayer::Initialize(void * pArg)
 {
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
-	if (FAILED(Ready_Sockets()))
+
+	if (FAILED(Ready_Hands()))
 		return E_FAIL;
 
 	if (FAILED(Ready_PlayerParts()))
@@ -119,12 +118,9 @@ void CPlayer::Tick( _float fTimeDelta)
 		
 
 	}
-	Update_Weapon();
-	for (auto& pPart : m_pParts)
-	{
-		if (pPart != nullptr)
-			pPart->Tick(fTimeDelta);
-	}
+
+	Update_Weapon(fTimeDelta);
+
 	for (auto& pCollider : m_pColliderCom)
 	{
 		if (nullptr != pCollider)
@@ -139,12 +135,20 @@ void CPlayer::LateTick( _float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
-	for (auto& pPart : m_pParts)
+	if (!m_bSkill)
 	{
-		if (pPart != nullptr)
-			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, pPart);
+		for (auto& _pPart : m_pBaseParts)
+		{
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, _pPart);
+		}
 	}
-		
+	else
+	{
+		for (auto& _pPart : m_pSkillParts[m_eCurSkill])
+		{
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, _pPart);
+		}
+	}	
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }
@@ -407,6 +411,12 @@ void CPlayer::KeyInput_Idle( _float fTimeDelta)
 	if (CGameInstance::Get_Instance()->KeyDown(DIK_R))
 	{
 		m_eCurState = Healing_Little;
+	}
+	if (CGameInstance::Get_Instance()->KeyDown(DIK_C))
+	{
+		m_eCurState = Corvus_PW_Axe;
+		m_bSkill = true;
+		m_eCurSkill = SKILL_AXE;
 	}
 }
 
@@ -909,28 +919,27 @@ _bool CPlayer::CheckLimit_Att(STATE _eAtt)
 
 	if (m_fPlayTime > m_vecLimitTime[_eAtt][ATTACKLIMIT_TRAILEND])
 	{
-		if (m_pParts[PART_SABER]->Trail_GetOn() == true && m_eReserveState == STATE_END)
+		if (m_pBaseParts[BASE_SABER]->Trail_GetOn() == true && m_eReserveState == STATE_END)
 		{
-			m_pParts[PART_SABER]->TrailOff();
+			m_pBaseParts[BASE_SABER]->TrailOff();
 		}
-			
 	}
 	else if (m_fPlayTime > m_vecLimitTime[_eAtt][ATTACKLIMIT_TRAILON])
 	{
 		//트레일 온
-		if (m_pParts[PART_SABER]->Trail_GetOn() == false)
+		if (m_pBaseParts[BASE_SABER]->Trail_GetOn() == false)
 		{
-			m_pParts[PART_SABER]->TrailOn();
+			m_pBaseParts[BASE_SABER]->TrailOn();
 		}
 	}
 
 	if (m_fPlayTime > m_vecLimitTime[_eAtt][ATTACKLIMIT_COLLIDEREND])
 	{
-		m_pParts[PART_SABER]->Set_CollisionOn(false);
+		m_pBaseParts[BASE_SABER]->Set_CollisionOn(false);
 	}
 	else if (m_fPlayTime > m_vecLimitTime[_eAtt][ATTACKLIMIT_COLLIDERON])
 	{
-		m_pParts[PART_SABER]->Set_CollisionOn(true);
+		m_pBaseParts[BASE_SABER]->Set_CollisionOn(true);
 	}
 	return false;
 }
@@ -1181,7 +1190,7 @@ void CPlayer::Set_Anim(STATE _eState)
 	m_pModelCom->Set_AnimationIndex(m_eCurState);
 	m_fPlayTime = 0.f;
 
-	m_pParts[PART_SABER]->Set_CollisionOn(false);
+	m_pBaseParts[BASE_SABER]->Set_CollisionOn(false);
 	//static_cast<CSaber*>(m_pParts[PART_SABER])->TrailOff();
 	m_bMotionPlay = false;
 }
@@ -1382,7 +1391,7 @@ HRESULT CPlayer::SetUp_ShaderResources()
 	return S_OK;
 }
 
-HRESULT CPlayer::Ready_Sockets()
+HRESULT CPlayer::Ready_Hands()
 {
 	if (nullptr == m_pModelCom)
 		return E_FAIL;
@@ -1390,19 +1399,45 @@ HRESULT CPlayer::Ready_Sockets()
 	CHierarchyNode*		pWeaponSocket = m_pModelCom->Get_HierarchyNode("ik_hand_gun");
 	if (nullptr == pWeaponSocket)
 		return E_FAIL;
-	m_pSockets[PART_SABER] = pWeaponSocket;
+	m_pHands[HAND_RIGHT] = pWeaponSocket;
 
 	pWeaponSocket = m_pModelCom->Get_HierarchyNode("ik_hand_l");
 	if (nullptr == pWeaponSocket)
 		return E_FAIL;
-	m_pSockets[PART_DAGGER] = pWeaponSocket;
+	m_pHands[HAND_LEFT] = pWeaponSocket;
 
 	return S_OK;
 }
 
 HRESULT CPlayer::Ready_PlayerParts()
 {
-	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
+	if (FAILED(Ready_PlayerParts_Base()))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(Ready_PlayerParts_Skill()))
+	{
+		return E_FAIL;
+	}
+	return S_OK;
+}
+
+HRESULT CPlayer::Ready_PlayerParts_Skill()
+{
+	AUTOINSTANCE(CGameInstance, pGameInstance);
+
+	CWeapon*		pGameObject = static_cast<CWeapon*>(pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Weapon_Axe")));
+
+	if (nullptr == pGameObject)
+		return E_FAIL;
+	m_pSkillParts[SKILL_AXE].push_back(pGameObject);
+	m_pSkillHands[SKILL_AXE].push_back(HAND_LEFT);
+	return S_OK;
+}
+
+HRESULT CPlayer::Ready_PlayerParts_Base()
+{
+	AUTOINSTANCE(CGameInstance, pGameInstance);
 
 	/* For.Sword */
 	CWeapon*		pGameObject = static_cast<CWeapon*>(pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Weapon_Saber")));
@@ -1410,50 +1445,103 @@ HRESULT CPlayer::Ready_PlayerParts()
 	if (nullptr == pGameObject)
 		return E_FAIL;
 
-	m_pParts[PART_SABER] = pGameObject;
-	
-	
+	m_pBaseParts.push_back(pGameObject);
+	m_pBaseHands.push_back(HAND_RIGHT);
+
 	pGameObject = static_cast<CWeapon*>(pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Weapon_Dagger")));
 
 	if (nullptr == pGameObject)
 		return E_FAIL;
 
-	m_pParts[PART_DAGGER] = pGameObject;
-
-	Safe_Release(pGameInstance);
+	m_pBaseParts.push_back(pGameObject);
+	m_pBaseHands.push_back(HAND_LEFT);
 
 	return S_OK;
 }
 
-HRESULT CPlayer::Update_Weapon()
+HRESULT CPlayer::Update_Hands_Matrix()
 {
-	if (nullptr == m_pSockets[PART_SABER])
+	if (nullptr == m_pHands[HAND_RIGHT])
 		return E_FAIL;
 
-	/* 행렬. */
-	/*_matrix			WeaponMatrix = 뼈의 스페이스 변환(OffsetMatrix)
-	* 뼈의 행렬(CombinedTransformation)
-	* 모델의 PivotMatrix * 프렐이어의월드행렬. ;*/
-	_matrix		PivotMatrix = XMMatrixIdentity();
-
-	/* For.Prototype_Component_Model_Player */
-	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
 	_matrix WeaponMatrix = /*m_pSockets[PART_SABER]->Get_OffSetMatrix()**/
-			m_pSockets[PART_SABER]->Get_CombinedTransformation()
-		 * XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())
-		* m_pTransformCom->Get_WorldMatrix();
-
-	m_pParts[PART_SABER]->SetUp_State(WeaponMatrix);
-
-
-	if (nullptr == m_pSockets[PART_DAGGER])
-		return E_FAIL;
-	WeaponMatrix = /*m_pSockets[PART_SABER]->Get_OffSetMatrix()**/
-		m_pSockets[PART_DAGGER]->Get_CombinedTransformation()
+		m_pHands[HAND_RIGHT]->Get_CombinedTransformation()
 		* XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())
 		* m_pTransformCom->Get_WorldMatrix();
 
-	m_pParts[PART_DAGGER]->SetUp_State(WeaponMatrix);
+	XMStoreFloat4x4(&(m_matHands[HAND_RIGHT]), WeaponMatrix);
+
+	if (nullptr == m_pHands[HAND_LEFT])
+		return E_FAIL;
+
+	WeaponMatrix = /*m_pSockets[PART_SABER]->Get_OffSetMatrix()**/
+		m_pHands[HAND_LEFT]->Get_CombinedTransformation()
+		* XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())
+		* m_pTransformCom->Get_WorldMatrix();
+
+	XMStoreFloat4x4(&(m_matHands[HAND_LEFT]), WeaponMatrix);
+
+	return S_OK;
+}
+
+HRESULT CPlayer::Update_Weapon(_float fTimeDelta)
+{
+	if (FAILED(Update_Hands_Matrix()))
+	{
+		MSG_BOX(TEXT("failed to update Hands"));
+		return E_FAIL;
+	}
+
+	if (!m_bSkill)
+	{
+		if (FAILED(Update_Weapon_Base()))
+		{
+			MSG_BOX(TEXT("failed to update BaseWeapon"));
+			return E_FAIL;
+		}
+		for (auto& pPart : m_pBaseParts)
+		{
+			if (pPart != nullptr)
+				pPart->Tick(fTimeDelta);
+		}
+	}
+	else
+	{
+		if (FAILED(Update_Weapon_Skill()))
+		{
+			MSG_BOX(TEXT("failed to update SkillWeapon"));
+			return E_FAIL;
+		}
+		for (auto& pPart : m_pSkillParts[m_eCurSkill])
+		{
+			if (pPart != nullptr)
+				pPart->Tick(fTimeDelta);
+		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CPlayer::Update_Weapon_Base()
+{
+	_uint i = 0;
+	for (auto& _pPart : m_pBaseParts)
+	{
+		_pPart->SetUp_State(XMLoadFloat4x4(&(m_matHands[i])));
+		++i;
+	}
+
+	return S_OK;
+}
+
+HRESULT CPlayer::Update_Weapon_Skill()
+{
+	_uint i = 0;
+	for (auto& _pPart : m_pSkillParts[m_eCurSkill])
+	{
+		_pPart->SetUp_State(XMLoadFloat4x4(&(m_matHands[m_pSkillHands[m_eCurSkill][i]])));
+		++i;
+	}
 
 	return S_OK;
 }
@@ -1499,16 +1587,25 @@ void CPlayer::Free()
 	}
 
 
-	for (auto& _Socket : m_pSockets)
+	for (auto& _pHand : m_pHands)
 	{
-		if (_Socket)
-			Safe_Release(_Socket);
+		if (_pHand)
+			Safe_Release(_pHand);
 	}
-	for (auto& _Part : m_pParts)
+	for (auto& _Part : m_pBaseParts)
 	{
 		if (_Part)
 			Safe_Release(_Part);
 	}
+	for (_int i = 0; i < SKILL_END; ++i)
+	{
+		for (auto& _pPart : m_pSkillParts[i])
+		{
+			if (_pPart)
+				Safe_Release(_pPart);
+		}		
+	}
+
 	for (auto& _pCollider : m_pColliderCom)
 	{
 		if (_pCollider)

@@ -54,7 +54,6 @@ public:
 
 private:
 	enum DIRECT { DIR_F, DIR_B, DIR_R, DIR_L, DIR_FR, DIR_BR, DIR_FL, DIR_BL, DIR_END };
-	enum PART { PART_DAGGER, PART_SABER, PART_END };
 	enum COLLIDERTYPE { COLLIDERTYPE_AABB, COLLIDERTYPE_OBB_MONSTER, COLLIDERTYPE_SPHERE_ITEM, COLLILDERTYPE_END };
 	enum ATTACKLIMIT { ATTACKLIMIT_CHANGE, ATTACKLIMIT_TRAILON, ATTACKLIMIT_TRAILEND, ATTACKLIMIT_COLLIDERON, ATTACKLIMIT_COLLIDEREND, ATTACKLIMIT_END };
 
@@ -111,11 +110,22 @@ private:
 
 
 private:
+	enum BASE { BASE_SABER, BASE_DAGGER, BASE_END };
+	enum SKILL {SKILL_AXE, SKILL_END};
+	enum HAND	{HAND_RIGHT, HAND_LEFT, HAND_END};
+
 	typedef vector<class CWeapon*>		PARTS;
-	PARTS								m_pParts;
+	class CHierarchyNode*				m_pHands[HAND_END];
+	_float4x4							m_matHands[HAND_END];
+	
+	PARTS								m_pBaseParts;
+	vector<_uint>						m_pBaseHands;
 
+	PARTS								m_pSkillParts[SKILL_END];	
+	vector<_uint>						m_pSkillHands[SKILL_END];
 
-	vector<class CHierarchyNode*>		m_pSockets;
+	_bool								m_bSkill = false;
+	SKILL								m_eCurSkill = SKILL_END;
 
 private:
 	CShader*				m_pShaderCom = nullptr;
@@ -163,10 +173,15 @@ private:
 	HRESULT Ready_Collider();
 	HRESULT SetUp_ShaderResources();
 
-	HRESULT Ready_Sockets();
+	HRESULT Ready_Hands();
 	HRESULT Ready_PlayerParts();
+	HRESULT Ready_PlayerParts_Skill();
+	HRESULT Ready_PlayerParts_Base();
 
-	HRESULT Update_Weapon();
+	HRESULT	Update_Weapon(_float fTimeDelta);
+	HRESULT Update_Hands_Matrix();
+	HRESULT Update_Weapon_Base();
+	HRESULT Update_Weapon_Skill();
 
 public:
 	static CPlayer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
