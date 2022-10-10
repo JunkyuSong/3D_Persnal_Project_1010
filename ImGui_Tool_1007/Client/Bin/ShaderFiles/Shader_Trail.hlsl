@@ -81,9 +81,16 @@ PS_OUT PS_MAIN(PS_IN In)
 
 	//Out.vColor.a = 1.f - In.vTexUV.y;
 
-	Out.vColor.x = g_Color.x;
-	Out.vColor.y = g_Color.y;
-	Out.vColor.z = g_Color.z;
+	Out.vColor.x = g_Color.x + In.vTexUV.y * 0.8f;
+	Out.vColor.y = g_Color.y + In.vTexUV.y * 0.8f;
+	Out.vColor.z = g_Color.z + In.vTexUV.y * 0.8f;
+
+	if (In.vTexUV.y > 0.3f)
+	{
+		Out.vColor.x = g_Color.x + In.vTexUV.y;
+		Out.vColor.y = g_Color.y + In.vTexUV.y;
+		Out.vColor.z = g_Color.z + In.vTexUV.y;
+	}
 
 	return Out;	
 }

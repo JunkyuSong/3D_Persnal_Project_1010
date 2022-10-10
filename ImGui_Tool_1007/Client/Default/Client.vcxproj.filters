@@ -139,6 +139,12 @@
     <Filter Include="02.GameObjects\04. Weapon\01. Magician\02. Card">
       <UniqueIdentifier>{3dd25aa8-dd88-4398-8aa9-a2c634e05563}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\04. Weapon\00. Player\02. SkillWeapon">
+      <UniqueIdentifier>{cab8f7b5-7e31-4aac-a0be-8af35c95b1bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04. Weapon\00. Player\02. SkillWeapon\00. Axe">
+      <UniqueIdentifier>{0c8d697a-03f9-41b9-a5f9-38aa9cd959ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -279,6 +285,9 @@
     <ClInclude Include="..\Public\Cane.h">
       <Filter>02.GameObjects\04. Weapon\01. Magician\00. Cane</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Axe.h">
+      <Filter>02.GameObjects\04. Weapon\00. Player\02. SkillWeapon\00. Axe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -403,6 +412,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Cane_Sword.cpp">
       <Filter>02.GameObjects\04. Weapon\01. Magician\01. Cane_Sword</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Axe.cpp">
+      <Filter>02.GameObjects\04. Weapon\00. Player\02. SkillWeapon\00. Axe</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

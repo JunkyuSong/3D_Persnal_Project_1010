@@ -366,9 +366,9 @@ HRESULT CObj_Tool::Tool_Obj_Add()
 		ImGui::InputFloat("Angle.y", &_vRot.y);
 		ImGui::InputFloat("Angle.z", &_vRot.z);
 
-		_vRot.x = XMConvertToRadians(_vRot.x);
-		_vRot.y = XMConvertToRadians(_vRot.y);
-		_vRot.z = XMConvertToRadians(_vRot.z);
+		//_vRot.x = XMConvertToRadians(_vRot.x);
+		//_vRot.y = XMConvertToRadians(_vRot.y);
+		//_vRot.z = XMConvertToRadians(_vRot.z);
 
 		world = XMMatrixAffineTransformation(XMLoadFloat3(&m_vScale), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMLoadFloat4(&_vRot), XMVectorSetW(XMLoadFloat3(&m_vPos), 1.f));
 		_float4x4 _world4x4;

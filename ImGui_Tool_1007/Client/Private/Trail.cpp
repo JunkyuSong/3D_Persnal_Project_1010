@@ -211,8 +211,8 @@ void CTrail::Tick(const _float& _fTimeDelta, _matrix _matWeapon)
 			{
 				_iVtxCount = (_float)m_iVtxCount;
 			}
-			m_RealData[i].vTexture = { ((_float)i) / ((_float)_iVtxCount),1.f };
-			m_RealData[i + 1].vTexture = { ((_float)i) / ((_float)_iVtxCount),0.f };
+			m_RealData[i].vTexture = { ((_float)i) / ((_float)_iVtxCount),0.f };
+			m_RealData[i + 1].vTexture = { ((_float)i) / ((_float)_iVtxCount),1.f };
 		}
 		m_iVtxCount += 2;
 	}

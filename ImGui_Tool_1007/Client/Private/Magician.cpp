@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 #include "ImGuiMgr.h"
 #include "HierarchyNode.h"
+#include "Weapon.h"
 
 CMagician::CMagician(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CMonster(pDevice, pContext)
@@ -43,15 +44,19 @@ HRESULT CMagician::Initialize(void * pArg)
 	if (FAILED(Ready_PlayerParts()))
 		return E_FAIL;
 
+	Ready_LimitTime();
+
 	/*if (m_pModelCom != nullptr)
 		m_pModelCom->Set_AnimationIndex(STATE_END);*/
-	m_fAnimSpeed = 1.f;
+
+	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(5.f, 0.f, 5.f, 1.f));
+	m_eCurState = Appear_L;
 	return S_OK;
 }
 
 void CMagician::Tick( _float fTimeDelta)
 {
-	//ImGuiTick();
 	if (m_pModelCom != nullptr)
 	{
 		if (!m_bAnimStop)
@@ -59,8 +64,9 @@ void CMagician::Tick( _float fTimeDelta)
 		
 			CheckAnim();
 
-			CheckState();
+			CheckState(fTimeDelta);
 			PlayAnimation(fTimeDelta);
+
 			
 		}
 		else
@@ -136,6 +142,7 @@ void CMagician::PlayAnimation( _float fTimeDelta)
 	{
 		CheckEndAnim();
 	}
+	CheckLimit();
 	XMStoreFloat4(&m_AnimPos, (XMLoadFloat4(&_vAnim) - XMLoadFloat4(&m_PreAnimPos)));
 	m_PreAnimPos = _vAnim;
 }
@@ -161,6 +168,7 @@ void CMagician::CheckEndAnim()
 		m_eCurState = Magician_Idle;
 		break;
 	case Client::CMagician::Cane_Att1:
+		
 		m_eCurState = Magician_Idle;
 		break;
 	case Client::CMagician::Cane_Att2:
@@ -173,12 +181,21 @@ void CMagician::CheckEndAnim()
 		m_eCurState = Magician_Idle;
 		break;
 	case Client::CMagician::SP_Att2_Start:
-		m_eCurState = SP_Att2_Loop;
+	{
+		m_eCurState = SP_Att2_Suc;
+		ChangeCanesword(CANESWORD_L); //패링 안되었을때??
+	}
+	{
+		//m_eCurState = SP_Att2_Loop; 패링되었을때??
+	}
+		
 		break;
 	case Client::CMagician::SP_Att2_Loop:
-		m_eCurState = SP_Att2_Suc;
+		ChangeCanesword(CANESWORD_R);
+		m_eCurState = Magician_Idle;
 		break;
 	case Client::CMagician::SP_Att2_Suc:
+		
 		m_eCurState = Magician_Idle;
 		break;
 	case Client::CMagician::Appear_L:
@@ -216,7 +233,63 @@ void CMagician::CheckEndAnim()
 	m_PreAnimPos = m_AnimPos;
 }
 
-void CMagician::CheckState()
+void CMagician::CheckState(_float fTimeDelta)
+{
+	//아이들 상태일때 플레이어쪽으로 회전
+	// 
+	switch (m_eCurState)
+	{
+	case Client::CMagician::Magician_Idle:
+		break;
+	case Client::CMagician::Magician_Idle2:
+		break;
+	case Client::CMagician::Hurt_Short:
+		break;
+	case Client::CMagician::Hurt_Long:
+		break;
+	case Client::CMagician::Boss_Enter:
+		break;
+	case Client::CMagician::Cane_Att1:
+		
+		break;
+	case Client::CMagician::Cane_Att2:
+		break;
+	case Client::CMagician::SP_Att1_Start:
+		break;
+	case Client::CMagician::SP_Att1_Suc:
+		break;
+	case Client::CMagician::SP_Att2_Start:
+		break;
+	case Client::CMagician::SP_Att2_Loop:
+		break;
+	case Client::CMagician::SP_Att2_Suc:		
+		break;
+	case Client::CMagician::Appear_L:
+		break;
+	case Client::CMagician::Appear_R:
+		break;
+	case Client::CMagician::Appear_B:
+		break;
+	case Client::CMagician::Appear_F:
+		break;
+	case Client::CMagician::Cane_Att3:
+		break;
+	case Client::CMagician::Kick_Combo:
+		break;
+	case Client::CMagician::Walk_B:
+		break;
+	case Client::CMagician::Walk_F:
+		break;
+	case Client::CMagician::Walk_L:
+		break;
+	case Client::CMagician::Walk_R:
+		break;
+	}
+
+	Get_AnimMat();
+}
+
+void CMagician::AnimTick(_float fTimeDelta)
 {
 	switch (m_eCurState)
 	{
@@ -264,9 +337,81 @@ void CMagician::CheckState()
 		break;
 	case Client::CMagician::Walk_R:
 		break;
+	case Client::CMagician::STATE_END:
+		break;
+	default:
+		break;
 	}
+}
 
-	Get_AnimMat();
+void CMagician::ChangeCanesword(CANESWORD _eCanesword)
+{
+	Safe_Release(m_pSockets[PART_CANESWORD]);
+	m_pSockets[PART_CANESWORD] = m_pCanesword[_eCanesword];
+	Safe_AddRef(m_pSockets[PART_CANESWORD]);
+}
+
+void CMagician::CheckLimit()
+{
+	switch (m_eCurState)
+	{
+	case Client::CMagician::Magician_Idle:
+		break;
+	case Client::CMagician::Magician_Idle2:
+		break;
+	case Client::CMagician::Hurt_Short:
+		break;
+	case Client::CMagician::Hurt_Long:
+		break;
+	case Client::CMagician::Boss_Enter:
+		break;
+	case Client::CMagician::Cane_Att1:
+		break;
+	case Client::CMagician::Cane_Att2:
+		break;
+	case Client::CMagician::SP_Att1_Start:
+		break;
+	case Client::CMagician::SP_Att1_Suc:
+		break;
+	case Client::CMagician::SP_Att2_Start:
+		break;
+	case Client::CMagician::SP_Att2_Loop:
+		if (m_vecLimitTime[SP_Att2_Loop][1] < m_fPlayTime)
+		{
+			ChangeCanesword(CANESWORD_R);
+		}
+		else if (m_vecLimitTime[SP_Att2_Loop][0] < m_fPlayTime)
+		{
+			ChangeCanesword(CANESWORD_L);
+		}
+		break;
+	case Client::CMagician::SP_Att2_Suc:
+		if (m_vecLimitTime[SP_Att2_Suc][0] < m_fPlayTime)
+		{
+			ChangeCanesword(CANESWORD_R);
+		}
+		break;
+	case Client::CMagician::Appear_L:
+		break;
+	case Client::CMagician::Appear_R:
+		break;
+	case Client::CMagician::Appear_B:
+		break;
+	case Client::CMagician::Appear_F:
+		break;
+	case Client::CMagician::Cane_Att3:
+		break;
+	case Client::CMagician::Kick_Combo:
+		break;
+	case Client::CMagician::Walk_B:
+		break;
+	case Client::CMagician::Walk_F:
+		break;
+	case Client::CMagician::Walk_L:
+		break;
+	case Client::CMagician::Walk_R:
+		break;
+	}
 }
 
 void CMagician::Set_Anim(STATE _eState)
@@ -360,6 +505,13 @@ HRESULT CMagician::SetUp_ShaderResources()
 	return S_OK;
 }
 
+void CMagician::Ready_LimitTime()
+{
+	m_vecLimitTime[SP_Att2_Loop].push_back(20.f);
+	m_vecLimitTime[SP_Att2_Loop].push_back(150.f);
+	m_vecLimitTime[SP_Att2_Suc].push_back(220.f);
+}
+
 CMagician * CMagician::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
 	CMagician*		pInstance = new CMagician(pDevice, pContext);
@@ -399,6 +551,11 @@ void CMagician::Free()
 		if (_Part)
 			Safe_Release(_Part);
 	}
+	for (auto& _Socket : m_pCanesword)
+	{
+		if (_Socket)
+			Safe_Release(_Socket);
+	}
 }
 
 
@@ -412,12 +569,21 @@ HRESULT CMagician::Ready_Sockets()
 	if (nullptr == pWeaponSocket)
 		return E_FAIL;
 	m_pSockets[PART_CANE] = pWeaponSocket;
+	Safe_AddRef(m_pSockets[PART_CANE]);
 
 	pWeaponSocket = m_pModelCom->Get_HierarchyNode("weapon_r_Sword");
-	//pWeaponSocket = m_pModelCom->Get_HierarchyNode("weapon_l_Sword");
 	if (nullptr == pWeaponSocket)
 		return E_FAIL;
 	m_pSockets[PART_CANESWORD] = pWeaponSocket;
+	Safe_AddRef(m_pSockets[PART_CANESWORD]);
+	m_pCanesword.push_back(m_pSockets[PART_CANESWORD]);
+	Safe_AddRef(m_pCanesword[CANESWORD_R]);
+
+	pWeaponSocket = m_pModelCom->Get_HierarchyNode("weapon_l_Sword");
+	if (nullptr == pWeaponSocket)
+		return E_FAIL;
+	m_pCanesword.push_back(pWeaponSocket);
+	Safe_AddRef(m_pCanesword[CANESWORD_L]);
 
 	return S_OK;
 }
@@ -427,7 +593,7 @@ HRESULT CMagician::Ready_PlayerParts()
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 
 	/* For.Sword */
-	CGameObject*		pGameObject = pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Weapon_Cane"));
+	CWeapon*		pGameObject = static_cast<CWeapon*>(pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Weapon_Cane")));
 
 	if (nullptr == pGameObject)
 		return E_FAIL;
@@ -435,7 +601,7 @@ HRESULT CMagician::Ready_PlayerParts()
 	m_pParts[PART_CANE] = pGameObject;
 
 
-	pGameObject = pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Weapon_Cane_Sword"));
+	pGameObject = static_cast<CWeapon*>(pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Weapon_Cane_Sword")));
 
 	if (nullptr == pGameObject)
 		return E_FAIL;

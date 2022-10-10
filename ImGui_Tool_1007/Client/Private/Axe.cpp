@@ -1,26 +1,26 @@
 #include "stdafx.h"
-#include "..\Public\Saber.h"
+#include "..\Public\Axe.h"
 #include "GameInstance.h"
 
 
 #include "Trail.h"
 
-CSaber::CSaber(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CAxe::CAxe(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CWeapon(pDevice, pContext)
 {
 }
 
-CSaber::CSaber(const CSaber & rhs)
+CAxe::CAxe(const CAxe & rhs)
 	: CWeapon(rhs)
 {
 }
 
-HRESULT CSaber::Initialize_Prototype()
+HRESULT CAxe::Initialize_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CSaber::Initialize(void * pArg)
+HRESULT CAxe::Initialize(void * pArg)
 {
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -35,7 +35,7 @@ HRESULT CSaber::Initialize(void * pArg)
 	return S_OK;
 }
 
-void CSaber::Tick(_float fTimeDelta)
+void CAxe::Tick(_float fTimeDelta)
 {
 	m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 
@@ -43,7 +43,7 @@ void CSaber::Tick(_float fTimeDelta)
 		m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 }
 
-void CSaber::LateTick(_float fTimeDelta)
+void CAxe::LateTick(_float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
 		return;
@@ -51,7 +51,7 @@ void CSaber::LateTick(_float fTimeDelta)
 
 }
 
-HRESULT CSaber::Render()
+HRESULT CAxe::Render()
 {
 	if (nullptr == m_pModelCom ||
 		nullptr == m_pShaderCom)
@@ -99,7 +99,7 @@ HRESULT CSaber::Render()
 
 
 
-HRESULT CSaber::Ready_Components()
+HRESULT CAxe::Ready_Components()
 {
 	/* For.Com_Transform */
 	CTransform::TRANSFORMDESC	_Desc;
@@ -124,14 +124,14 @@ HRESULT CSaber::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Weapon_Saber"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Weapon_Axe"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
 	/* For.Com_Trail */
 	CTrail::TRAILINFO _tInfo;
 	_tInfo._Color = _float4(1.f, 0.f, 1.f, 1.f);
 	_tInfo._HighAndLow.vHigh = _float3(100.0f, 0.f, 0.f);
-	_tInfo._HighAndLow.vLow = _float3(-5.f, 0.f, 0.f);
+	_tInfo._HighAndLow.vLow = _float3(30.f, 0.f, 0.f);
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Trail"), TEXT("Com_Trail"), (CComponent**)&m_pTrailCom, &_tInfo)))
 	{
 		MSG_BOX(TEXT("fail to trail in saber"));
@@ -152,22 +152,22 @@ HRESULT CSaber::Ready_Components()
 	return S_OK;
 }
 
-CSaber * CSaber::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CAxe * CAxe::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
-	CSaber*		pInstance = new CSaber(pDevice, pContext);
+	CAxe*		pInstance = new CAxe(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CSaber"));
+		MSG_BOX(TEXT("Failed To Created : CAxe"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject * CSaber::Clone(void * pArg)
+CGameObject * CAxe::Clone(void * pArg)
 {
-	CSaber*		pInstance = new CSaber(*this);
+	CAxe*		pInstance = new CAxe(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
@@ -178,7 +178,7 @@ CGameObject * CSaber::Clone(void * pArg)
 	return pInstance;
 }
 
-void CSaber::Free()
+void CAxe::Free()
 {
 	__super::Free();
 }

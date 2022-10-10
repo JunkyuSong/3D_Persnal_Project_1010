@@ -215,6 +215,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CCane_Sword::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+
 	///* For.Prototype_GameObject_Sky */
 	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Sky"),
 	//	CSky::Create(m_pGraphic_Device))))
