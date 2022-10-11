@@ -60,7 +60,7 @@ void CGameInstance::Tick_Engine( _float fTimeDelta)
 	m_pInput_Device->Update();
 	m_pLevel_Manager->Tick(fTimeDelta);
 	m_pObject_Manager->Tick(fTimeDelta);
-
+	//zhffldjsal
 	m_pPipeLine->Update();
 	CPicking::Get_Instance()->Tick();
 	m_pObject_Manager->LateTick(fTimeDelta);

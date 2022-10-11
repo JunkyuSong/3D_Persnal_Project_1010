@@ -4,6 +4,7 @@
 #include "ImGuiMgr.h"
 #include "HierarchyNode.h"
 #include "Weapon.h"
+#include "CollisionMgr.h"
 
 CMagician::CMagician(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CMonster(pDevice, pContext)
@@ -60,24 +61,18 @@ void CMagician::Tick( _float fTimeDelta)
 	if (m_pModelCom != nullptr)
 	{
 		if (!m_bAnimStop)
-		{
-		
+		{		
 			CheckAnim();
 
 			CheckState(fTimeDelta);
 			PlayAnimation(fTimeDelta);
-
-			
 		}
 		else
 		{
 			CheckAnim();
 			_float4 _vAnim;
 			XMStoreFloat4(&_vAnim, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-			if (m_pModelCom->Play_Animation(fTimeDelta, &_vAnim, &m_fPlayTime))
-			{
-				//CheckEndAnim(fTimeDelta);
-			}
+			m_pModelCom->Play_Animation(fTimeDelta, &_vAnim, &m_fPlayTime);
 			XMStoreFloat4(&m_AnimPos, (XMLoadFloat4(&_vAnim) - XMLoadFloat4(&m_PreAnimPos)));
 			m_PreAnimPos = _vAnim;
 		}
@@ -88,16 +83,18 @@ void CMagician::Tick( _float fTimeDelta)
 		if (pPart != nullptr)
 			pPart->Tick(fTimeDelta);
 	}
+	for (auto& pCollider : m_pColliderCom)
+	{
+		if (nullptr != pCollider)
+			pCollider->Update(m_pTransformCom->Get_WorldMatrix());
+	}
 }
 
 void CMagician::LateTick( _float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
 		return;
-	if (m_pModelCom != nullptr)
-	{
-		
-	}
+	
 	for (auto& pPart : m_pParts)
 	{
 		if (pPart != nullptr)
@@ -128,6 +125,11 @@ HRESULT CMagician::Render()
 			return E_FAIL;
 	}
 
+	for (_uint i = 0; i < COLLILDERTYPE_END; ++i)
+	{
+		if (nullptr != m_pColliderCom[i])
+			m_pColliderCom[i]->Render();
+	}
 
 	return S_OK;
 }
@@ -240,6 +242,8 @@ void CMagician::CheckState(_float fTimeDelta)
 	switch (m_eCurState)
 	{
 	case Client::CMagician::Magician_Idle:
+		//콜라이더 넣음
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_BODY, CCollisionMgr::TYPE_OBB, m_pColliderCom[COLLIDERTYPE_BODY]);
 		break;
 	case Client::CMagician::Magician_Idle2:
 		break;
@@ -463,6 +467,14 @@ HRESULT CMagician::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Magician"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
+
+	CCollider::COLLIDERDESC		ColliderDesc;
+	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
+	ColliderDesc.vSize = _float3(1.3f, 1.3f, 1.3f);
+	ColliderDesc.vCenter = _float3(0.f, ColliderDesc.vSize.y * 0.5f, 0.f);
+	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_BODY], &ColliderDesc)))
+		return E_FAIL;
 
 
 	return S_OK;

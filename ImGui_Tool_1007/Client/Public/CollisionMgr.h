@@ -32,6 +32,11 @@ public:
 	_bool	PlayerBody_vs_MonsterWeapon();
 	void	PlayerWeapon_vs_MonsterBody();
 
+	list<CCollider*>	Get_CollisionList(GAMEOBJ_TYPE _GameObjType, COLLSION_TYPE _CollisionType)
+	{
+		return m_CollisionList[_GameObjType][_CollisionType];
+	}
+
 public:
 	virtual void Free() override;
 

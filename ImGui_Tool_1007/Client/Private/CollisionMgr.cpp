@@ -13,6 +13,7 @@ CCollisionMgr::CCollisionMgr()
 void CCollisionMgr::Add_CollisoinList(GAMEOBJ_TYPE _GameObjType, COLLSION_TYPE  _CollisionType, CCollider * _pCollider)
 {
 	m_CollisionList[_GameObjType][_CollisionType].push_back(_pCollider);
+	Safe_AddRef(_pCollider);
 }
 
 void CCollisionMgr::Clear_CollisoinList()
@@ -40,6 +41,7 @@ void CCollisionMgr::Tick()
 		return;
 	}
 	PlayerWeapon_vs_MonsterBody();
+	Clear_CollisoinList();
 }
 
 _bool CCollisionMgr::PlayerBody_vs_MonsterWeapon()

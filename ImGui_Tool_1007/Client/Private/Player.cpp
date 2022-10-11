@@ -487,7 +487,6 @@ void CPlayer::Move(_float fTimeDelta)
 	{
 	case Client::CPlayer::DIR_F:
 		m_eCurState = STATE_RUN_F;
-
 		m_pTransformCom->Turn(_vLook, _vCamLook, _fRatio);
 		m_pTransformCom->Go_Straight(fTimeDelta);
 		break;

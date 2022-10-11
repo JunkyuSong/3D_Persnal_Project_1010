@@ -8,6 +8,7 @@ BEGIN(Engine)
 class CShader;
 class CTexture;
 class CRenderer;
+class CCollider;
 class CTransform;
 class CAnimModel;
 class CHierarchyNode;
@@ -18,6 +19,7 @@ BEGIN(Client)
 class CMagician final : public CMonster
 {
 public:
+	enum MAGICIANCOLLIDER { COLLIDERTYPE_BODY, COLLILDERTYPE_END };
 	enum STATE {
 		Magician_Idle, Magician_Idle2,
 		Hurt_Short, Hurt_Long,
@@ -116,6 +118,8 @@ private:
 	_bool					m_bAnimStop = false;
 	_float					m_fPlayTime = 0.f;
 	vector<_float>			m_vecLimitTime[STATE_END];
+
+	CCollider*				m_pColliderCom[COLLILDERTYPE_END] = { nullptr };
 
 	DIRECT					m_eDir = DIR_END;
 
