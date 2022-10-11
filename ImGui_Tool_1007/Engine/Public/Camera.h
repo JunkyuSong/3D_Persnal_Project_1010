@@ -30,6 +30,9 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
+public:
+	class CTransform*			Get_Transform() { return m_pTransformCom; }
+
 protected:
 	class CTransform*			m_pTransformCom = nullptr;
 	CAMERADESC					m_CameraDesc;

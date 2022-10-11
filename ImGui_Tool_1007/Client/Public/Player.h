@@ -111,7 +111,7 @@ private:
 
 private:
 	enum BASE { BASE_SABER, BASE_DAGGER, BASE_END };
-	enum SKILL {SKILL_AXE, SKILL_END};
+	enum SKILL {SKILL_AXE, SKILL_DUAL, SKILL_END};
 	enum HAND	{HAND_RIGHT, HAND_LEFT, HAND_END};
 
 	typedef vector<class CWeapon*>		PARTS;

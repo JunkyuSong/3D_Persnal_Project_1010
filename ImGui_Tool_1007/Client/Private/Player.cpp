@@ -414,9 +414,12 @@ void CPlayer::KeyInput_Idle( _float fTimeDelta)
 	}
 	if (CGameInstance::Get_Instance()->KeyDown(DIK_C))
 	{
-		m_eCurState = Corvus_PW_Axe;
+		/*m_eCurState = DualKnife;
 		m_bSkill = true;
-		m_eCurSkill = SKILL_AXE;
+		m_eCurSkill = SKILL_DUAL;
+		m_pSkillParts[SKILL_DUAL][HAND_LEFT]->TrailOn();
+		m_pSkillParts[SKILL_DUAL][HAND_RIGHT]->TrailOn();*/
+		m_eCurState = Corvus_PW_Axe;
 	}
 }
 
@@ -702,6 +705,7 @@ void CPlayer::CheckEndAnim()
 		break;
 	case Client::CPlayer::Corvus_PW_Axe:
 		m_eCurState = STATE_IDLE;
+		m_bMotionPlay = false;
 		break;
 	case Client::CPlayer::Tackle_F:
 		m_eCurState = STATE_IDLE;
@@ -714,6 +718,9 @@ void CPlayer::CheckEndAnim()
 		break;
 	case Client::CPlayer::DualKnife:
 		m_eCurState = STATE_IDLE;
+		m_bSkill = false;
+		m_pSkillParts[SKILL_DUAL][HAND_LEFT]->TrailOff();
+		m_pSkillParts[SKILL_DUAL][HAND_RIGHT]->TrailOff();
 		break;
 	case Client::CPlayer::GreatSword:
 		m_eCurState = STATE_IDLE;
@@ -839,6 +846,28 @@ void CPlayer::CheckLimit()
 	case Client::CPlayer::STATE_AVOIDATTACK:
 		break;
 	case Client::CPlayer::Corvus_PW_Axe:
+		if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][3])//다시 무기 스왑 및 타이머 정상화
+		{
+			m_bSkill = false;
+			m_eCurSkill = SKILL_END;
+			AUTOINSTANCE(CGameInstance, pGame);
+			pGame->Set_TimeSpeed(TEXT("Timer_Main"), 1.f);
+		}
+		else if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][2])//모션트레일 off
+		{
+			m_bMotionPlay = false;
+		}
+		else if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][1])//타이머 및 모션트레일
+		{
+			m_bMotionPlay = true;
+			AUTOINSTANCE(CGameInstance, pGame);
+			pGame->Set_TimeSpeed(TEXT("Timer_Main"), 0.5f);
+		}
+		else if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][0])//무기 스왑
+		{
+			m_eCurSkill = SKILL_AXE;
+			m_bSkill = true;
+		}
 		break;
 	case Client::CPlayer::Tackle_F:
 		break;
@@ -1070,43 +1099,30 @@ void CPlayer::AfterAnim()
 	switch (m_eCurState)
 	{
 	case Client::CPlayer::STATE_ATT1:
-		//m_fAnimSpeed = 2.f;
 		break;
 	case Client::CPlayer::STATE_ATT2:
-		//m_fAnimSpeed = 2.f;
 		break;
 	case Client::CPlayer::STATE_ATT3:
-		//m_fAnimSpeed = 2.f;
 		break;
 	case Client::CPlayer::STATE_ATT4:
-		//m_fAnimSpeed = 2.f;
 		break;
 	case Client::CPlayer::STATE_ATT5:
-		//m_fAnimSpeed = 2.f;
 		break;
 	case Client::CPlayer::STATE_RUN_B:
-		//m_fAnimSpeed = 1.f;
 		break;
 	case Client::CPlayer::STATE_RUN_F:
-		//m_fAnimSpeed = 1.f;
 		break;
 	case Client::CPlayer::STATE_RUN_L:
-		//m_fAnimSpeed = 1.f;
 		break;
 	case Client::CPlayer::STATE_RUN_R:
-		//m_fAnimSpeed = 1.f;
 		break;
 	case Client::CPlayer::STATE_APPROACH:
-		//m_fAnimSpeed = 1.f;
 		break;
 	case Client::CPlayer::STATE_WALK:
-		//m_fAnimSpeed = 1.5f;
 		break;
 	case Client::CPlayer::STATE_IDLE:
-		//m_fAnimSpeed = 1.f;
 		break;
 	case Client::CPlayer::STATE_AVOIDATTACK:
-		//m_fAnimSpeed = 1.f;
 		break;
 	case Client::CPlayer::STATE_JUMPAVOID:
 		m_bMotionPlay = true;
@@ -1131,7 +1147,7 @@ void CPlayer::AfterAnim()
 	case Client::CPlayer::PW_Hammer_A:
 		break;
 	case Client::CPlayer::PW_TwinSwords_1:
-break;
+		break;
 	case Client::CPlayer::PW_TwinSwords_2:
 		break;
 	case Client::CPlayer::PW_VargSword_A:
@@ -1289,35 +1305,44 @@ HRESULT CPlayer::Ready_Components()
 
 HRESULT CPlayer::Ready_AnimLimit()
 {
-	m_vecLimitTime[STATE_ATT1].push_back(30.f - 10.f);
+	//공격
+	m_vecLimitTime[STATE_ATT1].push_back(20.f);
 	m_vecLimitTime[STATE_ATT1].push_back(10.f);
 	m_vecLimitTime[STATE_ATT1].push_back(25.f);
 	m_vecLimitTime[STATE_ATT1].push_back(10.f);
 	m_vecLimitTime[STATE_ATT1].push_back(25.f);
 
-	m_vecLimitTime[STATE_ATT2].push_back(30.f - 10.f);
+	m_vecLimitTime[STATE_ATT2].push_back(20.f);
 	m_vecLimitTime[STATE_ATT2].push_back(10.f);
 	m_vecLimitTime[STATE_ATT2].push_back(25.f);
 	m_vecLimitTime[STATE_ATT2].push_back(10.f);
 	m_vecLimitTime[STATE_ATT2].push_back(25.f);
 
-	m_vecLimitTime[STATE_ATT3].push_back(30.f - 5.f);
+	m_vecLimitTime[STATE_ATT3].push_back(25.f);
 	m_vecLimitTime[STATE_ATT3].push_back(10.f);
 	m_vecLimitTime[STATE_ATT3].push_back(25.f);
 	m_vecLimitTime[STATE_ATT3].push_back(10.f);
 	m_vecLimitTime[STATE_ATT3].push_back(25.f);
 
-	m_vecLimitTime[STATE_ATT4].push_back(45.f - 5.f);
+	m_vecLimitTime[STATE_ATT4].push_back(40.f);
 	m_vecLimitTime[STATE_ATT4].push_back(10.f);
 	m_vecLimitTime[STATE_ATT4].push_back(40.f);
 	m_vecLimitTime[STATE_ATT4].push_back(10.f);
 	m_vecLimitTime[STATE_ATT4].push_back(40.f);
 
-	m_vecLimitTime[STATE_ATT5].push_back(55.f - 5.f);
-	m_vecLimitTime[STATE_ATT5].push_back(20.f);
 	m_vecLimitTime[STATE_ATT5].push_back(50.f);
 	m_vecLimitTime[STATE_ATT5].push_back(20.f);
 	m_vecLimitTime[STATE_ATT5].push_back(50.f);
+	m_vecLimitTime[STATE_ATT5].push_back(20.f);
+	m_vecLimitTime[STATE_ATT5].push_back(50.f);
+	
+	//도끼스킬
+	m_vecLimitTime[Corvus_PW_Axe].push_back(20.f);
+	m_vecLimitTime[Corvus_PW_Axe].push_back(40.f);
+	m_vecLimitTime[Corvus_PW_Axe].push_back(65.f);
+	m_vecLimitTime[Corvus_PW_Axe].push_back(160.f);
+
+	
 
 	return S_OK;
 }
@@ -1432,6 +1457,21 @@ HRESULT CPlayer::Ready_PlayerParts_Skill()
 		return E_FAIL;
 	m_pSkillParts[SKILL_AXE].push_back(pGameObject);
 	m_pSkillHands[SKILL_AXE].push_back(HAND_LEFT);
+
+	pGameObject = static_cast<CWeapon*>(pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Weapon_Knife")));
+
+	if (nullptr == pGameObject)
+		return E_FAIL;
+	m_pSkillParts[SKILL_DUAL].push_back(pGameObject);
+	m_pSkillHands[SKILL_DUAL].push_back(HAND_RIGHT);
+
+	pGameObject = static_cast<CWeapon*>(pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Weapon_Knife")));
+
+	if (nullptr == pGameObject)
+		return E_FAIL;
+	m_pSkillParts[SKILL_DUAL].push_back(pGameObject);
+	m_pSkillHands[SKILL_DUAL].push_back(HAND_LEFT);
+
 	return S_OK;
 }
 

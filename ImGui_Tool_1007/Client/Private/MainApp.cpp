@@ -6,6 +6,7 @@
 #include "ImGuiMgr.h"
 #include "TerrainMgr.h"
 #include "ReleaseMgr.h"
+#include "CameraMgr.h"
 
 using namespace Client;
 
@@ -53,6 +54,7 @@ void CMainApp::Tick(const _float& fTimeDelta)
 #endif // _DEBUG
 	CImGui::Get_Instance()->Tick();
 	m_pGameInstance->Tick_Engine(fTimeDelta);
+	CCameraMgr::Get_Instance()->Tick(fTimeDelta);
 }
 
 HRESULT CMainApp::Render()
@@ -171,7 +173,7 @@ void CMainApp::Free()
 	CTerrainMgr::Destroy_Instance();
 	CGameInstance::Release_Engine();
 	CImGui::Destroy_Instance();
-
+	CCameraMgr::Destroy_Instance();
 
 
 }

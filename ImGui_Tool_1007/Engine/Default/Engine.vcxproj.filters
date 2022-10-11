@@ -198,9 +198,6 @@
     <ClInclude Include="..\public\Transform.h">
       <Filter>03.Components\05.Transform</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Camera.h">
-      <Filter>02.GameObjects\01.Camera</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\PipeLine.h">
       <Filter>04.Utility\01.PipeLine</Filter>
     </ClInclude>
@@ -269,6 +266,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Capsule.h">
       <Filter>03.Components\07. Collider\03. Capsule</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera.h">
+      <Filter>02.GameObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -400,6 +400,9 @@
     </Filter>
     <Filter Include="97. Picking">
       <UniqueIdentifier>{1cf233e9-a45a-48af-a228-05c069f9412b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Utility\02. Camera">
+      <UniqueIdentifier>{e91cd1b9-4f9e-4108-b884-9c6c5760fa6a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

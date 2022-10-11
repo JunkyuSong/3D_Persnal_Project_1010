@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Client_Defines.h"
-#include "Camera.h"
+#include "Client_Camere.h"
 
 BEGIN(Client)
 
-class CCamera_Player final : public CCamera
+class CCamera_Player final : public CClient_Camere
 {
 private:
 	CCamera_Player(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

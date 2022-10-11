@@ -145,6 +145,12 @@
     <Filter Include="02.GameObjects\04. Weapon\00. Player\02. SkillWeapon\00. Axe">
       <UniqueIdentifier>{0c8d697a-03f9-41b9-a5f9-38aa9cd959ee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\04. Weapon\00. Player\02. SkillWeapon\01. Knife">
+      <UniqueIdentifier>{444ad516-0816-4bf6-91ba-c169db54aa7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95. Manager\Camera">
+      <UniqueIdentifier>{f5f98415-dbfc-43d8-a739-8a6eda4e8e2f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -288,6 +294,15 @@
     <ClInclude Include="..\Public\Axe.h">
       <Filter>02.GameObjects\04. Weapon\00. Player\02. SkillWeapon\00. Axe</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Client_Camere.h">
+      <Filter>02.GameObjects\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Knife.h">
+      <Filter>02.GameObjects\04. Weapon\00. Player\02. SkillWeapon\01. Knife</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\CameraMgr.h">
+      <Filter>95. Manager\Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -415,6 +430,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\Axe.cpp">
       <Filter>02.GameObjects\04. Weapon\00. Player\02. SkillWeapon\00. Axe</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Client_Camere.cpp">
+      <Filter>02.GameObjects\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Knife.cpp">
+      <Filter>02.GameObjects\04. Weapon\00. Player\02. SkillWeapon\01. Knife</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\CameraMgr.cpp">
+      <Filter>95. Manager\Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

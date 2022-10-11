@@ -51,7 +51,7 @@ HRESULT CMagician::Initialize(void * pArg)
 
 	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(5.f, 0.f, 5.f, 1.f));
-	m_eCurState = Appear_L;
+	m_eCurState = SP_Att2_Start;
 	return S_OK;
 }
 
