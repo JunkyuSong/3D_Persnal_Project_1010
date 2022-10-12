@@ -18,6 +18,7 @@ public:
 public:
 	HRESULT Set_AnimationIndex(_uint _AnimationIndex);
 	_bool	Play_Animation(_float _fTimeDelta, _float4* _vAnim, _float* pOut);
+	_bool	Repeat_Animation(_float _fTimeDelta, _float4* _vAnim, _float* pOut);
 	HRESULT Render(class CShader* pShader, _uint _iPass, _uint _iMeshIndex);
 	_uint   Get_MaterialIndex(_uint _iMeshIndex) const;
 
@@ -46,6 +47,8 @@ public:
 	vector<class CAnimMeshContainer*>* Get_MeshesVector() { return &m_Meshes; }
 	vector<MATERIALDESC>			Get_Materials() { return m_Materials; }
 
+	void							Repeat() { m_bRepeat = true; }
+
 private:
 	TANIMMODEL							m_tModel;
 
@@ -64,6 +67,8 @@ private:
 	MESHES								m_Meshes;
 
 	set<_uint>							m_TotalChannel;
+
+	_bool								m_bRepeat = false;
 
 private:
 	HRESULT	Load_Dat(const char * pModelFilePath, const char * pModelFileName);

@@ -373,8 +373,6 @@ HRESULT CAnimModel::Set_AnimationIndex(_uint _AnimationIndex)
 
 _bool CAnimModel::Play_Animation(_float _fTimeDelta, _float4* _vAnim, _float* pOut)
 {
-	//1. 현재 진행중인 애니메이션이 계속 진행할 것이다. (pre == cur) ->현재 애니메이션을 보간한다
-	//2. 다음 진행할 애니메이션과 현재 진행중인 애니메이션 다르다 (cur != pre) -> 3번과 병합한다
 	_bool _bResult = false;
 	if (m_iPreAnimIndex == m_iCurrentAnimIndex)
 	{
@@ -415,6 +413,21 @@ _bool CAnimModel::Play_Animation(_float _fTimeDelta, _float4* _vAnim, _float* pO
 		else
 			pHierarchyNode->Set_CombinedTransformation(_AnimMatrix, true);
 	}*/
+	return _bResult;
+}
+
+_bool CAnimModel::Repeat_Animation(_float _fTimeDelta, _float4 * _vAnim, _float * pOut)
+{
+	_bool _bResult = false;
+	if (m_Animations[m_iPreAnimIndex]->Play_Animation(_fTimeDelta, m_Animations[m_iCurrentAnimIndex], m_TotalChannel))
+	{
+		m_iPreAnimIndex = m_iCurrentAnimIndex;
+		return _bResult;
+	}
+	for (auto& pHierarchyNode : m_HierarchyNodes)
+	{
+		pHierarchyNode->Set_CombinedTransformation(_vAnim, true);
+	}
 	return _bResult;
 }
 

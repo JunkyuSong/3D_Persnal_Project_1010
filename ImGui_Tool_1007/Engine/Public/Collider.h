@@ -34,6 +34,9 @@ public:
 	virtual void Update(_fmatrix TransformMatrix) = 0;
 	virtual _bool Collision(CCollider* pTargetCollider) = 0;
 
+	void					Set_Target(class CGameObject* _pTarget);
+	class	CGameObject*	Get_Target(); 
+	void					Clear_Target();
 
 #ifdef _DEBUG
 public:
@@ -44,6 +47,7 @@ protected:
 	TYPE					m_eColliderType = TYPE_END;
 	COLLIDERDESC			m_ColliderDesc;
 	_bool					m_isColl = false;
+	class CGameObject*		m_pTarget = nullptr;
 	
 
 #ifdef _DEBUG

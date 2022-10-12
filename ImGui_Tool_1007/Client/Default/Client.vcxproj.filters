@@ -109,9 +109,6 @@
     <Filter Include="96. ImGuiMgr\Tool\Texture_Tool">
       <UniqueIdentifier>{9bf2306d-ea80-428f-8811-72b99828ef89}</UniqueIdentifier>
     </Filter>
-    <Filter Include="95. Manager\Collision">
-      <UniqueIdentifier>{8556b7f9-ed8d-4bbe-9c06-c4b6cd803c6f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\05. Monster">
       <UniqueIdentifier>{48b9ac98-5754-483c-866d-5c9c6265633b}</UniqueIdentifier>
     </Filter>
@@ -273,9 +270,6 @@
     <ClInclude Include="..\public\Texture_Tool.h">
       <Filter>96. ImGuiMgr\Tool\Texture_Tool</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\CollisionMgr.h">
-      <Filter>95. Manager\Collision</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Monster.h">
       <Filter>02.GameObjects\05. Monster</Filter>
     </ClInclude>
@@ -409,9 +403,6 @@
     </ClCompile>
     <ClCompile Include="..\private\Texture_Tool.cpp">
       <Filter>96. ImGuiMgr\Tool\Texture_Tool</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\CollisionMgr.cpp">
-      <Filter>95. Manager\Collision</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Monster.cpp">
       <Filter>02.GameObjects\05. Monster</Filter>

@@ -124,6 +124,9 @@
     <ClCompile Include="..\Private\Capsule.cpp">
       <Filter>03.Components\07. Collider\03. Capsule</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\CollisionMgr.cpp">
+      <Filter>04.Utility\04. Collision</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -270,6 +273,9 @@
     <ClInclude Include="..\Public\Camera.h">
       <Filter>02.GameObjects</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\CollisionMgr.h">
+      <Filter>04.Utility\04. Collision</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="99.Defines">
@@ -404,8 +410,8 @@
     <Filter Include="04.Utility\02. Camera">
       <UniqueIdentifier>{e91cd1b9-4f9e-4108-b884-9c6c5760fa6a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03.Components\07. Collider\98.">
-      <UniqueIdentifier>{01acb719-2cc5-4f71-bbaa-cc6531aeefe6}</UniqueIdentifier>
+    <Filter Include="04.Utility\04. Collision">
+      <UniqueIdentifier>{833da33b-6cb3-40f8-b0ee-f41c43d3181f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -2,6 +2,7 @@
 #include "..\Public\Saber.h"
 #include "GameInstance.h"
 
+#include "CollisionMgr.h"
 
 #include "Trail.h"
 
@@ -41,7 +42,11 @@ void CSaber::Tick(_float fTimeDelta)
 	m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 
 	if (m_bColliderOn)
+	{
 		m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_WEAPON, m_pColliderCom, this);
+	}
+		
 }
 
 void CSaber::LateTick(_float fTimeDelta)

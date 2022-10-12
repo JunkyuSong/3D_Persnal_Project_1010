@@ -55,6 +55,11 @@ HRESULT CCollider::Initialize(void * pArg)
 	return S_OK;
 }
 
+void CCollider::Set_Target(CGameObject * _pTarget)
+{
+	Safe_Release(m_pTarget); m_pTarget = _pTarget; Safe_AddRef(m_pTarget);
+}
+
 
 HRESULT CCollider::Render()
 {
@@ -105,4 +110,14 @@ void CCollider::Free()
 	
 #endif // _DEBUG
 
+}
+
+CGameObject * CCollider::Get_Target()
+{
+	return m_pTarget;
+}
+
+void CCollider::Clear_Target()
+{
+	Safe_Release(m_pTarget);
 }

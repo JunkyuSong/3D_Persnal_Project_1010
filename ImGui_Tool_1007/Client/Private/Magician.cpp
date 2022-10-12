@@ -92,6 +92,29 @@ void CMagician::Tick( _float fTimeDelta)
 
 void CMagician::LateTick( _float fTimeDelta)
 {
+	CGameObject* _pTarget = nullptr;
+
+	if (_pTarget = m_pColliderCom[COLLIDERTYPE_BODY]->Get_Target())
+	{
+		if (m_eCurState == Hurt_Long)
+		{
+			m_eCurState = Hurt_Short;
+		}
+		else if (m_eCurState == Hurt_Short)
+		{
+			m_eCurState = Hurt_Long;
+		}
+		else
+		{
+			m_eCurState = Hurt_Short;
+		}
+
+		CheckAnim();
+
+		CheckState(fTimeDelta);
+		PlayAnimation(fTimeDelta);
+	}
+
 	if (nullptr == m_pRendererCom)
 		return;
 	
@@ -243,7 +266,7 @@ void CMagician::CheckState(_float fTimeDelta)
 	{
 	case Client::CMagician::Magician_Idle:
 		//콜라이더 넣음
-		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_BODY, CCollisionMgr::TYPE_OBB, m_pColliderCom[COLLIDERTYPE_BODY], this);
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
 		break;
 	case Client::CMagician::Magician_Idle2:
 		break;
@@ -364,8 +387,16 @@ void CMagician::CheckLimit()
 	case Client::CMagician::Magician_Idle2:
 		break;
 	case Client::CMagician::Hurt_Short:
+		if (5.f < m_fPlayTime)
+		{
+			CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
+		}
 		break;
 	case Client::CMagician::Hurt_Long:
+		if (5.f < m_fPlayTime)
+		{
+			CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
+		}
 		break;
 	case Client::CMagician::Boss_Enter:
 		break;
@@ -470,7 +501,7 @@ HRESULT CMagician::Ready_Components()
 
 	CCollider::COLLIDERDESC		ColliderDesc;
 	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
-	ColliderDesc.vSize = _float3(1.3f, 1.3f, 1.3f);
+	ColliderDesc.vSize = _float3(0.7f, 1.8f, 0.7f);
 	ColliderDesc.vCenter = _float3(0.f, ColliderDesc.vSize.y * 0.5f, 0.f);
 	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_BODY], &ColliderDesc)))
@@ -522,6 +553,8 @@ void CMagician::Ready_LimitTime()
 	m_vecLimitTime[SP_Att2_Loop].push_back(20.f);
 	m_vecLimitTime[SP_Att2_Loop].push_back(150.f);
 	m_vecLimitTime[SP_Att2_Suc].push_back(220.f);
+
+	m_vecLimitTime[Hurt_Long].push_back(25.f);
 }
 
 CMagician * CMagician::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)

@@ -6,6 +6,7 @@
 #include "Level_Manager.h"
 #include "Object_Manager.h"
 #include "Component_Manager.h"
+#include "CollisionMgr.h"
 #include "LightMgr.h"
 #include "PipeLine.h"
 #include "Picking.h"
@@ -96,6 +97,7 @@ private:
 	CTimer_Manager*					m_pTimer_Manager = nullptr;
 	CPipeLine*						m_pPipeLine = nullptr;
 	CLight_Manager*					m_pLight_Manager = nullptr;
+	CCollisionMgr*					m_pCollision_Mgr = nullptr;
 
 public:
 	static void Release_Engine();

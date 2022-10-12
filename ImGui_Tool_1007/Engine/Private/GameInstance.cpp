@@ -11,6 +11,7 @@ CGameInstance::CGameInstance()
 	, m_pTimer_Manager(CTimer_Manager::Get_Instance())	
 	, m_pPipeLine(CPipeLine::Get_Instance())
 	, m_pLight_Manager(CLight_Manager::Get_Instance())
+	, m_pCollision_Mgr(CCollisionMgr::Get_Instance())
 {	
 	Safe_AddRef(m_pLight_Manager);
 	Safe_AddRef(m_pPipeLine);
@@ -20,6 +21,7 @@ CGameInstance::CGameInstance()
 	Safe_AddRef(m_pLevel_Manager);
 	Safe_AddRef(m_pInput_Device);
 	Safe_AddRef(m_pGraphic_Device);
+	Safe_AddRef(m_pCollision_Mgr);
 }
 
 HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, HINSTANCE hInst, const GRAPHICDESC& GraphicDesc, ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext)
@@ -57,10 +59,13 @@ void CGameInstance::Tick_Engine( _float fTimeDelta)
 		nullptr == m_pInput_Device)
 		return;
 
+
+	m_pCollision_Mgr->Clear_CollisoinList();
+
 	m_pInput_Device->Update();
 	m_pLevel_Manager->Tick(fTimeDelta);
 	m_pObject_Manager->Tick(fTimeDelta);
-	//zhffldjsal
+	m_pCollision_Mgr->Tick();
 	m_pPipeLine->Update();
 	CPicking::Get_Instance()->Tick();
 	m_pObject_Manager->LateTick(fTimeDelta);
@@ -357,6 +362,8 @@ void CGameInstance::Release_Engine()
 
 	CComponent_Manager::Get_Instance()->Destroy_Instance();
 
+	CCollisionMgr::Destroy_Instance();
+
 	CObject_Manager::Get_Instance()->Destroy_Instance();
 
 	CLevel_Manager::Get_Instance()->Destroy_Instance();
@@ -383,5 +390,7 @@ void CGameInstance::Free()
 	Safe_Release(m_pObject_Manager);
 	Safe_Release(m_pLevel_Manager);
 	Safe_Release(m_pInput_Device);
-	Safe_Release(m_pGraphic_Device); 
+	Safe_Release(m_pGraphic_Device);
+	Safe_Release(m_pCollision_Mgr);
+	
 }
