@@ -25,23 +25,20 @@ private:
 	virtual ~CCollisionMgr() = default;
 
 public:
-	void	Add_CollisoinList(GAMEOBJ_TYPE _GameObjType, COLLSION_TYPE  _CollisionType, CCollider * _pCollider);
+	void	Add_CollisoinList(GAMEOBJ_TYPE _GameObjType, COLLSION_TYPE  _CollisionType, CCollider * _pCollider, CGameObject* _pObj);
 	void	Clear_CollisoinList();
 	void	Tick();
 
 	_bool	PlayerBody_vs_MonsterWeapon();
 	void	PlayerWeapon_vs_MonsterBody();
 
-	list<CCollider*>	Get_CollisionList(GAMEOBJ_TYPE _GameObjType, COLLSION_TYPE _CollisionType)
-	{
-		return m_CollisionList[_GameObjType][_CollisionType];
-	}
+	CGameObject*	Collision(GAMEOBJ_TYPE _GameObjType, COLLSION_TYPE _CollisionType, CCollider * _pCollider);
 
 public:
 	virtual void Free() override;
 
 private:
-	list<CCollider*>	m_CollisionList[GAMEOBJ_END][COLLISION_END];
+	list<pair<CGameObject*,CCollider*>>	m_CollisionList[GAMEOBJ_END][COLLISION_END];
 };
 
 END

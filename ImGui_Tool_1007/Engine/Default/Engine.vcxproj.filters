@@ -404,5 +404,8 @@
     <Filter Include="04.Utility\02. Camera">
       <UniqueIdentifier>{e91cd1b9-4f9e-4108-b884-9c6c5760fa6a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03.Components\07. Collider\98.">
+      <UniqueIdentifier>{01acb719-2cc5-4f71-bbaa-cc6531aeefe6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

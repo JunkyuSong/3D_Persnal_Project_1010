@@ -7,6 +7,7 @@
 #include "TerrainMgr.h"
 #include "ReleaseMgr.h"
 #include "CameraMgr.h"
+#include "CollisionMgr.h"
 
 using namespace Client;
 
@@ -55,6 +56,7 @@ void CMainApp::Tick(const _float& fTimeDelta)
 	CImGui::Get_Instance()->Tick();
 	m_pGameInstance->Tick_Engine(fTimeDelta);
 	CCameraMgr::Get_Instance()->Tick(fTimeDelta);
+	CCollisionMgr::Get_Instance()->Clear_CollisoinList();
 }
 
 HRESULT CMainApp::Render()
@@ -165,15 +167,17 @@ void CMainApp::Free()
 	Safe_Release(m_pGameInstance);
 	/*m_pGameInstance = CGameInstance::Get_Instance();
 	Safe_Release(m_pGameInstance);*/
-	CReleaseMgr* ReleaseMgr = CReleaseMgr::Get_Instance();
+	/*CReleaseMgr* ReleaseMgr = CReleaseMgr::Get_Instance();
 	CTerrainMgr* _pTerrain = CTerrainMgr::Get_Instance();
 	Safe_Release(ReleaseMgr);
-	Safe_Release(_pTerrain);
+	Safe_Release(_pTerrain);*/
 	CReleaseMgr::Destroy_Instance();
 	CTerrainMgr::Destroy_Instance();
+	CCameraMgr::Destroy_Instance();
+	CCollisionMgr::Destroy_Instance();
 	CGameInstance::Release_Engine();
 	CImGui::Destroy_Instance();
-	CCameraMgr::Destroy_Instance();
+	
 
 
 }

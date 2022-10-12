@@ -243,7 +243,7 @@ void CMagician::CheckState(_float fTimeDelta)
 	{
 	case Client::CMagician::Magician_Idle:
 		//콜라이더 넣음
-		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_BODY, CCollisionMgr::TYPE_OBB, m_pColliderCom[COLLIDERTYPE_BODY]);
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_BODY, CCollisionMgr::TYPE_OBB, m_pColliderCom[COLLIDERTYPE_BODY], this);
 		break;
 	case Client::CMagician::Magician_Idle2:
 		break;
@@ -567,6 +567,11 @@ void CMagician::Free()
 	{
 		if (_Socket)
 			Safe_Release(_Socket);
+	}
+	for (auto& _Collider : m_pColliderCom)
+	{
+		if (_Collider)
+			Safe_Release(_Collider);
 	}
 }
 

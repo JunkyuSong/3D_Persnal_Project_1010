@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "..\Public\CollisionMgr.h"
-#include "OBB.h"
-#include "AABB.h"
-#include "Sphere.h"
+#include "GameInstance.h"
+//#include "OBB.h"
+//#include "AABB.h"
+//#include "Sphere.h"
 IMPLEMENT_SINGLETON(CCollisionMgr)
 
 CCollisionMgr::CCollisionMgr()
@@ -10,9 +11,11 @@ CCollisionMgr::CCollisionMgr()
 }
 
 
-void CCollisionMgr::Add_CollisoinList(GAMEOBJ_TYPE _GameObjType, COLLSION_TYPE  _CollisionType, CCollider * _pCollider)
+void CCollisionMgr::Add_CollisoinList(GAMEOBJ_TYPE _GameObjType, COLLSION_TYPE  _CollisionType, CCollider * _pCollider, CGameObject* _pObj)
 {
-	m_CollisionList[_GameObjType][_CollisionType].push_back(_pCollider);
+	pair<CGameObject*, CCollider*> _pair = { _pObj , _pCollider };
+	m_CollisionList[_GameObjType][_CollisionType].push_back(_pair);
+	Safe_AddRef(_pObj);
 	Safe_AddRef(_pCollider);
 }
 
@@ -24,50 +27,67 @@ void CCollisionMgr::Clear_CollisoinList()
 		{
 			for (auto& iter : m_CollisionList[i][j])
 			{
-				Safe_Release(iter);
+				Safe_Release(iter.first);
+				Safe_Release(iter.second);
 			}
+			m_CollisionList[i][j].clear();
 		}
 	}
 }
 
-void CCollisionMgr::Tick()
+CGameObject * CCollisionMgr::Collision(GAMEOBJ_TYPE _GameObjType, COLLSION_TYPE _CollisionType, CCollider * _pCollider)
 {
-	//플레이어가 회피중일땐 안넣으면 그만인데, 패링할때는 어쩌지... 넣어야하는데, 그게...음. 오반데
-	//그냥 sr때처럼 각 객체안에서 돌릴까..
-	// 콜리젼 틱 돌리면 쓰레드 따로 돌릴 수 있는데
-	// 객체 안에서 돌리면 쓰레드 따로 돌릴 수 있나...
-	if (PlayerBody_vs_MonsterWeapon())
+	switch (_pCollider->Get_ColliderType())
 	{
-		return;
-	}
-	PlayerWeapon_vs_MonsterBody();
-	Clear_CollisoinList();
-}
-
-_bool CCollisionMgr::PlayerBody_vs_MonsterWeapon()
-{
-	for (auto& Sour : m_CollisionList[TYPE_PLAYER_BODY][TYPE_OBB])
-	{
-		for (auto& Dest : m_CollisionList[TYPE_MONSTER_WEAPON][TYPE_OBB])
+	case CCollider::TYPE_AABB:
 		{
-			if ((COBB*)Sour->Collision(Dest))
+			CAABB* _Collider = static_cast<CAABB*>(_pCollider);
+			for (auto& _pair : m_CollisionList[_GameObjType][_CollisionType])
 			{
-				return true;
+				if (_Collider->Collision(_pair.second))
+				{
+					return _pair.first;
+				}
 			}
 		}
-	}
-	return false;
-}
-
-void CCollisionMgr::PlayerWeapon_vs_MonsterBody()
-{
-	for (auto& Sour : m_CollisionList[TYPE_PLAYER_WEAPON][TYPE_OBB])
-	{
-		for (auto& Dest : m_CollisionList[TYPE_MONSTER_BODY][TYPE_OBB])
+		break;
+	case CCollider::TYPE_OBB:
 		{
-			(COBB*)Dest->Collision(Sour);
+			COBB* _Collider = static_cast<COBB*>(_pCollider);
+			for (auto& _pair : m_CollisionList[_GameObjType][_CollisionType])
+			{
+				if (_Collider->Collision(_pair.second))
+				{
+					return _pair.first;
+				}
+			}
 		}
+		break;
+	case CCollider::TYPE_SPHERE:
+		{
+			CSphere* _Collider = static_cast<CSphere*>(_pCollider);
+			for (auto& _pair : m_CollisionList[_GameObjType][_CollisionType])
+			{
+				if (_Collider->Collision(_pair.second))
+				{
+					return _pair.first;
+				}
+			}
+		}
+		break;
+	//case CCollider::TYPE_CAPSULE:
+	//{
+	//	/*CCap* _Collider = static_cast<CAABB*>(_pCollider);
+	//	for (auto& _pair : m_CollisionList[_GameObjType][_CollisionType])
+	//	{
+	//		_Collider->Collision(_pair.second);
+	//	}*/
+	//}
+	//	break;
 	}
+	
+	
+	return nullptr;
 }
 
 void CCollisionMgr::Free()
@@ -78,8 +98,10 @@ void CCollisionMgr::Free()
 		{
 			for (auto& iter : m_CollisionList[i][j])
 			{
-				Safe_Release(iter);
+				Safe_Release(iter.first);
+				Safe_Release(iter.second);
 			}
-		}
+			m_CollisionList[i][j].clear();
+		}		
 	}
 }
