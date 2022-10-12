@@ -333,7 +333,7 @@ HRESULT CObj_Tool::Tool_Obj_Add()
 		//m_vScale = m_pPick_Trans->Get_Scale();
 		//_float3 _vPos;
 		//XMStoreFloat3(&_vPos, m_pPick_Trans->Get_State(CTransform::STATE_POSITION));
-		//m_vAngle = m_pPick_Trans->Get_Rotation();
+		m_vAngle = m_pPick_Trans->Get_Rotation();
 		_vector _Scale, _Rot, _Pos;
 		_matrix world = m_pPick_Trans->Get_WorldMatrix();
 		XMMatrixDecompose(&_Scale, &_Rot, &_Pos, world);
@@ -343,9 +343,13 @@ HRESULT CObj_Tool::Tool_Obj_Add()
 		XMStoreFloat4(&_vRot, _Rot);
 		//XMStoreFloat3(&m_vPos, _Pos);
 
-		_vRot.x = XMConvertToDegrees(_vRot.x);
+		/*_vRot.x = XMConvertToDegrees(_vRot.x);
 		_vRot.y = XMConvertToDegrees(_vRot.y);
-		_vRot.z = XMConvertToDegrees(_vRot.z);
+		_vRot.z = XMConvertToDegrees(_vRot.z);*/
+
+		m_vAngle.x = XMConvertToDegrees(m_vAngle.x);
+		m_vAngle.y = XMConvertToDegrees(m_vAngle.y);
+		m_vAngle.z = XMConvertToDegrees(m_vAngle.z);
 
 		m_vPos.y = XMVectorGetY(_Pos);
 		Key_Input();
@@ -362,25 +366,27 @@ HRESULT CObj_Tool::Tool_Obj_Add()
 		ImGui::InputFloat("Scale.z", &m_vScale.z);
 		if (m_vScale.z <= 0.f) { m_vScale.z = 0.01f; }
 
-		ImGui::InputFloat("Angle.x", &_vRot.x);
-		ImGui::InputFloat("Angle.y", &_vRot.y);
-		ImGui::InputFloat("Angle.z", &_vRot.z);
+		ImGui::InputFloat("Angle.x", &m_vAngle.x);
+		ImGui::InputFloat("Angle.y", &m_vAngle.y);
+		ImGui::InputFloat("Angle.z", &m_vAngle.z);
 
-		//_vRot.x = XMConvertToRadians(_vRot.x);
-		//_vRot.y = XMConvertToRadians(_vRot.y);
-		//_vRot.z = XMConvertToRadians(_vRot.z);
+		m_vAngle.x = XMConvertToRadians(m_vAngle.x);
+		m_vAngle.y = XMConvertToRadians(m_vAngle.y);
+		m_vAngle.z = XMConvertToRadians(m_vAngle.z);
 
-		world = XMMatrixAffineTransformation(XMLoadFloat3(&m_vScale), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMLoadFloat4(&_vRot), XMVectorSetW(XMLoadFloat3(&m_vPos), 1.f));
+		/*world = XMMatrixAffineTransformation(XMLoadFloat3(&m_vScale), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMLoadFloat4(&_vRot), XMVectorSetW(XMLoadFloat3(&m_vPos), 1.f));
 		_float4x4 _world4x4;
 		XMStoreFloat4x4(&_world4x4, world);
-		m_pPick_Trans->Set_WorldFloat4x4(_world4x4);
-		/*m_pPick_Trans->Set_Scale(XMVectorSet(m_vScale.x, m_vScale.y, m_vScale.z, 0.f));
+		m_pPick_Trans->Set_WorldFloat4x4(_world4x4);*/
+		m_pPick_Trans->Set_Scale(XMVectorSet(m_vScale.x, m_vScale.y, m_vScale.z, 0.f));
 
-		m_pPick_Trans->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), XMConvertToRadians(m_vAngle.z));
-		m_pPick_Trans->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), XMConvertToRadians(m_vAngle.x));
-		m_pPick_Trans->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(m_vAngle.y));
+		//m_pPick_Trans->Turn(XMVectorSet(0.f, 0.f, 1.f, 0.f), XMConvertToRadians(m_vAngle.z));
+		m_pPick_Trans->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), (m_vAngle.x));
+		m_pPick_Trans->Turn_Angle(XMVectorSet(0.f, 1.f, 0.f, 0.f), (m_vAngle.y));
+		m_pPick_Trans->Turn_Angle(XMVectorSet(0.f, 0.f, 1.f, 0.f), (m_vAngle.z));
+
 		m_pPick_Trans->Set_Rotation(XMLoadFloat3(&m_vAngle));
-		m_pPick_Trans->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_vPos.x, m_vPos.y, m_vPos.z, 1.f));*/
+		m_pPick_Trans->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_vPos.x, m_vPos.y, m_vPos.z, 1.f));
 		m_pPick->Tick(0.f);
 		m_pPick->LateTick(0.f);
 	}
@@ -433,9 +439,9 @@ HRESULT CObj_Tool::Tool_Obj_Add()
 		_matrix		Matrix = XMMatrixIdentity();
 
 		Matrix = XMMatrixScaling(m_vScale.x, m_vScale.y, m_vScale.z) *
-				XMMatrixRotationX(XMConvertToRadians(m_vAngle.x)) *
-				XMMatrixRotationY(XMConvertToRadians(m_vAngle.y)) *
-				XMMatrixRotationZ(XMConvertToRadians(m_vAngle.z)) *
+				XMMatrixRotationX((m_vAngle.x)) *
+				XMMatrixRotationY((m_vAngle.y)) *
+				XMMatrixRotationZ((m_vAngle.z)) *
 				XMMatrixTranslation(m_vPos.x, m_vPos.y, m_vPos.z);
 
 		XMStoreFloat4x4(&m_tObj_Desc.matWorld, Matrix) ;

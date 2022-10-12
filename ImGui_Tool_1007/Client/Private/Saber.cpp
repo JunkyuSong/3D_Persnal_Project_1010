@@ -58,7 +58,6 @@ void CSaber::Tick(_float fTimeDelta, CGameObject * _pUser)
 		m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_WEAPON, m_pColliderCom, _pUser);
 	}
-
 }
 
 void CSaber::LateTick(_float fTimeDelta)
