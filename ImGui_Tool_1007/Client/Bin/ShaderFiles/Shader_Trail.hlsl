@@ -1,4 +1,4 @@
-
+#include "Client_Shader_Defines.hpp"
 //struct tagData
 //{
 //	float3		Position;
@@ -79,18 +79,18 @@ PS_OUT PS_MAIN(PS_IN In)
 
 	//Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
 
-	//Out.vColor.a = 1.f - In.vTexUV.y;
+	Out.vColor.a = 1.f - In.vTexUV.y;
 
-	Out.vColor.x = g_Color.x + In.vTexUV.y * 0.8f;
-	Out.vColor.y = g_Color.y + In.vTexUV.y * 0.8f;
-	Out.vColor.z = g_Color.z + In.vTexUV.y * 0.8f;
+	Out.vColor.x = g_Color.x + In.vTexUV.y;
+	Out.vColor.y = g_Color.y + In.vTexUV.y;
+	Out.vColor.z = g_Color.z + In.vTexUV.y;
 
-	if (In.vTexUV.y > 0.3f)
+	/*if (In.vTexUV.y > 0.3f)
 	{
 		Out.vColor.x = g_Color.x + In.vTexUV.y;
 		Out.vColor.y = g_Color.y + In.vTexUV.y;
 		Out.vColor.z = g_Color.z + In.vTexUV.y;
-	}
+	}*/
 
 	return Out;	
 }
@@ -100,6 +100,9 @@ technique11 DefaultTechnique
 {
 	pass DefaultPass
 	{
+		SetRasterizerState(RS_CullNone);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();

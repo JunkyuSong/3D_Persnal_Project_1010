@@ -29,6 +29,18 @@ HRESULT CRenderer::Add_RenderGroup(RENDERGROUP eRenderGroup, CGameObject * pGame
 	return S_OK;
 }
 
+HRESULT CRenderer::Add_RenderGroup_Trail(CComponent * pComponent)
+{
+	if (nullptr == pComponent)
+		return E_FAIL;
+
+	m_RenderAlphaTrail.push_back(pComponent);
+
+	Safe_AddRef(pComponent);
+
+	return S_OK;
+}
+
 HRESULT CRenderer::Draw()
 {
 	for (_uint i = 0; i < RENDER_END; ++i)

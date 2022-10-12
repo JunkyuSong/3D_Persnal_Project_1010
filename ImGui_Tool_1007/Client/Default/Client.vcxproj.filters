@@ -148,6 +148,9 @@
     <Filter Include="95. Manager\Camera">
       <UniqueIdentifier>{f5f98415-dbfc-43d8-a739-8a6eda4e8e2f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00. Player\Dummy">
+      <UniqueIdentifier>{979d9cf4-44d0-408b-97c7-ff0b1607b831}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -297,6 +300,12 @@
     <ClInclude Include="..\public\CameraMgr.h">
       <Filter>95. Manager\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="..\Bin\ShaderFiles\Client_Shader_Defines.hpp">
+      <Filter>97.ShaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Dummy.h">
+      <Filter>02.GameObjects\00. Player\Dummy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -430,6 +439,9 @@
     </ClCompile>
     <ClCompile Include="..\private\CameraMgr.cpp">
       <Filter>95. Manager\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Dummy.cpp">
+      <Filter>02.GameObjects\00. Player\Dummy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

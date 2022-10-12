@@ -1,5 +1,6 @@
-
+#include "Client_Shader_Defines.hpp"
 matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
+float		g_fAlpha;
 
 struct tagBoneMatrices
 {
@@ -88,11 +89,13 @@ PS_OUT PS_MAIN_TRAIL(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	Out.vColor = (vector)1.f;
+	//Out.vColor = (vector)1.f;
 
 	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
-	Out.vColor *= vector(0.5f, 0.2f, 0.8f, 1.f);
-	if (0 == Out.vColor.a)
+
+	Out.vColor *= vector(0.5f, 0.2f, 0.8f, g_fAlpha);
+
+	if (0 >= Out.vColor.a)
 		discard;
 
 	return Out;
@@ -103,6 +106,9 @@ technique11 DefaultTechnique
 {
 	pass DefaultPass
 	{
+		SetRasterizerState(RS_CullNone);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
@@ -110,6 +116,19 @@ technique11 DefaultTechnique
 
 	pass DefaultPass2
 	{
+		SetRasterizerState(RS_CullNone);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN();
+	}
+
+	pass MotionTrail
+	{
+		SetRasterizerState(RS_CullNone);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_TRAIL();

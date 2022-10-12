@@ -153,8 +153,8 @@ private:
 
 	DIRECT					m_eDir = DIR_END;
 
-	list<CMotionTrail*>		m_listMotion;
-	list<CMotionTrail*>		m_listDeadMotion;
+	list<class CDummy*>		m_listMotion;
+	list<class CDummy*>		m_listDeadMotion;
 	_bool					m_bMotionPlay = false;
 	_float					m_MaxMotionTrail = 0.07f;
 	_float					m_CurMotionTrail = 0.f;

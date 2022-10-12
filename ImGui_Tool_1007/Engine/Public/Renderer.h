@@ -25,10 +25,12 @@ public:
 	virtual HRESULT Initialize(void* pArg) override;
 public:
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pGameObject);
+	HRESULT Add_RenderGroup_Trail(CComponent* pComponent);
 	HRESULT Draw();
 
 private:
 	list<class CGameObject*>				m_RenderObjects[RENDER_END];
+	list<CComponent*>						m_RenderAlphaTrail;
 	typedef list<class CGameObject*>		RENDEROBJECTS;
 
 public:

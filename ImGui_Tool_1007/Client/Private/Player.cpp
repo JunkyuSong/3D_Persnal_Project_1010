@@ -5,6 +5,7 @@
 #include "HierarchyNode.h"
 
 #include "MotionTrail.h"
+#include "Dummy.h"
 #include "Weapon.h"
 
 
@@ -77,7 +78,8 @@ HRESULT CPlayer::Initialize(void * pArg)
 			MSG_BOX(TEXT("creat Motion"));
 			return E_FAIL;
 		}
-		m_listDeadMotion.push_back(_Motion);
+		CDummy*		_pDummy = CDummy::Creat(m_pDevice, m_pContext, _Motion, _float4x4());
+		m_listDeadMotion.push_back(_pDummy);
 	}
 
 	KeySetting();
@@ -139,17 +141,20 @@ void CPlayer::LateTick( _float fTimeDelta)
 	{
 		for (auto& _pPart : m_pBaseParts)
 		{
-			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, _pPart);
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, _pPart);
 		}
 	}
 	else
 	{
 		for (auto& _pPart : m_pSkillParts[m_eCurSkill])
 		{
-			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, _pPart);
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, _pPart);
 		}
 	}	
-
+	for (auto& _motion : m_listMotion)
+	{
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, _motion);
+	}
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }
 
@@ -158,12 +163,11 @@ HRESULT CPlayer::Render()
 	if (nullptr == m_pModelCom ||
 		nullptr == m_pShaderCom)
 		return E_FAIL;
-	SetUp_ShaderResources();
+
 	_uint		iNumMeshes;//메쉬 갯수를 알고 메쉬 갯수만큼 렌더를 할 것임. 여기서!
-	for (auto& _motion : m_listMotion)
-	{
+	
 		
-		iNumMeshes = _motion->Get_NumMesh();
+		/*iNumMeshes = _motion->Get_NumMesh();
 		for (_uint i = 0; i < iNumMeshes; ++i)
 		{
 			if (FAILED(_motion->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
@@ -171,8 +175,7 @@ HRESULT CPlayer::Render()
 
 			if (FAILED(_motion->Render(m_pShaderCom, 1, i)))
 				return E_FAIL;
-		}
-	}
+		}*/
 
 	SetUp_ShaderResources();
 
@@ -183,7 +186,7 @@ HRESULT CPlayer::Render()
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, m_ePass,i)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, 0,i)))
 			return E_FAIL;
 	}
 
@@ -845,12 +848,17 @@ void CPlayer::CheckLimit()
 	case Client::CPlayer::STATE_AVOIDATTACK:
 		break;
 	case Client::CPlayer::Corvus_PW_Axe:
-		if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][3])//다시 무기 스왑 및 타이머 정상화
+		if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][4])//다시 무기 스왑 및 타이머 정상화
 		{
 			m_bSkill = false;
 			m_eCurSkill = SKILL_END;
 			AUTOINSTANCE(CGameInstance, pGame);
 			pGame->Set_TimeSpeed(TEXT("Timer_Main"), 1.f);
+		}
+		else if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][3])//다시 무기 스왑 및 타이머 정상화
+		{
+			AUTOINSTANCE(CGameInstance, pGame);
+			pGame->Set_TimeSpeed(TEXT("Timer_Main"), 2.f);
 		}
 		else if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][2])//모션트레일 off
 		{
@@ -1235,10 +1243,10 @@ HRESULT CPlayer::Check_MotionTrail(_float fTimeDelta)
 	for (auto iter = m_listMotion.begin(); iter != m_listMotion.end();)
 	{
 		(*iter)->Tick(fTimeDelta);
-		if ((*iter)->Get_Tick() > 0.3f)
+		if ((*iter)->Get_Tick() > 0.5f)
 		{
 			(*iter)->Set_Tick(0.f);
-			CMotionTrail* _Motion = (*iter);
+			CDummy* _Motion = (*iter);
 			iter = m_listMotion.erase(iter);
 			m_listDeadMotion.push_back(_Motion);
 		}
@@ -1262,13 +1270,14 @@ HRESULT CPlayer::Check_MotionTrail(_float fTimeDelta)
 				return E_FAIL;
 			}
 			_Motion->Set_CombinedMat(m_pModelCom->Get_HierarchyNodeVector(), m_pTransformCom->Get_WorldFloat4x4());
-			m_listMotion.push_back(_Motion);
+			CDummy*		_pDummy = CDummy::Creat(m_pDevice, m_pContext, _Motion, m_pTransformCom->Get_WorldFloat4x4());
+			m_listMotion.push_back(_pDummy);
 		}
 		else
 		{
-			CMotionTrail* _Motion = m_listDeadMotion.back();
-			_Motion->Set_CombinedMat(m_pModelCom->Get_HierarchyNodeVector(), m_pTransformCom->Get_WorldFloat4x4());
-			m_listMotion.push_back(_Motion);
+			CDummy*		_pDummy = m_listDeadMotion.back();
+			_pDummy->Set_CombinedMat(m_pModelCom->Get_HierarchyNodeVector(), m_pTransformCom->Get_WorldFloat4x4());
+			m_listMotion.push_back(_pDummy);
 			m_listDeadMotion.pop_back();
 		}
 	}
@@ -1339,6 +1348,7 @@ HRESULT CPlayer::Ready_AnimLimit()
 	m_vecLimitTime[Corvus_PW_Axe].push_back(20.f);
 	m_vecLimitTime[Corvus_PW_Axe].push_back(40.f);
 	m_vecLimitTime[Corvus_PW_Axe].push_back(65.f);
+	m_vecLimitTime[Corvus_PW_Axe].push_back(120.f);
 	m_vecLimitTime[Corvus_PW_Axe].push_back(160.f);
 
 	

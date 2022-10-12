@@ -21,6 +21,14 @@ CMainApp::CMainApp()
 
 HRESULT CMainApp::Initialize()
 {
+	/*
+	D3D11_RASTERIZER_DESC
+	D3D11_BLEND_DESC
+	D3D11_DEPTH_STENCIL_DESC
+
+	*/
+
+
 	GRAPHICDESC			GraphicDesc;
 	ZeroMemory(&GraphicDesc, sizeof(GRAPHICDESC));
 
