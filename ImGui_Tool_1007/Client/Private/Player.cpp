@@ -1541,7 +1541,7 @@ HRESULT CPlayer::Update_Weapon(_float fTimeDelta)
 		for (auto& pPart : m_pBaseParts)
 		{
 			if (pPart != nullptr)
-				pPart->Tick(fTimeDelta);
+				pPart->Tick(fTimeDelta, this);
 		}
 	}
 	else
@@ -1554,7 +1554,7 @@ HRESULT CPlayer::Update_Weapon(_float fTimeDelta)
 		for (auto& pPart : m_pSkillParts[m_eCurSkill])
 		{
 			if (pPart != nullptr)
-				pPart->Tick(fTimeDelta);
+				pPart->Tick(fTimeDelta, this);
 		}
 	}
 

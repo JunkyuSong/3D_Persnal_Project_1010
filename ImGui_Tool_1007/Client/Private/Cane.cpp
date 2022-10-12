@@ -43,6 +43,14 @@ void CCane::Tick(_float fTimeDelta)
 		m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 }
 
+void CCane::Tick(_float fTimeDelta, CGameObject * _pUser)
+{
+	//m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+
+	if (m_bColliderOn)
+		m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+}
+
 void CCane::LateTick(_float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
@@ -141,8 +149,8 @@ HRESULT CCane::Ready_Components()
 	CCollider::COLLIDERDESC		ColliderDesc;
 	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
 
-	ColliderDesc.vSize = _float3(90.0f, 10.f, 5.f);
-	ColliderDesc.vCenter = _float3(0.f, ColliderDesc.vSize.y * 0.5f - 5.f, 0.f);
+	ColliderDesc.vSize = _float3(90.0f, 5.f, 5.f);
+	ColliderDesc.vCenter = _float3(-20.f, ColliderDesc.vSize.y * 0.5f - 5.f, 0.f);
 	ColliderDesc.vRotation = _float3(0.f, XMConvertToRadians(0.f), 0.f);
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pColliderCom, &ColliderDesc)))
 		return E_FAIL;

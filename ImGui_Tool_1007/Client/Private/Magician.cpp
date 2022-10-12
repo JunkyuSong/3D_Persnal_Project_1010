@@ -81,7 +81,7 @@ void CMagician::Tick( _float fTimeDelta)
 	for (auto& pPart : m_pParts)
 	{
 		if (pPart != nullptr)
-			pPart->Tick(fTimeDelta);
+			pPart->Tick(fTimeDelta, this);
 	}
 	for (auto& pCollider : m_pColliderCom)
 	{
@@ -206,13 +206,13 @@ void CMagician::CheckEndAnim()
 		m_eCurState = Magician_Idle;
 		break;
 	case Client::CMagician::SP_Att2_Start:
-	{
-		m_eCurState = SP_Att2_Suc;
+		{
+		m_eCurState = SP_Att2_Loop;
 		ChangeCanesword(CANESWORD_L); //패링 안되었을때??
-	}
-	{
+		}
+		{
 		//m_eCurState = SP_Att2_Loop; 패링되었을때??
-	}
+		}
 		
 		break;
 	case Client::CMagician::SP_Att2_Loop:

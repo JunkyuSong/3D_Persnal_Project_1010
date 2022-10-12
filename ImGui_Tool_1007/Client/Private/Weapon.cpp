@@ -30,6 +30,10 @@ void CWeapon::Tick(_float fTimeDelta)
 {
 }
 
+void CWeapon::Tick(_float fTimeDelta, CGameObject * _pUser)
+{
+}
+
 void CWeapon::LateTick(_float fTimeDelta)
 {
 }

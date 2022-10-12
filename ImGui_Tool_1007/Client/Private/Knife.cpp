@@ -43,6 +43,14 @@ void CKnife::Tick(_float fTimeDelta)
 		m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 }
 
+void CKnife::Tick(_float fTimeDelta, CGameObject * _pUser)
+{
+	m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+
+	if (m_bColliderOn)
+		m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+}
+
 void CKnife::LateTick(_float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)

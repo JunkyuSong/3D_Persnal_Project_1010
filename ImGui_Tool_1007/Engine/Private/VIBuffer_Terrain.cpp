@@ -239,7 +239,7 @@ _bool CVIBuffer_Terrain::Picking(CTransform* pTransform, _vector& pOut)
 	if (_bPicking)
 	{
 
-		//여기서 이제 인덱스 처리 y값 안쓸건데 그냥 그래도 계산할까..
+		//여기서 이제 인덱스 처리 y값 인덱스로 해서 피킹 다시 하면 됨
 		//_uint		iIndex = i * m_iNumVerticesX + j;
 		//pOut.m128_f32[0];
 	}

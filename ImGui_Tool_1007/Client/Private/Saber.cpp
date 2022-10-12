@@ -49,6 +49,18 @@ void CSaber::Tick(_float fTimeDelta)
 		
 }
 
+void CSaber::Tick(_float fTimeDelta, CGameObject * _pUser)
+{
+	m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+
+	if (m_bColliderOn)
+	{
+		m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_WEAPON, m_pColliderCom, _pUser);
+	}
+
+}
+
 void CSaber::LateTick(_float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
@@ -137,6 +149,7 @@ HRESULT CSaber::Ready_Components()
 	CTrail::TRAILINFO _tInfo;
 	_tInfo._Color = _float4(1.f, 0.f, 1.f, 1.f);
 	_tInfo._HighAndLow.vHigh = _float3(100.0f, 0.f, 0.f);
+	//_tInfo._HighAndLow.vLow = _float3(80.f, 0.f, 0.f);
 	_tInfo._HighAndLow.vLow = _float3(-5.f, 0.f, 0.f);
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Trail"), TEXT("Com_Trail"), (CComponent**)&m_pTrailCom, &_tInfo)))
 	{

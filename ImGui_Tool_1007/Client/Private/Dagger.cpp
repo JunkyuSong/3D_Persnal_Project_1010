@@ -43,6 +43,15 @@ void CDagger::Tick(_float fTimeDelta)
 	//m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 }
 
+void CDagger::Tick(_float fTimeDelta, CGameObject * _pUser)
+{
+	if (!m_pTrailCom->Get_On())
+	{
+		m_pTrailCom->TrailOn(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+	}
+	//m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+}
+
 void CDagger::LateTick(_float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)

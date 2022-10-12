@@ -31,13 +31,25 @@ HRESULT CCane_Sword::Initialize(void * pArg)
 
 	m_bColliderOn = true;
 
-
+	
 	return S_OK;
 }
 
 void CCane_Sword::Tick(_float fTimeDelta)
 {
-	//m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+	if (!m_pTrailCom->Get_On())
+		m_pTrailCom->TrailOn(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+	m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+
+	if (m_bColliderOn)
+		m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+}
+
+void CCane_Sword::Tick(_float fTimeDelta, CGameObject * _pUser)
+{
+	if (!m_pTrailCom->Get_On())
+		m_pTrailCom->TrailOn(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+	m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 
 	if (m_bColliderOn)
 		m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
@@ -86,10 +98,10 @@ HRESULT CCane_Sword::Render()
 		if (FAILED(m_pModelCom->Render(i)))
 			return E_FAIL;
 	}
-	//m_pTrailCom->Render();
+	m_pTrailCom->Render();
 #ifdef _DEBUG
-	/*if (nullptr != m_pColliderCom && m_bColliderOn)
-		m_pColliderCom->Render();*/
+	if (nullptr != m_pColliderCom && m_bColliderOn)
+		m_pColliderCom->Render();
 #endif
 
 	return S_OK;
@@ -128,9 +140,11 @@ HRESULT CCane_Sword::Ready_Components()
 
 	/* For.Com_Trail */
 	CTrail::TRAILINFO _tInfo;
-	_tInfo._Color = _float4(1.f, 1.f, 0.f, 1.f);
+	
+	_tInfo._Color = _float4(100.f / 255.f, 216.f / 255.f, 201.f / 255.f, 1.f);
 	_tInfo._HighAndLow.vHigh = _float3(100.0f, 0.f, 0.f);
-	_tInfo._HighAndLow.vLow = _float3(-5.f, 0.f, 0.f);
+	_tInfo._HighAndLow.vLow = _float3(90.0f, 0.f, 0.f);
+	//_tInfo._HighAndLow.vLow = _float3(-5.f, 0.f, 0.f);
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Trail"), TEXT("Com_Trail"), (CComponent**)&m_pTrailCom, &_tInfo)))
 	{
 		MSG_BOX(TEXT("fail to trail in Cane_Sword"));
