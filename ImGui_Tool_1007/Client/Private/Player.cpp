@@ -4,9 +4,12 @@
 #include "ImGuiMgr.h"
 #include "HierarchyNode.h"
 
+#include "Status.h"
+
 #include "MotionTrail.h"
 #include "Dummy.h"
 #include "Weapon.h"
+
 
 
 CPlayer::CPlayer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -392,8 +395,7 @@ void CPlayer::KeyInput_Idle( _float fTimeDelta)
 		m_eCurState = DualKnife;
 		m_eWeapon = WEAPON::WEAPON_SKILL;
 		m_eCurSkill = SKILL_DUAL;
-		m_pSkillParts[SKILL_DUAL][HAND_LEFT]->TrailOn();
-		m_pSkillParts[SKILL_DUAL][HAND_RIGHT]->TrailOn();
+		
 		//m_eCurState = Corvus_PW_Axe;
 	}
 }
@@ -695,8 +697,6 @@ void CPlayer::CheckEndAnim()
 	case Client::CPlayer::DualKnife:
 		m_eCurState = STATE_IDLE;
 		m_eWeapon = WEAPON_BASE;
-		m_pSkillParts[SKILL_DUAL][HAND_LEFT]->TrailOff();
-		m_pSkillParts[SKILL_DUAL][HAND_RIGHT]->TrailOff();
 		break;
 	case Client::CPlayer::GreatSword:
 		m_eCurState = STATE_IDLE;
@@ -860,6 +860,24 @@ void CPlayer::CheckLimit()
 	case Client::CPlayer::ParryL:
 		break;
 	case Client::CPlayer::DualKnife:
+		if (m_fPlayTime > m_vecLimitTime[DualKnife][1])//무기 스왑
+		{
+			m_pSkillParts[SKILL_DUAL][HAND_LEFT]->Set_CollisionOn(false);
+			m_pSkillParts[SKILL_DUAL][HAND_RIGHT]->Set_CollisionOn(false);
+			if(m_pSkillParts[SKILL_DUAL][HAND_LEFT]->Trail_GetOn())
+				m_pSkillParts[SKILL_DUAL][HAND_LEFT]->TrailOff();
+			if (m_pSkillParts[SKILL_DUAL][HAND_RIGHT]->Trail_GetOn())
+				m_pSkillParts[SKILL_DUAL][HAND_RIGHT]->TrailOff();
+		}
+		else if (m_fPlayTime > m_vecLimitTime[DualKnife][0])
+		{
+			if (!m_pSkillParts[SKILL_DUAL][HAND_LEFT]->Trail_GetOn())
+				m_pSkillParts[SKILL_DUAL][HAND_LEFT]->TrailOn();
+			if (!m_pSkillParts[SKILL_DUAL][HAND_RIGHT]->Trail_GetOn())
+				m_pSkillParts[SKILL_DUAL][HAND_RIGHT]->TrailOn();
+			m_pSkillParts[SKILL_DUAL][HAND_LEFT]->Set_CollisionOn(true);
+			m_pSkillParts[SKILL_DUAL][HAND_RIGHT]->Set_CollisionOn(true);
+		}
 		break;
 	case Client::CPlayer::GreatSword:
 		break;
@@ -894,7 +912,14 @@ void CPlayer::CheckLimit()
 	case Client::CPlayer::Raven_ClawLong_ChargeFull:
 		break;
 	case Client::CPlayer::Raven_ClawNear:
-
+		if (m_fPlayTime > m_vecLimitTime[DualKnife][1])
+		{
+			//
+		}
+		else if (m_fPlayTime > m_vecLimitTime[DualKnife][0])
+		{
+			CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_WEAPON, m_pColliderCom[COLLIDERTYPE_CLAW], this);
+		}
 		break;
 	case Client::CPlayer::Strong_Jump:
 		break;
@@ -1136,12 +1161,14 @@ _bool CPlayer::Collision(_float fTimeDelta)
 				{
 					_Part->TrailOff();
 				}
+				
 				_Part->Set_CollisionOn(false);
 			}
-			
+			m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack());
 			return true;
 		}
 	}
+	return false;
 }
 
 HRESULT CPlayer::Check_MotionTrail(_float fTimeDelta)
@@ -1211,6 +1238,14 @@ HRESULT CPlayer::Ready_Components()
 
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Player"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+		return E_FAIL;
+
+	/* For.Com_Status */
+	CStatus::STATUS _tStatus;
+	_tStatus.fMaxHp = 200.f;
+	_tStatus.fAttack = 40.f;
+	_tStatus.fHp = _tStatus.fMaxHp;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Status"), TEXT("Com_Status"), (CComponent**)&m_pStatusCom, &_tStatus)))
 		return E_FAIL;
 
 	return S_OK;
@@ -1286,6 +1321,13 @@ HRESULT CPlayer::Ready_AnimLimit()
 	m_vecLimitTime[Corvus_PW_Axe].push_back(120.f);
 	m_vecLimitTime[Corvus_PW_Axe].push_back(160.f);
 
+	//쌍검
+	m_vecLimitTime[DualKnife].push_back(5.f);
+	m_vecLimitTime[DualKnife].push_back(40.f);
+
+	//클로
+	m_vecLimitTime[Raven_ClawNear].push_back(5.f);
+	m_vecLimitTime[Raven_ClawNear].push_back(50.f);
 	
 
 	return S_OK;
@@ -1598,4 +1640,5 @@ void CPlayer::Free()
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);
+	Safe_Release(m_pStatusCom);
 }

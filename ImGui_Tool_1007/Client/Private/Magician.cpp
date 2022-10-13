@@ -6,6 +6,7 @@
 #include "Weapon.h"
 #include "CollisionMgr.h"
 #include "Player.h"
+#include "Status.h"
 
 CMagician::CMagician(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CMonster(pDevice, pContext)
@@ -60,6 +61,12 @@ HRESULT CMagician::Initialize(void * pArg)
 
 void CMagician::Tick( _float fTimeDelta)
 {
+	AUTOINSTANCE(CGameInstance, _Instance);
+	if (_Instance->KeyDown(DIK_4))
+	{
+		m_eCurState = Magician_SwordAttack1;
+	}
+
 	if (m_pModelCom != nullptr)
 	{
 		CheckAnim();
@@ -657,6 +664,7 @@ _bool CMagician::Collision(_float fTimeDelta)
 		}
 		return true;
 	}
+	return false;
 }
 
 void CMagician::On_Collider(MAGICIANCOLLIDER _eCollider, _bool _bCollision)
@@ -700,6 +708,14 @@ HRESULT CMagician::Ready_Components()
 
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Magician"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+		return E_FAIL;
+
+	/* For.Com_Status */
+	CStatus::STATUS _tStatus;
+	_tStatus.fMaxHp = 300.f;
+	_tStatus.fAttack = 30.f;
+	_tStatus.fHp = _tStatus.fMaxHp;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Status"), TEXT("Com_Status"), (CComponent**)&m_pStatusCom, &_tStatus)))
 		return E_FAIL;
 
 

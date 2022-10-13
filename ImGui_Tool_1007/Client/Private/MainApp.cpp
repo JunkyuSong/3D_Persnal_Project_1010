@@ -8,6 +8,8 @@
 #include "ReleaseMgr.h"
 #include "CameraMgr.h"
 #include "CollisionMgr.h"
+#include "UI_Mgr.h"
+#include "Status.h"
 
 using namespace Client;
 
@@ -145,6 +147,12 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	
 	Safe_AddRef(m_pRenderer);
 
+
+	/* For.Prototype_Component_Status */
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Status"),
+		CStatus::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -183,6 +191,7 @@ void CMainApp::Free()
 	CTerrainMgr::Destroy_Instance();
 	CCameraMgr::Destroy_Instance();
 	CCollisionMgr::Destroy_Instance();
+	CUI_Mgr::Destroy_Instance();
 	CGameInstance::Release_Engine();
 	CImGui::Destroy_Instance();
 	

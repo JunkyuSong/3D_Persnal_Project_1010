@@ -5,6 +5,7 @@
 #include "Camera_Free.h"
 #include "Camera_Player.h"
 #include "CameraMgr.h"
+#include "UI_Mgr.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -169,6 +170,10 @@ HRESULT CLevel_GamePlay::Ready_Layer_UI(const _tchar * pLayerTag)
 	}
 
 */
+	CGameObject* _pGameObj = nullptr;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_UI_PlayerHpBar"), LEVEL_STATIC, pLayerTag, nullptr, &_pGameObj)))
+		return E_FAIL;
+	CUI_Mgr::Get_Instance()->Add_UI(TEXT("PLAYER_HP_BAR"), _pGameObj);
 	Safe_Release(pGameInstance);
 
 

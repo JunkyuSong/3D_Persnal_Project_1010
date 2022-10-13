@@ -10,8 +10,9 @@ CTransform::CTransform(const CTransform & rhs)
 	: CComponent(rhs)
 	, m_WorldMatrix(rhs.m_WorldMatrix)
 	, m_vRotation(rhs.m_vRotation)
+	, m_vPrePos(rhs.m_WorldMatrix.m[3])
 {
-
+	
 }
 
 void CTransform::Set_State(STATE eState, _fvector vState)

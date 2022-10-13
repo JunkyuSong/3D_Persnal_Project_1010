@@ -22,6 +22,7 @@
 #include "Cane_Sword.h"
 #include "Axe.h"
 #include "Knife.h"
+#include "UI_PlayerHpBar.h"
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice(pDevice)
@@ -94,6 +95,8 @@ HRESULT CLoader::Loading_ForLogoLevel()
 		CCamera_Player::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+
+
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
 	/* 텍스쳐를 로드한다. */
 
@@ -139,7 +142,15 @@ HRESULT CLoader::Loading_ForLogoLevel()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MainUI_MiniSlot"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/GameUI/PlagueWeapon/TexUI_PW_DefaultSlotFrame.png")))))
 		return E_FAIL;
-
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MainUI_HpBar_Edge"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/GameUI/PlayerHPBar/TexUI_HPBar_1Border.png")))))
+		return E_FAIL;
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MainUI_HpBar_Edge2"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/GameUI/PlayerHPBar/TexUI_HPBar_2BG.png")))))
+		return E_FAIL;
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MainUI_HpBar_Hp"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/GameUI/PlayerHPBar/TexUI_HPBar_3MainBar.png")))))
+		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));	
 	/* 모델를 로드한다. */
@@ -225,6 +236,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Weapon_Knife"),
 		CKnife::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_PlayerHpBar"),
+		CUI_PlayerHpBar::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 

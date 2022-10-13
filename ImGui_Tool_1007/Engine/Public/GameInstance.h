@@ -48,7 +48,7 @@ public: /* For.Level_Manager */
 public: /* For.Object_Manager */
 	class CGameObject* Clone_GameObject(const _tchar* pPrototypeTag, void* pArg = nullptr);
 	HRESULT Add_Prototype(const _tchar* pPrototypeTag, class CGameObject* pPrototype);
-	HRESULT Add_GameObjectToLayer(const _tchar* pPrototypeTag, _uint iLevelIndex, const _tchar* pLayerTag, void* pArg = nullptr);
+	HRESULT Add_GameObjectToLayer(const _tchar* pPrototypeTag, _uint iLevelIndex, const _tchar* pLayerTag, void* pArg = nullptr, class CGameObject** pOut = nullptr);
 	class CLayer*	Get_Layer(_uint iLevelIndex, _tchar* _pLayerTag);
 	map<const _tchar*, class CLayer*>	Get_Layers(_uint iLevelIndex);
 	HRESULT Add_Layer(_uint iLevelIndex, const _tchar* pLayerTag);

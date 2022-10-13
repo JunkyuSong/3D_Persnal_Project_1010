@@ -33,7 +33,8 @@ public:
 
 private:
 	void	PlayerWeapon_vs_MonsterBody();
-	void	PlayerParry_vs_MonsterBody();
+	void	PlayerBody_vs_MonsterBody();
+	void	PlayerParry_vs_MonsterWeapon();
 	_bool	MonsterWeapon_vs_PlayerBody();
 
 

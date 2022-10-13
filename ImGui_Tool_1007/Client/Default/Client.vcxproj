@@ -206,10 +206,13 @@
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\public\ReleaseMgr.h" />
     <ClInclude Include="..\Public\Saber.h" />
+    <ClInclude Include="..\Public\Status.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\Public\TerrainMgr.h" />
     <ClInclude Include="..\public\Texture_Tool.h" />
     <ClInclude Include="..\Public\Trail.h" />
+    <ClInclude Include="..\public\UI_Mgr.h" />
+    <ClInclude Include="..\public\UI_PlayerHpBar.h" />
     <ClInclude Include="..\public\UI_Plus.h" />
     <ClInclude Include="..\public\UI_Tool.h" />
     <ClInclude Include="..\Public\Weapon.h" />
@@ -255,10 +258,13 @@
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\private\ReleaseMgr.cpp" />
     <ClCompile Include="..\Private\Saber.cpp" />
+    <ClCompile Include="..\Private\Status.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\Private\TerrainMgr.cpp" />
     <ClCompile Include="..\private\Texture_Tool.cpp" />
     <ClCompile Include="..\Private\Trail.cpp" />
+    <ClCompile Include="..\private\UI_Mgr.cpp" />
+    <ClCompile Include="..\private\UI_PlayerHpBar.cpp" />
     <ClCompile Include="..\private\UI_Plus.cpp" />
     <ClCompile Include="..\private\UI_Tool.cpp" />
     <ClCompile Include="..\Private\Weapon.cpp" />

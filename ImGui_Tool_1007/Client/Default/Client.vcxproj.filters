@@ -91,12 +91,6 @@
     <Filter Include="02.GameObjects\01. Obj\Anim_Obj">
       <UniqueIdentifier>{e3a1247f-e02f-4076-914e-7706c7e97edc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. VIBuffer">
-      <UniqueIdentifier>{40077470-3edb-48f2-b178-a74afdb0acd5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. VIBuffer\Trail">
-      <UniqueIdentifier>{cacef744-cc97-48c0-ada0-134d6f69a5fb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="95. Manager">
       <UniqueIdentifier>{7f02059b-f849-4281-b2c1-b4cbd59f652f}</UniqueIdentifier>
     </Filter>
@@ -150,6 +144,24 @@
     </Filter>
     <Filter Include="02.GameObjects\00. Player\Dummy">
       <UniqueIdentifier>{979d9cf4-44d0-408b-97c7-ff0b1607b831}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\03. UI\HP_Bar">
+      <UniqueIdentifier>{044039be-f0f9-4d3b-bd3d-f2bc9ffcdf92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\03. UI\Mgr">
+      <UniqueIdentifier>{4c1006ad-12b4-4c67-9c52-8259d1dfd34d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Component">
+      <UniqueIdentifier>{e743b84d-08a3-43ef-acb4-75c8f319d09f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Component\03. VIBuffer">
+      <UniqueIdentifier>{40077470-3edb-48f2-b178-a74afdb0acd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Component\03. VIBuffer\Trail">
+      <UniqueIdentifier>{cacef744-cc97-48c0-ada0-134d6f69a5fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Component\01. Status">
+      <UniqueIdentifier>{d2122dc9-701a-46e4-a4a1-1659203e5323}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -262,7 +274,7 @@
       <Filter>02.GameObjects\01. Obj\Anim_Obj</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Trail.h">
-      <Filter>03. VIBuffer\Trail</Filter>
+      <Filter>03. Component\03. VIBuffer\Trail</Filter>
     </ClInclude>
     <ClInclude Include="..\public\ReleaseMgr.h">
       <Filter>95. Manager\Release</Filter>
@@ -305,6 +317,15 @@
     </ClInclude>
     <ClInclude Include="..\public\Dummy.h">
       <Filter>02.GameObjects\00. Player\Dummy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Mgr.h">
+      <Filter>02.GameObjects\03. UI\Mgr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_PlayerHpBar.h">
+      <Filter>02.GameObjects\03. UI\HP_Bar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Status.h">
+      <Filter>03. Component\01. Status</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -402,7 +423,7 @@
       <Filter>96. ImGuiMgr\Tool\Obj_Tool</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Trail.cpp">
-      <Filter>03. VIBuffer\Trail</Filter>
+      <Filter>03. Component\03. VIBuffer\Trail</Filter>
     </ClCompile>
     <ClCompile Include="..\private\ReleaseMgr.cpp">
       <Filter>95. Manager\Release</Filter>
@@ -442,6 +463,15 @@
     </ClCompile>
     <ClCompile Include="..\private\Dummy.cpp">
       <Filter>02.GameObjects\00. Player\Dummy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Mgr.cpp">
+      <Filter>02.GameObjects\03. UI\Mgr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_PlayerHpBar.cpp">
+      <Filter>02.GameObjects\03. UI\HP_Bar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Status.cpp">
+      <Filter>03. Component\01. Status</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

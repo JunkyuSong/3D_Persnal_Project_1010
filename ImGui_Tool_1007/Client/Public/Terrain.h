@@ -27,7 +27,7 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
-	const _bool&			Picking(_float3& _vPos);
+	_bool			Picking(_float3& _vPos);
 
 private:
 	CShader*				m_pShaderCom = nullptr;

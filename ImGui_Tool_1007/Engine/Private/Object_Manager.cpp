@@ -57,7 +57,7 @@ HRESULT CObject_Manager::Add_Prototype(const _tchar * pPrototypeTag, CGameObject
 	return S_OK;
 }
 
-HRESULT CObject_Manager::Add_GameObjectToLayer(const _tchar* pPrototypeTag, _uint iLevelIndex, const _tchar* pLayerTag, void* pArg)
+HRESULT CObject_Manager::Add_GameObjectToLayer(const _tchar* pPrototypeTag, _uint iLevelIndex, const _tchar* pLayerTag, void* pArg, CGameObject** pOut)
 {
 	CGameObject*	pPrototype = Find_Prototype(pPrototypeTag);
 
@@ -84,6 +84,9 @@ HRESULT CObject_Manager::Add_GameObjectToLayer(const _tchar* pPrototypeTag, _uin
 	}
 	else
 		pLayer->Add_GameObject(pGameObject);
+
+	if (pOut)
+		*pOut = pGameObject;
 
 	return S_OK;
 }

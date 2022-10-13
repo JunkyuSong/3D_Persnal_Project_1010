@@ -79,7 +79,7 @@ HRESULT CTerrain::Render()
 	return S_OK;
 }
 
-const _bool& CTerrain::Picking(_float3& _vPos)
+_bool CTerrain::Picking(_float3& _vPos)
 {
 	_bool			_bPick;
 	_vector			vPickPos;

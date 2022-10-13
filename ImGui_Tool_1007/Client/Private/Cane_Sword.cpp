@@ -35,8 +35,6 @@ HRESULT CCane_Sword::Initialize(void * pArg)
 
 void CCane_Sword::Tick(_float fTimeDelta)
 {
-	if (!m_pTrailCom->Get_On())
-		m_pTrailCom->TrailOn(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 	m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 
 	if (m_bColliderOn)
@@ -45,8 +43,6 @@ void CCane_Sword::Tick(_float fTimeDelta)
 
 void CCane_Sword::Tick(_float fTimeDelta, CGameObject * _pUser)
 {
-	if (!m_pTrailCom->Get_On())
-		m_pTrailCom->TrailOn(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 	m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 
 	if (m_bColliderOn)

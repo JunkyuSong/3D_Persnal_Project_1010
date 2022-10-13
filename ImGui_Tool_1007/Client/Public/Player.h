@@ -138,6 +138,8 @@ private:
 	CTransform*				m_pTransformCom = nullptr;
 	CAnimModel*				m_pModelCom = nullptr;
 
+	class CStatus*			m_pStatusCom = nullptr;
+
 	OBJ_DESC				m_tInfo;
 
 	PASS					m_ePass;

@@ -79,8 +79,12 @@ public:
 	void Set_Rotation(_fvector _vRotation) { XMStoreFloat3(&m_vRotation, _vRotation); }
 	_float3 Get_Rotation() { return m_vRotation; };
 
+	void Set_PrePos(_float3 _vPrePos) { m_vPrePos = _vPrePos; }
+	void Rewind_Pos() { memcpy(m_WorldMatrix.m[3], &m_vPrePos, sizeof(_float3)); }
+
 private:
 	_float4x4				m_WorldMatrix;
+	_float3					m_vPrePos;
 	TRANSFORMDESC			m_TransformDesc;
 	_float3					m_vRotation;
 

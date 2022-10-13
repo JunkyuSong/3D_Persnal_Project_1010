@@ -3,9 +3,19 @@
 matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D	g_DiffuseTexture;
 
+float		g_HpPer, g_PreHpPer;
+
 sampler DefaultSampler = sampler_state {
 
 	filter = min_mag_mip_linear;
+	/*minfilter = linear;
+	magfilter = linear;
+	mipfilter = linear;*/
+};
+
+sampler PointSampler = sampler_state {
+
+	filter = min_mag_mip_point;
 	/*minfilter = linear;
 	magfilter = linear;
 	mipfilter = linear;*/
@@ -60,11 +70,30 @@ PS_OUT PS_MAIN(PS_IN In)
 	return Out;	
 }
 
-PS_OUT PS_Select(PS_IN In)
+PS_OUT PS_MAIN_HP(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
 	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+
+	if (In.vTexUV.x > g_PreHpPer)
+		Out.vColor.a = 0.f;
+	else if (In.vTexUV.x > g_HpPer)
+	{
+		Out.vColor.r = 1.f;
+	}
+
+
+	if (0 >= Out.vColor.a)
+		discard;
+	return Out;
+}
+
+PS_OUT PS_Select(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	Out.vColor = g_DiffuseTexture.Sample(PointSampler, In.vTexUV);
 
 	if(In.vTexUV.x >= 0.f && In.vTexUV.x <= 0.01f)
 		Out.vColor = float4(0.f, 1.f, 0.f, 1.f);
@@ -85,7 +114,7 @@ PS_OUT PS_NonSelect(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+	Out.vColor = g_DiffuseTexture.Sample(PointSampler, In.vTexUV);
 
 	if (In.vTexUV.x >= 0.f && In.vTexUV.x <= 0.005f)
 		Out.vColor = float4(1.f, 0.f,  0.f, 1.f);
@@ -106,9 +135,9 @@ technique11 DefaultTechnique
 {
 	pass DefaultPass
 	{
-		SetRasterizerState(RS_Default);
+		SetRasterizerState(RS_CullNone);
 		SetDepthStencilState(DSS_Default, 0);
-		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
@@ -132,5 +161,15 @@ technique11 DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_NonSelect();
+	}
+
+	pass HpBarPass
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_HP();
 	}
 }
