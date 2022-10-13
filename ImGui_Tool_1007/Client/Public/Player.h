@@ -54,7 +54,7 @@ public:
 
 private:
 	enum DIRECT { DIR_F, DIR_B, DIR_R, DIR_L, DIR_FR, DIR_BR, DIR_FL, DIR_BL, DIR_END };
-	enum COLLIDERTYPE { COLLIDERTYPE_AABB, COLLIDERTYPE_OBB_MONSTER, COLLIDERTYPE_SPHERE_ITEM, COLLILDERTYPE_END };
+	enum COLLIDERTYPE { COLLIDERTYPE_CLAW, COLLIDERTYPE_BODY, COLLIDERTYPE_SPHERE_ITEM, COLLILDERTYPE_END };
 	enum ATTACKLIMIT { ATTACKLIMIT_CHANGE, ATTACKLIMIT_TRAILON, ATTACKLIMIT_TRAILEND, ATTACKLIMIT_COLLIDERON, ATTACKLIMIT_COLLIDEREND, ATTACKLIMIT_END };
 
 public:
@@ -82,7 +82,7 @@ public:
 	void		Set_Info(OBJ_DESC _tInfo);
 	OBJ_DESC	Get_Info(OBJ_DESC _tInfo) { return m_tInfo; }
 
-	void Set_Pass(PASS _ePass) { m_ePass = _ePass; }
+	void		Set_Pass(PASS _ePass) { m_ePass = _ePass; }
 
 	void		ImGuiTick();
 	void		Set_AnimState(STATE	_eState)			{ m_eCurState = _eState; }
@@ -93,12 +93,14 @@ public:
 	void		Set_Stop(_bool _bStop)					{ m_bAnimStop = _bStop; }
 
 private:
+	void Add_Render();
+
+private:
 	HRESULT Ready_AnimLimit();
 	void	CheckEndAnim();
 
 	void	Set_Anim(STATE _eState);
 	void	CheckAnim();
-	void	CheckState();
 	void	AfterAnim();
 
 	void	CheckLimit();
@@ -107,9 +109,11 @@ private:
 
 	void	Get_AnimMat();
 
-
+private:
+	_bool	Collision(_float fTimeDelta);
 
 private:
+	enum WEAPON { WEAPON_NONE, WEAPON_BASE, WEAPON_SKILL };
 	enum BASE { BASE_SABER, BASE_DAGGER, BASE_END };
 	enum SKILL {SKILL_AXE, SKILL_DUAL, SKILL_END};
 	enum HAND	{HAND_RIGHT, HAND_LEFT, HAND_END};
@@ -124,7 +128,7 @@ private:
 	PARTS								m_pSkillParts[SKILL_END];	
 	vector<_uint>						m_pSkillHands[SKILL_END];
 
-	_bool								m_bSkill = false;
+	WEAPON								m_eWeapon = WEAPON_BASE;
 	SKILL								m_eCurSkill = SKILL_END;
 
 private:

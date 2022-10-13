@@ -5,6 +5,7 @@
 #include "HierarchyNode.h"
 #include "Weapon.h"
 #include "CollisionMgr.h"
+#include "Player.h"
 
 CMagician::CMagician(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CMonster(pDevice, pContext)
@@ -52,7 +53,8 @@ HRESULT CMagician::Initialize(void * pArg)
 
 	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(5.f, 0.f, 5.f, 1.f));
-	m_eCurState = SP_Att2_Start;
+
+	m_eCurState = Kick_Combo;
 	return S_OK;
 }
 
@@ -60,22 +62,10 @@ void CMagician::Tick( _float fTimeDelta)
 {
 	if (m_pModelCom != nullptr)
 	{
-		if (!m_bAnimStop)
-		{		
-			CheckAnim();
+		CheckAnim();
 
-			CheckState(fTimeDelta);
-			PlayAnimation(fTimeDelta);
-		}
-		else
-		{
-			CheckAnim();
-			_float4 _vAnim;
-			XMStoreFloat4(&_vAnim, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-			m_pModelCom->Play_Animation(fTimeDelta, &_vAnim, &m_fPlayTime);
-			XMStoreFloat4(&m_AnimPos, (XMLoadFloat4(&_vAnim) - XMLoadFloat4(&m_PreAnimPos)));
-			m_PreAnimPos = _vAnim;
-		}
+		CheckState(fTimeDelta);
+		PlayAnimation(fTimeDelta);
 	}
 	Update_Weapon();
 	for (auto& pPart : m_pParts)
@@ -83,48 +73,19 @@ void CMagician::Tick( _float fTimeDelta)
 		if (pPart != nullptr)
 			pPart->Tick(fTimeDelta, this);
 	}
-	for (auto& pCollider : m_pColliderCom)
-	{
-		if (nullptr != pCollider)
-			pCollider->Update(m_pTransformCom->Get_WorldMatrix());
-	}
+	Update_Collider();
 }
 
 void CMagician::LateTick( _float fTimeDelta)
 {
-	CGameObject* _pTarget = nullptr;
-
-	if (_pTarget = m_pColliderCom[COLLIDERTYPE_BODY]->Get_Target())
+	if (Collision(fTimeDelta))
 	{
-		if (m_eCurState == Hurt_Long)
-		{
-			m_eCurState = Hurt_Short;
-		}
-		else if (m_eCurState == Hurt_Short)
-		{
-			m_eCurState = Hurt_Long;
-		}
-		else
-		{
-			m_eCurState = Hurt_Short;
-		}
-
 		CheckAnim();
-
 		CheckState(fTimeDelta);
 		PlayAnimation(fTimeDelta);
 	}
 
-	if (nullptr == m_pRendererCom)
-		return;
-	
-	for (auto& pPart : m_pParts)
-	{
-		if (pPart != nullptr)
-			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, pPart);
-	}
-
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+	RenderGroup();
 }
 
 HRESULT CMagician::Render()
@@ -193,7 +154,7 @@ void CMagician::CheckEndAnim()
 		m_eCurState = Magician_Idle;
 		break;
 	case Client::CMagician::Cane_Att1:
-		
+
 		m_eCurState = Magician_Idle;
 		break;
 	case Client::CMagician::Cane_Att2:
@@ -206,21 +167,20 @@ void CMagician::CheckEndAnim()
 		m_eCurState = Magician_Idle;
 		break;
 	case Client::CMagician::SP_Att2_Start:
-		{
+	{
 		m_eCurState = SP_Att2_Loop;
 		ChangeCanesword(CANESWORD_L); //패링 안되었을때??
-		}
-		{
+	}
+	{
 		//m_eCurState = SP_Att2_Loop; 패링되었을때??
-		}
-		
-		break;
+	}
+
+	break;
 	case Client::CMagician::SP_Att2_Loop:
 		ChangeCanesword(CANESWORD_R);
 		m_eCurState = Magician_Idle;
 		break;
 	case Client::CMagician::SP_Att2_Suc:
-		
 		m_eCurState = Magician_Idle;
 		break;
 	case Client::CMagician::Appear_L:
@@ -239,6 +199,8 @@ void CMagician::CheckEndAnim()
 		m_eCurState = Magician_Idle;
 		break;
 	case Client::CMagician::Kick_Combo:
+		On_Collider(COLLIDERTYPE_FOOT_R, false);
+		On_Collider(COLLIDERTYPE_FOOT_L, false);
 		m_eCurState = Magician_Idle;
 		break;
 	case Client::CMagician::Walk_B:
@@ -253,7 +215,111 @@ void CMagician::CheckEndAnim()
 	case Client::CMagician::Walk_R:
 		m_eCurState = Magician_Idle;
 		break;
+	case Client::CMagician::Magician_Parry01:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_ParryAttack01:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_ParryAttack02:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_ParryJump:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_Shoot1:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_Shoot2:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_Shoot2_Slow:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_ShotJump:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_Disappear:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_Stage2_Attakc01:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_Stage2_Attakc04:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_Stage2_SwrodAttackCombo:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_Stage2_JumpAppear:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_StunStart_Sword:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_StunLoop_Sword:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_StunEnd_Sword:
+		break;
+	case Client::CMagician::Magician_StunStart_Cane:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_StunLoop_Cane:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_StunEnd_Cane:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_SwordAttack1:
+		ChangeCanesword(CANESWORD_R);
+		m_pParts[PART_CANESWORD]->Set_CollisionOn(false);
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_SwordAttack2:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_SwordAttack2_V2:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_VSCorvus_TakeExecution:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_VSCorvus_TakeExecutionDisappear:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_Walk2F:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_Walk2L:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_Walk2R:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_HurtFL:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_HurtFR:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_HurtSL:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_HurtSR:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_DisppearIdle:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_JumpAppear:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_Sprinkle:
+		m_eCurState = Magician_Idle;
+		break;
 	}
+
 	XMStoreFloat4(&m_AnimPos, XMVectorSet(0.f, 0.f, 0.f, 1.f));
 	m_PreAnimPos = m_AnimPos;
 }
@@ -262,11 +328,17 @@ void CMagician::CheckState(_float fTimeDelta)
 {
 	//아이들 상태일때 플레이어쪽으로 회전
 	// 
+
 	switch (m_eCurState)
 	{
 	case Client::CMagician::Magician_Idle:
+	{
 		//콜라이더 넣음
-		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
+		On_Collider(COLLIDERTYPE_BODY, true);
+		//플레이어 쳐다봄 => 서서히 쳐다보도록!
+		CTransform* _vPlayerPos = static_cast<CTransform*>(CGameInstance::Get_Instance()->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
+		m_pTransformCom->LookAt_ForLandObject(_vPlayerPos->Get_State(CTransform::STATE_POSITION));
+	}		
 		break;
 	case Client::CMagician::Magician_Idle2:
 		break;
@@ -277,11 +349,12 @@ void CMagician::CheckState(_float fTimeDelta)
 	case Client::CMagician::Boss_Enter:
 		break;
 	case Client::CMagician::Cane_Att1:
-		
+
 		break;
 	case Client::CMagician::Cane_Att2:
 		break;
 	case Client::CMagician::SP_Att1_Start:
+
 		break;
 	case Client::CMagician::SP_Att1_Suc:
 		break;
@@ -289,7 +362,7 @@ void CMagician::CheckState(_float fTimeDelta)
 		break;
 	case Client::CMagician::SP_Att2_Loop:
 		break;
-	case Client::CMagician::SP_Att2_Suc:		
+	case Client::CMagician::SP_Att2_Suc:
 		break;
 	case Client::CMagician::Appear_L:
 		break;
@@ -302,6 +375,9 @@ void CMagician::CheckState(_float fTimeDelta)
 	case Client::CMagician::Cane_Att3:
 		break;
 	case Client::CMagician::Kick_Combo:
+		On_Collider(COLLIDERTYPE_FOOT_R, true);
+		On_Collider(COLLIDERTYPE_FOOT_L, true);
+		On_Collider(COLLIDERTYPE_BODY, true);
 		break;
 	case Client::CMagician::Walk_B:
 		break;
@@ -310,6 +386,77 @@ void CMagician::CheckState(_float fTimeDelta)
 	case Client::CMagician::Walk_L:
 		break;
 	case Client::CMagician::Walk_R:
+		break;
+	case Client::CMagician::Magician_Parry01:
+		break;
+	case Client::CMagician::Magician_ParryAttack01:
+		break;
+	case Client::CMagician::Magician_ParryAttack02:
+		break;
+	case Client::CMagician::Magician_ParryJump:
+		break;
+	case Client::CMagician::Magician_Shoot1:
+		break;
+	case Client::CMagician::Magician_Shoot2:
+		break;
+	case Client::CMagician::Magician_Shoot2_Slow:
+		break;
+	case Client::CMagician::Magician_ShotJump:
+		break;
+	case Client::CMagician::Magician_Disappear:
+		break;
+	case Client::CMagician::Magician_Stage2_Attakc01:
+		break;
+	case Client::CMagician::Magician_Stage2_Attakc04:
+		break;
+	case Client::CMagician::Magician_Stage2_SwrodAttackCombo:
+		break;
+	case Client::CMagician::Magician_Stage2_JumpAppear:
+		break;
+	case Client::CMagician::Magician_StunStart_Sword:
+		break;
+	case Client::CMagician::Magician_StunLoop_Sword:
+		break;
+	case Client::CMagician::Magician_StunEnd_Sword:
+		break;
+	case Client::CMagician::Magician_StunStart_Cane:
+		break;
+	case Client::CMagician::Magician_StunLoop_Cane:
+		break;
+	case Client::CMagician::Magician_StunEnd_Cane:
+		break;
+	case Client::CMagician::Magician_SwordAttack1:
+		ChangeCanesword(CANESWORD_L);
+		m_pParts[PART_CANESWORD]->Set_CollisionOn(true);
+		On_Collider(COLLIDERTYPE_BODY, true);
+		break;
+	case Client::CMagician::Magician_SwordAttack2:
+		break;
+	case Client::CMagician::Magician_SwordAttack2_V2:
+		break;
+	case Client::CMagician::Magician_VSCorvus_TakeExecution:
+		break;
+	case Client::CMagician::Magician_VSCorvus_TakeExecutionDisappear:
+		break;
+	case Client::CMagician::Magician_Walk2F:
+		break;
+	case Client::CMagician::Magician_Walk2L:
+		break;
+	case Client::CMagician::Magician_Walk2R:
+		break;
+	case Client::CMagician::Magician_HurtFL:
+		break;
+	case Client::CMagician::Magician_HurtFR:
+		break;
+	case Client::CMagician::Magician_HurtSL:
+		break;
+	case Client::CMagician::Magician_HurtSR:
+		break;
+	case Client::CMagician::Magician_DisppearIdle:
+		break;
+	case Client::CMagician::Magician_JumpAppear:
+		break;
+	case Client::CMagician::Magician_Sprinkle:
 		break;
 	}
 
@@ -476,6 +623,63 @@ void CMagician::Get_AnimMat()
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
 }
 
+void CMagician::RenderGroup()
+{
+	if (nullptr == m_pRendererCom)
+		return;
+
+	for (auto& pPart : m_pParts)
+	{
+		if (pPart != nullptr)
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, pPart);
+	}
+
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+}
+
+_bool CMagician::Collision(_float fTimeDelta)
+{
+	CGameObject* _pTarget = nullptr;
+
+	if ((_pTarget = m_pColliderCom[COLLIDERTYPE_BODY]->Get_Target()) && (CPlayer::ParryL != *static_cast<CPlayer*>(_pTarget)->Get_AnimState()))
+	{
+		if (m_eCurState == Hurt_Long)
+		{
+			m_eCurState = Hurt_Short;
+		}
+		else if (m_eCurState == Hurt_Short)
+		{
+			m_eCurState = Hurt_Long;
+		}
+		else
+		{
+			m_eCurState = Hurt_Short;
+		}
+		return true;
+	}
+}
+
+void CMagician::On_Collider(MAGICIANCOLLIDER _eCollider, _bool _bCollision)
+{
+	switch (_eCollider)
+	{
+	case Client::CMagician::COLLIDERTYPE_BODY:		
+		if (m_bCollision[COLLIDERTYPE_BODY] = _bCollision)
+			CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
+		break;
+	case Client::CMagician::COLLIDERTYPE_FOOT_R:
+		if (m_bCollision[COLLIDERTYPE_FOOT_R] = _bCollision)
+			CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_WEAPON, m_pColliderCom[COLLIDERTYPE_FOOT_R], this);
+		break;
+	case Client::CMagician::COLLIDERTYPE_FOOT_L:
+		if (m_bCollision[COLLIDERTYPE_FOOT_L] = _bCollision)
+			CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_WEAPON, m_pColliderCom[COLLIDERTYPE_FOOT_L], this);
+		break;
+	case Client::CMagician::COLLILDERTYPE_END:
+		break;
+	}
+}
+
 HRESULT CMagician::Ready_Components()
 {
 	/* For.Com_Transform */
@@ -505,6 +709,26 @@ HRESULT CMagician::Ready_Components()
 	ColliderDesc.vCenter = _float3(0.f, ColliderDesc.vSize.y * 0.5f, 0.f);
 	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_BODY], &ColliderDesc)))
+		return E_FAIL;
+
+	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
+	ColliderDesc.vSize = _float3(0.2f, 0.2f, 0.2f);
+	_float3 vCenter = _float3(m_pModelCom->Get_HierarchyNode("ball_r")->Get_Trans()._41,
+		m_pModelCom->Get_HierarchyNode("ball_r")->Get_Trans()._42,
+		m_pModelCom->Get_HierarchyNode("ball_r")->Get_Trans()._43);
+	ColliderDesc.vCenter = vCenter;
+	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB_FootR"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_FOOT_R], &ColliderDesc)))
+		return E_FAIL;
+
+	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
+	ColliderDesc.vSize = _float3(0.2f, 0.2f, 0.2f);
+	vCenter = _float3(m_pModelCom->Get_HierarchyNode("ball_l")->Get_Trans()._41,
+		m_pModelCom->Get_HierarchyNode("ball_l")->Get_Trans()._42,
+		m_pModelCom->Get_HierarchyNode("ball_l")->Get_Trans()._43);
+	ColliderDesc.vCenter = vCenter;
+	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB_FootL"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_FOOT_L], &ColliderDesc)))
 		return E_FAIL;
 
 
@@ -694,4 +918,14 @@ HRESULT CMagician::Update_Weapon()
 	m_pParts[PART_CANESWORD]->SetUp_State(WeaponMatrix);
 
 	return S_OK;
+}
+
+void CMagician::Update_Collider()
+{
+	if (m_bCollision[COLLIDERTYPE_BODY])
+		m_pColliderCom[COLLIDERTYPE_BODY]->Update(m_pTransformCom->Get_WorldMatrix());
+	if (m_bCollision[COLLIDERTYPE_FOOT_R])
+		m_pColliderCom[COLLIDERTYPE_FOOT_R]->Update(m_pModelCom->Get_HierarchyNode("ball_r")->Get_CombinedTransformation()*XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())*m_pTransformCom->Get_WorldMatrix());
+	if (m_bCollision[COLLIDERTYPE_FOOT_L])
+		m_pColliderCom[COLLIDERTYPE_FOOT_L]->Update(m_pModelCom->Get_HierarchyNode("ball_l")->Get_CombinedTransformation()*XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())*m_pTransformCom->Get_WorldMatrix());
 }

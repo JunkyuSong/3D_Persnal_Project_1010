@@ -45,11 +45,13 @@ void CDagger::Tick(_float fTimeDelta)
 
 void CDagger::Tick(_float fTimeDelta, CGameObject * _pUser)
 {
-	if (!m_pTrailCom->Get_On())
+	m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+	
+	if (m_bColliderOn)
 	{
-		m_pTrailCom->TrailOn(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+		m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_PARRY, m_pColliderCom, _pUser);
 	}
-	//m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 }
 
 void CDagger::LateTick(_float fTimeDelta)
@@ -96,6 +98,11 @@ HRESULT CDagger::Render()
 			return E_FAIL;
 	}
 	m_pTrailCom->Render();
+
+#ifdef _DEBUG
+	if (nullptr != m_pColliderCom && m_bColliderOn)
+		m_pColliderCom->Render();
+#endif
 	return S_OK;
 }
 
@@ -137,6 +144,16 @@ HRESULT CDagger::Ready_Components()
 		MSG_BOX(TEXT("fail to trail in saber"));
 		return E_FAIL;
 	}
+
+	/* For.Com_OBB */
+	CCollider::COLLIDERDESC		ColliderDesc;
+	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
+
+	ColliderDesc.vSize = _float3(50.0f, 10.f, 5.f);
+	ColliderDesc.vCenter = _float3(20.f, ColliderDesc.vSize.y * 0.5f - 5.f, 0.f);
+	ColliderDesc.vRotation = _float3(0.f, XMConvertToRadians(0.f), 0.f);
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pColliderCom, &ColliderDesc)))
+		return E_FAIL;
 
 	return S_OK;
 }

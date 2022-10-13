@@ -19,7 +19,7 @@ BEGIN(Client)
 class CMagician final : public CMonster
 {
 public:
-	enum MAGICIANCOLLIDER { COLLIDERTYPE_BODY, COLLILDERTYPE_END };
+	enum MAGICIANCOLLIDER { COLLIDERTYPE_BODY, COLLIDERTYPE_FOOT_R, COLLIDERTYPE_FOOT_L, COLLILDERTYPE_END };
 	enum STATE {
 		Magician_Idle, Magician_Idle2,
 		Hurt_Short, Hurt_Long,
@@ -30,7 +30,7 @@ public:
 		Appear_L, Appear_R, Appear_B, Appear_F,
 		Cane_Att3,
 		Kick_Combo,
-		Walk_B, Walk_F, Walk_L, Walk_R,
+		Walk_B, Walk_Disappear_B, Walk_F, Walk_Disappear_F, Walk_L, Walk_Disappear_L, Walk_R, Walk_Disappear_R,
 
 		Magician_Parry01,
 		Magician_ParryAttack01,
@@ -107,6 +107,11 @@ private:
 
 	void Get_AnimMat();
 
+	void RenderGroup();
+	_bool Collision(_float fTimeDelta);
+
+	void On_Collider(MAGICIANCOLLIDER _eCollider, _bool _bCollision);
+
 private:
 	STATE					m_eReserveState = STATE_END;
 	STATE					m_eCurState = Magician_Idle;
@@ -120,6 +125,7 @@ private:
 	vector<_float>			m_vecLimitTime[STATE_END];
 
 	CCollider*				m_pColliderCom[COLLILDERTYPE_END] = { nullptr };
+	_bool					m_bCollision[COLLILDERTYPE_END] = { false };
 
 	DIRECT					m_eDir = DIR_END;
 
@@ -137,6 +143,8 @@ private:
 	HRESULT Ready_Sockets();
 	HRESULT Ready_PlayerParts();
 	HRESULT Update_Weapon();
+
+	void	Update_Collider();
 
 public:
 	static CMagician* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

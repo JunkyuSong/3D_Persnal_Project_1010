@@ -98,6 +98,14 @@ void CCamera_Player::Tick(_float fTimeDelta)
 	
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, (XMVector3TransformCoord(XMLoadFloat3(&m_vDis), m_pTransformCom->Get_WorldMatrix())));
 
+	_vector vWorldPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	
+	/*if (vWorldPos.m128_f32[1] < 0.f)
+	{
+		vWorldPos.m128_f32[1] = 0.2f;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vWorldPos);
+	}*/
+
 	Safe_Release(pGameInstance);
 	__super::Tick(fTimeDelta);
 }

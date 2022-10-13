@@ -119,5 +119,6 @@ CGameObject * CCollider::Get_Target()
 
 void CCollider::Clear_Target()
 {
+	m_isColl = false;
 	Safe_Release(m_pTarget);
 }

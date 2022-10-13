@@ -43,6 +43,9 @@ void CCollisionMgr::Tick()
 	// ㅇㅋ 간다
 
 	// 1. 플레이어 바디 vs 몬스터 무기
+
+	PlayerParry_vs_MonsterBody();
+
 	if (MonsterWeapon_vs_PlayerBody())
 		return;
 	
@@ -153,6 +156,59 @@ void CCollisionMgr::PlayerWeapon_vs_MonsterBody()
 		break;
 		}
 	}	
+}
+
+void CCollisionMgr::PlayerParry_vs_MonsterBody()
+{
+	for (auto& _WeaponPair : m_CollisionList[TYPE_MONSTER_WEAPON])
+	{
+
+		switch (_WeaponPair.second->Get_ColliderType())
+		{
+		case CCollider::TYPE_AABB:
+		{
+			CAABB* _Collider = static_cast<CAABB*>(_WeaponPair.second);
+			for (auto& _Body_Pair : m_CollisionList[TYPE_PLAYER_PARRY])
+			{
+				if (_Collider->Collision(_Body_Pair.second))
+				{
+					_Collider->Set_Target(_Body_Pair.first);
+					_Body_Pair.second->Set_Target(_WeaponPair.first);
+					return;
+				}
+			}
+		}
+		break;
+		case CCollider::TYPE_OBB:
+		{
+			COBB* _Collider = static_cast<COBB*>(_WeaponPair.second);
+			for (auto& _Body_Pair : m_CollisionList[TYPE_PLAYER_PARRY])
+			{
+				if (_Collider->Collision(_Body_Pair.second))
+				{
+					_Collider->Set_Target(_Body_Pair.first);
+					_Body_Pair.second->Set_Target(_WeaponPair.first);
+					return;
+				}
+			}
+		}
+		break;
+		case CCollider::TYPE_SPHERE:
+		{
+			CSphere* _Collider = static_cast<CSphere*>(_WeaponPair.second);
+			for (auto& _Body_Pair : m_CollisionList[TYPE_PLAYER_PARRY])
+			{
+				if (_Collider->Collision(_Body_Pair.second))
+				{
+					_Collider->Set_Target(_Body_Pair.first);
+					_Body_Pair.second->Set_Target(_WeaponPair.first);
+					return;
+				}
+			}
+		}
+		break;
+		}
+	}
 }
 
 _bool CCollisionMgr::MonsterWeapon_vs_PlayerBody()

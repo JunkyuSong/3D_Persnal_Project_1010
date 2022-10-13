@@ -83,9 +83,6 @@ HRESULT CPlayer::Initialize(void * pArg)
 	}
 
 	KeySetting();
-
-	/*CAutoInstance<CGameInstance> GameInstance(CGameInstance::Get_Instance());
-	GameInstance->Set_TimeSpeed(TEXT("Timer_Main"), 2.f);*/
 	
 	return S_OK;
 }
@@ -123,39 +120,24 @@ void CPlayer::Tick( _float fTimeDelta)
 
 	Update_Weapon(fTimeDelta);
 
-	for (auto& pCollider : m_pColliderCom)
-	{
-		if (nullptr != pCollider)
-			pCollider->Update(m_pTransformCom->Get_WorldMatrix());
-	}
+	m_pColliderCom[COLLIDERTYPE_CLAW]->Update(m_pHands[HAND_RIGHT]->Get_CombinedTransformation()*XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())*m_pTransformCom->Get_WorldMatrix());
+	m_pColliderCom[COLLIDERTYPE_BODY]->Update(m_pTransformCom->Get_WorldMatrix());
 
 	Check_MotionTrail(fTimeDelta);
 }
 
 void CPlayer::LateTick( _float fTimeDelta)
 {
-	if (nullptr == m_pRendererCom)
-		return;
+	if (Collision(fTimeDelta))
+	{
+		CheckAnim();
+		AfterAnim();
+		PlayAnimation(fTimeDelta);
+	}
+	
+	
 
-	if (!m_bSkill)
-	{
-		for (auto& _pPart : m_pBaseParts)
-		{
-			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, _pPart);
-		}
-	}
-	else
-	{
-		for (auto& _pPart : m_pSkillParts[m_eCurSkill])
-		{
-			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, _pPart);
-		}
-	}	
-	for (auto& _motion : m_listMotion)
-	{
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, _motion);
-	}
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+	Add_Render();
 }
 
 HRESULT CPlayer::Render()
@@ -166,17 +148,6 @@ HRESULT CPlayer::Render()
 
 	_uint		iNumMeshes;//메쉬 갯수를 알고 메쉬 갯수만큼 렌더를 할 것임. 여기서!
 	
-		
-		/*iNumMeshes = _motion->Get_NumMesh();
-		for (_uint i = 0; i < iNumMeshes; ++i)
-		{
-			if (FAILED(_motion->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-				return E_FAIL;
-
-			if (FAILED(_motion->Render(m_pShaderCom, 1, i)))
-				return E_FAIL;
-		}*/
-
 	SetUp_ShaderResources();
 
 	iNumMeshes = m_pModelCom->Get_NumMesh();//메쉬 갯수를 알고 메쉬 갯수만큼 렌더를 할 것임. 여기서!
@@ -191,11 +162,11 @@ HRESULT CPlayer::Render()
 	}
 
 #ifdef _DEBUG
-	/*for (_uint i = 0; i < COLLILDERTYPE_END; ++i)
+	for (_uint i = 0; i < COLLILDERTYPE_END; ++i)
 	{
 		if (nullptr != m_pColliderCom[i])
 			m_pColliderCom[i]->Render();
-	}*/
+	}
 #endif
 
 
@@ -394,6 +365,7 @@ void CPlayer::KeyInput_Idle( _float fTimeDelta)
 
 	if (CGameInstance::Get_Instance()->KeyDown(DIK_F))
 	{
+		m_pBaseParts[BASE_DAGGER]->Set_CollisionOn(true);
 		m_eCurState = ParryL;
 	}
 
@@ -417,12 +389,12 @@ void CPlayer::KeyInput_Idle( _float fTimeDelta)
 	}
 	if (CGameInstance::Get_Instance()->KeyDown(DIK_C))
 	{
-		/*m_eCurState = DualKnife;
-		m_bSkill = true;
+		m_eCurState = DualKnife;
+		m_eWeapon = WEAPON::WEAPON_SKILL;
 		m_eCurSkill = SKILL_DUAL;
 		m_pSkillParts[SKILL_DUAL][HAND_LEFT]->TrailOn();
-		m_pSkillParts[SKILL_DUAL][HAND_RIGHT]->TrailOn();*/
-		m_eCurState = Corvus_PW_Axe;
+		m_pSkillParts[SKILL_DUAL][HAND_RIGHT]->TrailOn();
+		//m_eCurState = Corvus_PW_Axe;
 	}
 }
 
@@ -628,6 +600,7 @@ void CPlayer::KP_ATT(_float fTimeDelta)
 	if (CGameInstance::Get_Instance()->MouseDown(DIMK_RBUTTON))
 	{
 		m_eReserveState = Raven_ClawNear;
+		
 	}
 	if (CGameInstance::Get_Instance()->KeyDown(DIK_SPACE))
 	{
@@ -716,11 +689,12 @@ void CPlayer::CheckEndAnim()
 		m_eCurState = STATE_IDLE;
 		break;
 	case Client::CPlayer::ParryL:
+		m_pBaseParts[BASE_DAGGER]->Set_CollisionOn(false);
 		m_eCurState = STATE_IDLE;
 		break;
 	case Client::CPlayer::DualKnife:
 		m_eCurState = STATE_IDLE;
-		m_bSkill = false;
+		m_eWeapon = WEAPON_BASE;
 		m_pSkillParts[SKILL_DUAL][HAND_LEFT]->TrailOff();
 		m_pSkillParts[SKILL_DUAL][HAND_RIGHT]->TrailOff();
 		break;
@@ -773,6 +747,7 @@ void CPlayer::CheckEndAnim()
 		m_eCurState = STATE_IDLE;
 		break;
 	case Client::CPlayer::Raven_ClawNear:
+		m_eWeapon = WEAPON_BASE;
 		m_eCurState = STATE_IDLE;
 		break;
 	case Client::CPlayer::Strong_Jump:
@@ -850,7 +825,7 @@ void CPlayer::CheckLimit()
 	case Client::CPlayer::Corvus_PW_Axe:
 		if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][4])//다시 무기 스왑 및 타이머 정상화
 		{
-			m_bSkill = false;
+			m_eWeapon = WEAPON_BASE;
 			m_eCurSkill = SKILL_END;
 			AUTOINSTANCE(CGameInstance, pGame);
 			pGame->Set_TimeSpeed(TEXT("Timer_Main"), 1.f);
@@ -862,10 +837,12 @@ void CPlayer::CheckLimit()
 		}
 		else if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][2])//모션트레일 off
 		{
+			m_pSkillParts[SKILL_AXE][0]->Set_CollisionOn(false);
 			m_bMotionPlay = false;
 		}
 		else if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][1])//타이머 및 모션트레일
 		{
+			m_pSkillParts[SKILL_AXE][0]->Set_CollisionOn(true);
 			m_bMotionPlay = true;
 			AUTOINSTANCE(CGameInstance, pGame);
 			pGame->Set_TimeSpeed(TEXT("Timer_Main"), 0.5f);
@@ -873,7 +850,7 @@ void CPlayer::CheckLimit()
 		else if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][0])//무기 스왑
 		{
 			m_eCurSkill = SKILL_AXE;
-			m_bSkill = true;
+			m_eWeapon = WEAPON_SKILL;
 		}
 		break;
 	case Client::CPlayer::Tackle_F:
@@ -917,6 +894,7 @@ void CPlayer::CheckLimit()
 	case Client::CPlayer::Raven_ClawLong_ChargeFull:
 		break;
 	case Client::CPlayer::Raven_ClawNear:
+
 		break;
 	case Client::CPlayer::Strong_Jump:
 		break;
@@ -989,135 +967,29 @@ void CPlayer::Change_Anim()
 	m_PreAnimPos = m_AnimPos;
 }
 
-void CPlayer::CheckState()
-{
-	
-
-	switch (m_eCurState)
-	{
-	case Client::CPlayer::STATE_ATT1:
-		m_fAnimSpeed = 2.f;
-		break;
-	case Client::CPlayer::STATE_ATT2:
-		m_fAnimSpeed = 2.f;
-		break;
-	case Client::CPlayer::STATE_ATT3:
-		m_fAnimSpeed = 2.f;
-		break;
-	case Client::CPlayer::STATE_ATT4:
-		m_fAnimSpeed = 2.f;
-		break;
-	case Client::CPlayer::STATE_ATT5:
-		m_fAnimSpeed = 2.f;
-		break;
-	case Client::CPlayer::STATE_RUN_B:
-		m_fAnimSpeed = 1.f;
-		break;
-	case Client::CPlayer::STATE_RUN_F:
-		m_fAnimSpeed = 1.f;
-		break;
-	case Client::CPlayer::STATE_RUN_L:
-		m_fAnimSpeed = 1.f;
-		break;
-	case Client::CPlayer::STATE_RUN_R:
-		m_fAnimSpeed = 1.f;
-		break;
-	case Client::CPlayer::STATE_APPROACH:
-		m_fAnimSpeed = 1.f;
-		break;
-	case Client::CPlayer::STATE_WALK:
-		m_fAnimSpeed = 1.5f;
-		break;
-	case Client::CPlayer::STATE_IDLE:
-		m_fAnimSpeed = 1.f;
-		break;
-	case Client::CPlayer::STATE_AVOIDATTACK:
-		m_fAnimSpeed = 1.f;
-		break;
-	case Client::CPlayer::Corvus_PW_Axe:
-		break;
-	case Client::CPlayer::Tackle_F:
-		break;
-	case Client::CPlayer::ParryR:
-		break;
-	case Client::CPlayer::ParryL:
-		break;
-	case Client::CPlayer::DualKnife:
-		break;
-	case Client::CPlayer::GreatSword:
-		break;
-	case Client::CPlayer::PW_Halberds:
-		break;
-	case Client::CPlayer::PW_Hammer_A:
-		break;
-	case Client::CPlayer::PW_TwinSwords_1:
-		break;
-	case Client::CPlayer::PW_TwinSwords_2:
-		break;
-	case Client::CPlayer::PW_VargSword_A:
-		break;
-	case Client::CPlayer::PW_Bow_Start:
-		break;
-	case Client::CPlayer::PW_Bow_End:
-		break;
-	case Client::CPlayer::PW_Bow_B:
-		break;
-	case Client::CPlayer::PW_Bloodwhip:
-		break;
-	case Client::CPlayer::PW_CaneSword_SP01:
-		break;
-	case Client::CPlayer::PW_CaneSword_SP02:
-		break;
-	case Client::CPlayer::Healing_Little:
-		break;
-	case Client::CPlayer::Healing2_Blend:
-		break;
-	case Client::CPlayer::Raven_ClawCommonV2_ChargeStart:
-		break;
-	case Client::CPlayer::Raven_ClawLong_ChargeFull:
-		break;
-	case Client::CPlayer::Raven_ClawNear:
-		break;
-	case Client::CPlayer::Strong_Jump:
-		break;
-	case Client::CPlayer::RavenAttack_Start:
-		break;
-	case Client::CPlayer::RavenAttack_End:
-		break;
-	case Client::CPlayer::SD_ParryToMob:
-		break;
-	case Client::CPlayer::SD_HurtIdle:
-		break;
-	case Client::CPlayer::SD_StrongHurt_Start:
-		break;
-	case Client::CPlayer::SD_StrongHurt_End:
-		break;
-	case Client::CPlayer::SD_Dead:
-		break;
-	case Client::CPlayer::STATE_END:
-		break;
-	default:
-		break;
-	}
-}
-
 void CPlayer::AfterAnim()
 {
 	switch (m_eCurState)
 	{
 	case Client::CPlayer::STATE_ATT1:
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::GAMEOBJ_TYPE::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
 		break;
 	case Client::CPlayer::STATE_ATT2:
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::GAMEOBJ_TYPE::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
 		break;
 	case Client::CPlayer::STATE_ATT3:
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::GAMEOBJ_TYPE::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
 		break;
 	case Client::CPlayer::STATE_ATT4:
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::GAMEOBJ_TYPE::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
 		break;
 	case Client::CPlayer::STATE_ATT5:
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::GAMEOBJ_TYPE::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
 		break;
 	case Client::CPlayer::STATE_RUN_B:
 		break;
 	case Client::CPlayer::STATE_RUN_F:
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::GAMEOBJ_TYPE::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
 		break;
 	case Client::CPlayer::STATE_RUN_L:
 		break;
@@ -1128,14 +1000,19 @@ void CPlayer::AfterAnim()
 	case Client::CPlayer::STATE_WALK:
 		break;
 	case Client::CPlayer::STATE_IDLE:
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::GAMEOBJ_TYPE::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
 		break;
 	case Client::CPlayer::STATE_AVOIDATTACK:
+		if (m_pBaseParts[BASE_SABER]->Trail_GetOn())
+			m_pBaseParts[BASE_SABER]->TrailOff();
 		break;
 	case Client::CPlayer::STATE_JUMPAVOID:
 		m_bMotionPlay = true;
 		break;
 	case Client::CPlayer::STATE_AVOIDBACK:
 		m_bMotionPlay = true;
+		if (m_pBaseParts[BASE_SABER]->Trail_GetOn())
+			m_pBaseParts[BASE_SABER]->TrailOff();
 		break;
 	case Client::CPlayer::Corvus_PW_Axe:
 		break;
@@ -1180,6 +1057,7 @@ void CPlayer::AfterAnim()
 	case Client::CPlayer::Raven_ClawLong_ChargeFull:
 		break;
 	case Client::CPlayer::Raven_ClawNear:
+		m_eWeapon = WEAPON_NONE;
 		break;
 	case Client::CPlayer::Strong_Jump:
 		break;
@@ -1214,7 +1092,6 @@ void CPlayer::Set_Anim(STATE _eState)
 	m_fPlayTime = 0.f;
 
 	m_pBaseParts[BASE_SABER]->Set_CollisionOn(false);
-	//static_cast<CSaber*>(m_pParts[PART_SABER])->TrailOff();
 	m_bMotionPlay = false;
 }
 
@@ -1235,6 +1112,36 @@ void CPlayer::Get_AnimMat()
 	_vector _vPos;
 	_vPos = XMVector3TransformCoord(XMLoadFloat4(&m_AnimPos), _World);
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
+}
+
+_bool CPlayer::Collision(_float fTimeDelta)
+{
+	CGameObject* _pTarget = static_cast<CCollider*>(m_pBaseParts[BASE_DAGGER]->Get_ComponentPtr(TEXT("Com_OBB")))->Get_Target();
+
+	if (_pTarget)
+	{
+		MSG_BOX(TEXT("Parry"));
+	}
+	else
+	{
+		_pTarget = static_cast<CCollider*>(m_pColliderCom[COLLIDERTYPE_BODY])->Get_Target();
+		if (_pTarget)
+		{
+			//패링 안되고 몸 충돌되었을때
+			m_eCurState = SD_HurtIdle;
+
+			for (auto& _Part : m_pBaseParts)
+			{
+				if (_Part->Trail_GetOn())
+				{
+					_Part->TrailOff();
+				}
+				_Part->Set_CollisionOn(false);
+			}
+			
+			return true;
+		}
+	}
 }
 
 HRESULT CPlayer::Check_MotionTrail(_float fTimeDelta)
@@ -1306,9 +1213,37 @@ HRESULT CPlayer::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Player"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
-
-
 	return S_OK;
+}
+
+void CPlayer::Add_Render()
+{
+	if (nullptr == m_pRendererCom)
+		return;
+
+	switch (m_eWeapon)
+	{
+	case Client::CPlayer::WEAPON_NONE:
+		break;
+	case Client::CPlayer::WEAPON_BASE:
+		for (auto& _pPart : m_pBaseParts)
+		{
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, _pPart);
+		}
+		break;
+	case Client::CPlayer::WEAPON_SKILL:
+		for (auto& _pPart : m_pSkillParts[m_eCurSkill])
+		{
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, _pPart);
+		}
+		break;
+	}
+
+	for (auto& _motion : m_listMotion)
+	{
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, _motion);
+	}
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }
 
 HRESULT CPlayer::Ready_AnimLimit()
@@ -1357,31 +1292,26 @@ HRESULT CPlayer::Ready_AnimLimit()
 }
 
 HRESULT CPlayer::Ready_Collider()
-{/* For.Com_AABB */
-	CCollider::COLLIDERDESC		ColliderDesc;
-	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
-
-	ColliderDesc.vSize = _float3(1.f, 2.f, 1.f);
-	ColliderDesc.vCenter = _float3(0.f, ColliderDesc.vSize.y * 0.5f, 0.f);
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_AABB"), TEXT("Com_AABB"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_AABB], &ColliderDesc)))
-		return E_FAIL;
-
+{
 	/* For.Com_OBB */
+	CCollider::COLLIDERDESC		ColliderDesc;	
 	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
 
-	ColliderDesc.vSize = _float3(1.3f, 1.3f, 1.3f);
+	ColliderDesc.vSize = _float3(0.7f, 1.4f, 0.7f);
 	ColliderDesc.vCenter = _float3(0.f, ColliderDesc.vSize.y * 0.5f, 0.f);
-	ColliderDesc.vRotation = _float3(0.f, XMConvertToRadians(45.f), 0.f);
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_OBB_MONSTER], &ColliderDesc)))
+	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_BODY], &ColliderDesc)))
 		return E_FAIL;
 
-	/* For.Com_SPHERE */
 	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
 
-	ColliderDesc.vSize = _float3(1.f, 1.f, 1.f);
-	ColliderDesc.vCenter = _float3(0.f, ColliderDesc.vSize.y * 0.5f, 0.f);
-	ColliderDesc.vRotation = _float3(0.f, XMConvertToRadians(45.f), 0.f);
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_Sphere"), TEXT("Com_SPHERE"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_SPHERE_ITEM], &ColliderDesc)))
+	ColliderDesc.vSize = _float3(0.5f, 0.2f, 0.5f);
+	_float3 vCenter = _float3(m_pModelCom->Get_HierarchyNode("ik_hand_gun")->Get_Trans()._41, 
+		m_pModelCom->Get_HierarchyNode("ik_hand_gun")->Get_Trans()._42,
+		m_pModelCom->Get_HierarchyNode("ik_hand_gun")->Get_Trans()._43);
+	ColliderDesc.vCenter = vCenter;
+	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Claw"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_CLAW], &ColliderDesc)))
 		return E_FAIL;
 
 	return S_OK;
@@ -1541,8 +1471,11 @@ HRESULT CPlayer::Update_Weapon(_float fTimeDelta)
 		return E_FAIL;
 	}
 
-	if (!m_bSkill)
+	switch (m_eWeapon)
 	{
+	case Client::CPlayer::WEAPON_NONE:
+		return S_OK;
+	case Client::CPlayer::WEAPON_BASE:
 		if (FAILED(Update_Weapon_Base()))
 		{
 			MSG_BOX(TEXT("failed to update BaseWeapon"));
@@ -1553,9 +1486,8 @@ HRESULT CPlayer::Update_Weapon(_float fTimeDelta)
 			if (pPart != nullptr)
 				pPart->Tick(fTimeDelta, this);
 		}
-	}
-	else
-	{
+		return S_OK;
+	case Client::CPlayer::WEAPON_SKILL:
 		if (FAILED(Update_Weapon_Skill()))
 		{
 			MSG_BOX(TEXT("failed to update SkillWeapon"));
@@ -1566,6 +1498,7 @@ HRESULT CPlayer::Update_Weapon(_float fTimeDelta)
 			if (pPart != nullptr)
 				pPart->Tick(fTimeDelta, this);
 		}
+		return S_OK;
 	}
 
 	return S_OK;

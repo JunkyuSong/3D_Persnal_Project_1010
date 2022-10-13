@@ -29,9 +29,6 @@ HRESULT CCane::Initialize(void * pArg)
 	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), XMConvertToRadians(-90.0f));
 
 
-	m_bColliderOn = true;
-
-
 	return S_OK;
 }
 
@@ -48,7 +45,10 @@ void CCane::Tick(_float fTimeDelta, CGameObject * _pUser)
 	//m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 
 	if (m_bColliderOn)
+	{
 		m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_WEAPON, m_pColliderCom, _pUser);
+	}
 }
 
 void CCane::LateTick(_float fTimeDelta)
