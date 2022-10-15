@@ -96,6 +96,8 @@ HRESULT CPlayer::Initialize(void * pArg)
 
 	m_MonsterLayer = pGameInstance->Get_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Monster"));
 	
+	
+
 	return S_OK;
 }
 
