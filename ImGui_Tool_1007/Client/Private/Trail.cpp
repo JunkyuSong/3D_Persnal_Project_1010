@@ -245,6 +245,30 @@ void CTrail::TrailOn(_matrix _matWeapon)
 }
 
 
+void CTrail::Spline()
+{
+	/*m_iEndIndex = m_iCatmullRomCount * 2 + m_iVtxCount;
+	m_iCatmullRomIndex[2] = m_iEndIndex - 2;
+	m_iCatmullRomIndex[3] = m_iEndIndex;
+
+	m_RealData[m_iEndIndex - 2].vPosition = m_RealData[m_iVtxCount - 2].vPosition;
+	m_RealData[m_iEndIndex - 1].vPosition = m_RealData[m_iVtxCount - 1].vPosition;
+
+	m_RealData[m_iEndIndex].vPosition = 
+		XMVector3TransformCoord(XMLoadFloat3(&m_HighAndLow.vLow), _matWeapon);
+	m_RealData[m_iEndIndex-1].vPosition =
+		XMVector3TransformCoord(XMLoadFloat3(&m_HighAndLow.vHigh), _matWeapon);
+
+	for (_uint i = 0; i < m_iCatmullRomCount; ++i)
+	{
+		_uint index = i * 2 + m_iVtxCount - 2;
+		_float fWeight = _float(i + 1) / (m_iCatmullRomCount + 1);
+
+		XMVectorCatmullRom()
+	}
+*/
+}
+
 CTrail * CTrail::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	CTrail*			pInstance = new CTrail(pDevice, pContext);

@@ -43,6 +43,8 @@ public:
 	
 	void			Set_Color(_float4 _Color) { m_Color = _Color; }
 
+	void			Spline();
+
 public:
 	static	CTrail*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CComponent*		Clone(void* pArg);
@@ -66,5 +68,8 @@ private:
 	_bool					m_bTrailOn;
 
 	_int					m_iVtxCount;
+
+	_uint					m_iEndIndex;
+	_uint					m_iCatmullRomCount;
 };
 END

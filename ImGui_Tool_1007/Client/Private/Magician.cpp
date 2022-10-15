@@ -62,11 +62,23 @@ HRESULT CMagician::Initialize(void * pArg)
 void CMagician::Tick( _float fTimeDelta)
 {
 	AUTOINSTANCE(CGameInstance, _Instance);
-	if (_Instance->KeyDown(DIK_4))
+	if (_Instance->KeyDown(DIK_NUMPAD1))
+	{
+		m_eCurState = SP_Att2_Start;
+	}
+	else if (_Instance->KeyDown(DIK_NUMPAD2))
+	{
+		m_eCurState = Cane_Att1;
+	}
+	else if (_Instance->KeyDown(DIK_NUMPAD3))
+	{
+		m_eCurState = Kick_Combo;
+	}
+	else if (_Instance->KeyDown(DIK_NUMPAD4))
 	{
 		m_eCurState = Magician_SwordAttack1;
 	}
-
+	
 	if (m_pModelCom != nullptr)
 	{
 		CheckAnim();
@@ -116,11 +128,11 @@ HRESULT CMagician::Render()
 			return E_FAIL;
 	}
 
-	for (_uint i = 0; i < COLLILDERTYPE_END; ++i)
-	{
-		if (nullptr != m_pColliderCom[i])
-			m_pColliderCom[i]->Render();
-	}
+	//for (_uint i = 0; i < COLLILDERTYPE_END; ++i)
+	//{
+	//	if (nullptr != m_pColliderCom[i])
+	//		m_pColliderCom[i]->Render();
+	//}
 
 	return S_OK;
 }
@@ -344,7 +356,10 @@ void CMagician::CheckState(_float fTimeDelta)
 		On_Collider(COLLIDERTYPE_BODY, true);
 		//플레이어 쳐다봄 => 서서히 쳐다보도록!
 		CTransform* _vPlayerPos = static_cast<CTransform*>(CGameInstance::Get_Instance()->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
-		m_pTransformCom->LookAt_ForLandObject(_vPlayerPos->Get_State(CTransform::STATE_POSITION));
+		
+		m_pTransformCom->Turn(m_pTransformCom->Get_State(CTransform::STATE_LOOK), 
+			_vPlayerPos->Get_State(CTransform::STATE_POSITION) - m_pTransformCom->Get_State(CTransform::STATE_POSITION)
+			, 0.9f);
 	}		
 		break;
 	case Client::CMagician::Magician_Idle2:
@@ -356,7 +371,20 @@ void CMagician::CheckState(_float fTimeDelta)
 	case Client::CMagician::Boss_Enter:
 		break;
 	case Client::CMagician::Cane_Att1:
+		if (m_eMonsterState == CMonster::ATTACK_STUN)
+		{
+			if (m_pParts[PART_CANESWORD]->Trail_GetOn())
+				m_pParts[PART_CANESWORD]->TrailOff();
+			m_pParts[PART_CANESWORD]->Set_CollisionOn(false);
 
+			if (m_pParts[PART_CANE]->Trail_GetOn())
+				m_pParts[PART_CANE]->TrailOff();
+			m_pParts[PART_CANE]->Set_CollisionOn(false);
+
+			m_eCurState = Hurt_Long;
+			m_eMonsterState = CMonster::ATTACK_IDLE;
+			CheckAnim();
+		}
 		break;
 	case Client::CMagician::Cane_Att2:
 		break;
@@ -368,6 +396,22 @@ void CMagician::CheckState(_float fTimeDelta)
 	case Client::CMagician::SP_Att2_Start:
 		break;
 	case Client::CMagician::SP_Att2_Loop:
+		if (m_eMonsterState == CMonster::ATTACK_STUN)
+		{
+			if (m_pParts[PART_CANESWORD]->Trail_GetOn())
+				m_pParts[PART_CANESWORD]->TrailOff();
+			m_pParts[PART_CANESWORD]->Set_CollisionOn(false);
+
+			ChangeCanesword(CANESWORD_R);
+
+			if (m_pParts[PART_CANE]->Trail_GetOn())
+				m_pParts[PART_CANE]->TrailOff();
+			m_pParts[PART_CANE]->Set_CollisionOn(false);
+
+			m_eCurState = Hurt_Long;
+			m_eMonsterState = CMonster::ATTACK_IDLE;
+			CheckAnim();
+		}
 		break;
 	case Client::CMagician::SP_Att2_Suc:
 		break;
@@ -382,9 +426,27 @@ void CMagician::CheckState(_float fTimeDelta)
 	case Client::CMagician::Cane_Att3:
 		break;
 	case Client::CMagician::Kick_Combo:
-		On_Collider(COLLIDERTYPE_FOOT_R, true);
-		On_Collider(COLLIDERTYPE_FOOT_L, true);
-		On_Collider(COLLIDERTYPE_BODY, true);
+		if (m_eMonsterState == CMonster::ATTACK_STUN)
+		{
+			if (m_pParts[PART_CANESWORD]->Trail_GetOn())
+				m_pParts[PART_CANESWORD]->TrailOff();
+			m_pParts[PART_CANESWORD]->Set_CollisionOn(false);
+
+			if (m_pParts[PART_CANE]->Trail_GetOn())
+				m_pParts[PART_CANE]->TrailOff();
+			m_pParts[PART_CANE]->Set_CollisionOn(false);
+
+			m_eCurState = Hurt_Long;
+			m_eMonsterState = CMonster::ATTACK_IDLE;
+			CheckAnim();
+		}
+		else
+		{
+			On_Collider(COLLIDERTYPE_FOOT_R, true);
+			On_Collider(COLLIDERTYPE_FOOT_L, true);
+			On_Collider(COLLIDERTYPE_BODY, true);
+		}
+		
 		break;
 	case Client::CMagician::Walk_B:
 		break;
@@ -433,9 +495,27 @@ void CMagician::CheckState(_float fTimeDelta)
 	case Client::CMagician::Magician_StunEnd_Cane:
 		break;
 	case Client::CMagician::Magician_SwordAttack1:
-		ChangeCanesword(CANESWORD_L);
-		m_pParts[PART_CANESWORD]->Set_CollisionOn(true);
-		On_Collider(COLLIDERTYPE_BODY, true);
+		if (m_eMonsterState == CMonster::ATTACK_STUN)
+		{
+			if (m_pParts[PART_CANESWORD]->Trail_GetOn())
+				m_pParts[PART_CANESWORD]->TrailOff();
+			m_pParts[PART_CANESWORD]->Set_CollisionOn(false);
+
+			if (m_pParts[PART_CANE]->Trail_GetOn())
+				m_pParts[PART_CANE]->TrailOff();
+			m_pParts[PART_CANE]->Set_CollisionOn(false);
+
+			m_eCurState = Hurt_Long;
+			m_eMonsterState = CMonster::ATTACK_IDLE;
+			CheckAnim();
+		}
+		else
+		{
+			ChangeCanesword(CANESWORD_L);
+			m_pParts[PART_CANESWORD]->Set_CollisionOn(true);
+			On_Collider(COLLIDERTYPE_BODY, true);
+		}
+		
 		break;
 	case Client::CMagician::Magician_SwordAttack2:
 		break;
@@ -468,61 +548,6 @@ void CMagician::CheckState(_float fTimeDelta)
 	}
 
 	Get_AnimMat();
-}
-
-void CMagician::AnimTick(_float fTimeDelta)
-{
-	switch (m_eCurState)
-	{
-	case Client::CMagician::Magician_Idle:
-		break;
-	case Client::CMagician::Magician_Idle2:
-		break;
-	case Client::CMagician::Hurt_Short:
-		break;
-	case Client::CMagician::Hurt_Long:
-		break;
-	case Client::CMagician::Boss_Enter:
-		break;
-	case Client::CMagician::Cane_Att1:
-		break;
-	case Client::CMagician::Cane_Att2:
-		break;
-	case Client::CMagician::SP_Att1_Start:
-		break;
-	case Client::CMagician::SP_Att1_Suc:
-		break;
-	case Client::CMagician::SP_Att2_Start:
-		break;
-	case Client::CMagician::SP_Att2_Loop:
-		break;
-	case Client::CMagician::SP_Att2_Suc:
-		break;
-	case Client::CMagician::Appear_L:
-		break;
-	case Client::CMagician::Appear_R:
-		break;
-	case Client::CMagician::Appear_B:
-		break;
-	case Client::CMagician::Appear_F:
-		break;
-	case Client::CMagician::Cane_Att3:
-		break;
-	case Client::CMagician::Kick_Combo:
-		break;
-	case Client::CMagician::Walk_B:
-		break;
-	case Client::CMagician::Walk_F:
-		break;
-	case Client::CMagician::Walk_L:
-		break;
-	case Client::CMagician::Walk_R:
-		break;
-	case Client::CMagician::STATE_END:
-		break;
-	default:
-		break;
-	}
 }
 
 void CMagician::ChangeCanesword(CANESWORD _eCanesword)
@@ -565,13 +590,22 @@ void CMagician::CheckLimit()
 	case Client::CMagician::SP_Att2_Start:
 		break;
 	case Client::CMagician::SP_Att2_Loop:
-		if (m_vecLimitTime[SP_Att2_Loop][1] < m_fPlayTime)
+		if (m_vecLimitTime[SP_Att2_Loop][2] < m_fPlayTime)
 		{
 			ChangeCanesword(CANESWORD_R);
+			if (m_pParts[PART_CANESWORD]->Trail_GetOn())
+				m_pParts[PART_CANESWORD]->TrailOff();
+			m_pParts[PART_CANESWORD]->Set_CollisionOn(false);
+		}
+		else if (m_vecLimitTime[SP_Att2_Loop][1] < m_fPlayTime)
+		{
+			ChangeCanesword(CANESWORD_L);
 		}
 		else if (m_vecLimitTime[SP_Att2_Loop][0] < m_fPlayTime)
 		{
-			ChangeCanesword(CANESWORD_L);
+			if (!m_pParts[PART_CANESWORD]->Trail_GetOn())
+				m_pParts[PART_CANESWORD]->TrailOn();
+			m_pParts[PART_CANESWORD]->Set_CollisionOn(true);
 		}
 		break;
 	case Client::CMagician::SP_Att2_Suc:
@@ -600,6 +634,76 @@ void CMagician::CheckLimit()
 		break;
 	case Client::CMagician::Walk_R:
 		break;
+	case Client::CMagician::Walk_Disappear_R:
+		break;
+	case Client::CMagician::Magician_Parry01:
+		break;
+	case Client::CMagician::Magician_ParryAttack01:
+		break;
+	case Client::CMagician::Magician_ParryAttack02:
+		break;
+	case Client::CMagician::Magician_ParryJump:
+		break;
+	case Client::CMagician::Magician_Shoot1:
+		break;
+	case Client::CMagician::Magician_Shoot2:
+		break;
+	case Client::CMagician::Magician_Shoot2_Slow:
+		break;
+	case Client::CMagician::Magician_ShotJump:
+		break;
+	case Client::CMagician::Magician_Disappear:
+		break;
+	case Client::CMagician::Magician_Stage2_Attakc01:
+		break;
+	case Client::CMagician::Magician_Stage2_Attakc04:
+		break;
+	case Client::CMagician::Magician_Stage2_SwrodAttackCombo:
+		break;
+	case Client::CMagician::Magician_Stage2_JumpAppear:
+		break;
+	case Client::CMagician::Magician_StunStart_Sword:
+		break;
+	case Client::CMagician::Magician_StunLoop_Sword:
+		break;
+	case Client::CMagician::Magician_StunEnd_Sword:
+		break;
+	case Client::CMagician::Magician_StunStart_Cane:
+		break;
+	case Client::CMagician::Magician_StunLoop_Cane:
+		break;
+	case Client::CMagician::Magician_StunEnd_Cane:
+		break;
+	case Client::CMagician::Magician_SwordAttack1:
+		break;
+	case Client::CMagician::Magician_SwordAttack2:
+		break;
+	case Client::CMagician::Magician_SwordAttack2_V2:
+		break;
+	case Client::CMagician::Magician_VSCorvus_TakeExecution:
+		break;
+	case Client::CMagician::Magician_VSCorvus_TakeExecutionDisappear:
+		break;
+	case Client::CMagician::Magician_Walk2F:
+		break;
+	case Client::CMagician::Magician_Walk2L:
+		break;
+	case Client::CMagician::Magician_Walk2R:
+		break;
+	case Client::CMagician::Magician_HurtFL:
+		break;
+	case Client::CMagician::Magician_HurtFR:
+		break;
+	case Client::CMagician::Magician_HurtSL:
+		break;
+	case Client::CMagician::Magician_HurtSR:
+		break;
+	case Client::CMagician::Magician_DisppearIdle:
+		break;
+	case Client::CMagician::Magician_JumpAppear:
+		break;
+	case Client::CMagician::Magician_Sprinkle:
+		break;
 	}
 }
 
@@ -608,6 +712,7 @@ void CMagician::Set_Anim(STATE _eState)
 	m_eCurState = _eState;
 	XMStoreFloat4(&m_AnimPos, XMVectorSet(0.f, 0.f, 0.f, 1.f));
 	m_PreAnimPos = m_AnimPos;
+	m_eMonsterState = CMonster::ATTACK_IDLE;
 	m_pModelCom->Set_AnimationIndex(m_eCurState);
 }
 
@@ -790,6 +895,7 @@ HRESULT CMagician::SetUp_ShaderResources()
 
 void CMagician::Ready_LimitTime()
 {
+	m_vecLimitTime[SP_Att2_Loop].push_back(0.f);
 	m_vecLimitTime[SP_Att2_Loop].push_back(20.f);
 	m_vecLimitTime[SP_Att2_Loop].push_back(150.f);
 	m_vecLimitTime[SP_Att2_Suc].push_back(220.f);

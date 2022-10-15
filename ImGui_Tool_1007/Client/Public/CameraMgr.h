@@ -28,9 +28,9 @@ public:
 	//void		Fast_Change();
 
 private:
-	CAMERATYPE			m_eCameraType = CAMERA_PLAYER;
+	CAMERATYPE			m_eCameraType = CAMERA_FREE;
 	class CCamera*		m_pCameras[CAMERA_END];
-
+	
 	// CBase을(를) 통해 상속됨
 	virtual void Free() override;
 };

@@ -13,6 +13,7 @@ class CTransform;
 class CAnimModel;
 class CMotionTrail;
 class CHierarchyNode;
+class CLayer;
 END
 
 BEGIN(Client)
@@ -54,7 +55,7 @@ public:
 
 private:
 	enum DIRECT { DIR_F, DIR_B, DIR_R, DIR_L, DIR_FR, DIR_BR, DIR_FL, DIR_BL, DIR_END };
-	enum COLLIDERTYPE { COLLIDERTYPE_CLAW, COLLIDERTYPE_BODY, COLLIDERTYPE_SPHERE_ITEM, COLLILDERTYPE_END };
+	enum COLLIDERTYPE { COLLIDERTYPE_CLAW, COLLIDERTYPE_BODY, COLLIDERTYPE_PARRY, COLLILDERTYPE_END };
 	enum ATTACKLIMIT { ATTACKLIMIT_CHANGE, ATTACKLIMIT_TRAILON, ATTACKLIMIT_TRAILEND, ATTACKLIMIT_COLLIDERON, ATTACKLIMIT_COLLIDEREND, ATTACKLIMIT_END };
 
 public:
@@ -151,7 +152,7 @@ private:
 	_float4					m_AnimPos;
 	_float4					m_PreAnimPos;
 
-	_bool					m_bAnimStop = false;
+	_bool					m_bAnimStop = true;
 	_float					m_fPlayTime = 0.f;
 	vector<_float>			m_vecLimitTime[STATE_END];
 
@@ -165,10 +166,14 @@ private:
 	_float					m_MaxMotionTrail = 0.07f;
 	_float					m_CurMotionTrail = 0.f;
 
+	class CMonster*			m_pTarget = nullptr;
+	CLayer*					m_MonsterLayer = nullptr;
+
 	
 	void (CPlayer::*KeyInput[STATE_END])(_float);
 
 	CCollider*				m_pColliderCom[COLLILDERTYPE_END] = { nullptr };
+	_bool					m_bCollision[COLLILDERTYPE_END] = { false };
 	_bool					m_bTrail = false;
 
 private:

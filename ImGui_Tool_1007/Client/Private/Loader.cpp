@@ -258,7 +258,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	/* For.Prototype_Component_Texture_Terrain */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Grass_%d.dds"), 2))))//Grass_%d.dds
-		return E_FAIL;	
+		return E_FAIL;
 
 
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));

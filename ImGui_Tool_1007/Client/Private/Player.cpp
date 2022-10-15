@@ -10,6 +10,10 @@
 #include "Dummy.h"
 #include "Weapon.h"
 
+#include "Layer.h"
+
+#include "Monster.h"
+
 
 
 CPlayer::CPlayer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -41,6 +45,9 @@ HRESULT CPlayer::Initialize_Prototype()
 
 HRESULT CPlayer::Initialize(void * pArg)
 {
+
+	AUTOINSTANCE(CGameInstance, pGameInstance);
+
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
@@ -63,12 +70,11 @@ HRESULT CPlayer::Initialize(void * pArg)
 		OBJ_DESC _tInfo = *static_cast<OBJ_DESC*>(pArg);
 		Set_Info(_tInfo);
 	}
-	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
-	Safe_AddRef(pGameInstance);
+
 
 	pGameInstance->Set_Player(this);
 
-	Safe_Release(pGameInstance);
+	
 
 	m_fAnimSpeed = 1.f;
 
@@ -86,6 +92,9 @@ HRESULT CPlayer::Initialize(void * pArg)
 	}
 
 	KeySetting();
+
+
+	m_MonsterLayer = pGameInstance->Get_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Monster"));
 	
 	return S_OK;
 }
@@ -121,10 +130,33 @@ void CPlayer::Tick( _float fTimeDelta)
 
 	}
 
-	Update_Weapon(fTimeDelta);
+	/*if (m_pTarget != nullptr)
+	{
+		_vector _vTargetPos = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
+		m_pTransformCom->LookAt_ForLandObject(_vTargetPos); 
+		
 
-	m_pColliderCom[COLLIDERTYPE_CLAW]->Update(m_pHands[HAND_RIGHT]->Get_CombinedTransformation()*XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())*m_pTransformCom->Get_WorldMatrix());
-	m_pColliderCom[COLLIDERTYPE_BODY]->Update(m_pTransformCom->Get_WorldMatrix());
+	}*/
+
+	Update_Weapon(fTimeDelta);
+	if (m_bCollision[COLLIDERTYPE_CLAW])
+	{
+		m_pColliderCom[COLLIDERTYPE_CLAW]->Update(m_pHands[HAND_RIGHT]->Get_CombinedTransformation()*XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())*m_pTransformCom->Get_WorldMatrix());
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_WEAPON, m_pColliderCom[COLLIDERTYPE_CLAW], this);
+	}
+	if (m_bCollision[COLLIDERTYPE_BODY])
+	{
+		m_pColliderCom[COLLIDERTYPE_BODY]->Update(m_pTransformCom->Get_WorldMatrix());
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
+	}
+	if (m_bCollision[COLLIDERTYPE_PARRY])
+	{
+		m_pColliderCom[COLLIDERTYPE_PARRY]->Update(m_pTransformCom->Get_WorldMatrix());
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_PARRY, m_pColliderCom[COLLIDERTYPE_PARRY], this);
+	}
+
+	
+	
 
 	Check_MotionTrail(fTimeDelta);
 }
@@ -165,11 +197,11 @@ HRESULT CPlayer::Render()
 	}
 
 #ifdef _DEBUG
-	for (_uint i = 0; i < COLLILDERTYPE_END; ++i)
-	{
-		if (nullptr != m_pColliderCom[i])
-			m_pColliderCom[i]->Render();
-	}
+	//for (_uint i = 0; i < COLLILDERTYPE_END; ++i)
+	//{
+	//	if (nullptr != m_pColliderCom[i])
+	//		m_pColliderCom[i]->Render();
+	//}
 #endif
 
 
@@ -368,7 +400,6 @@ void CPlayer::KeyInput_Idle( _float fTimeDelta)
 
 	if (CGameInstance::Get_Instance()->KeyDown(DIK_F))
 	{
-		m_pBaseParts[BASE_DAGGER]->Set_CollisionOn(true);
 		m_eCurState = ParryL;
 	}
 
@@ -390,13 +421,34 @@ void CPlayer::KeyInput_Idle( _float fTimeDelta)
 	{
 		m_eCurState = Healing_Little;
 	}
-	if (CGameInstance::Get_Instance()->KeyDown(DIK_C))
+	if (CGameInstance::Get_Instance()->KeyDown(DIK_1))
 	{
 		m_eCurState = DualKnife;
 		m_eWeapon = WEAPON::WEAPON_SKILL;
 		m_eCurSkill = SKILL_DUAL;
+	}
+	if (CGameInstance::Get_Instance()->KeyDown(DIK_2))
+	{
 		
-		//m_eCurState = Corvus_PW_Axe;
+		m_eCurState = Corvus_PW_Axe;
+	}
+	if (CGameInstance::Get_Instance()->MouseDown(DIMK_WHEEL))
+	{
+		list<CGameObject*> Monsters = *m_MonsterLayer->Get_ListFromLayer();
+		for (auto iter : Monsters)
+		{
+			//일정 범위 안에 있어야 한다, 일단은 보스몹 하나니까 
+			if (m_pTarget == nullptr)
+			{
+				m_pTarget = (CMonster*)iter;
+				break;
+			}
+			else
+			{
+				m_pTarget = nullptr;
+				break;
+			}
+		}
 	}
 }
 
@@ -691,7 +743,6 @@ void CPlayer::CheckEndAnim()
 		m_eCurState = STATE_IDLE;
 		break;
 	case Client::CPlayer::ParryL:
-		m_pBaseParts[BASE_DAGGER]->Set_CollisionOn(false);
 		m_eCurState = STATE_IDLE;
 		break;
 	case Client::CPlayer::DualKnife:
@@ -856,8 +907,28 @@ void CPlayer::CheckLimit()
 	case Client::CPlayer::Tackle_F:
 		break;
 	case Client::CPlayer::ParryR:
+		if (m_fPlayTime > m_vecLimitTime[ParryL][1])//무기 스왑
+		{
+			m_bCollision[COLLIDERTYPE_PARRY] = false;
+			//m_pBaseParts[BASE_DAGGER]->Set_CollisionOn(false);
+		}
+		else if (m_fPlayTime > m_vecLimitTime[ParryL][0])//무기 스왑
+		{
+			m_bCollision[COLLIDERTYPE_PARRY] = true;
+			//m_pBaseParts[BASE_DAGGER]->Set_CollisionOn(true);
+		}
 		break;
 	case Client::CPlayer::ParryL:
+		if (m_fPlayTime > m_vecLimitTime[ParryL][1])//무기 스왑
+		{
+			m_bCollision[COLLIDERTYPE_PARRY] = false;
+			//m_pBaseParts[BASE_DAGGER]->Set_CollisionOn(false);
+		}
+		else if (m_fPlayTime > m_vecLimitTime[ParryL][0])//무기 스왑
+		{
+			m_bCollision[COLLIDERTYPE_PARRY] = true;
+			//m_pBaseParts[BASE_DAGGER]->Set_CollisionOn(true);
+		}
 		break;
 	case Client::CPlayer::DualKnife:
 		if (m_fPlayTime > m_vecLimitTime[DualKnife][1])//무기 스왑
@@ -912,13 +983,13 @@ void CPlayer::CheckLimit()
 	case Client::CPlayer::Raven_ClawLong_ChargeFull:
 		break;
 	case Client::CPlayer::Raven_ClawNear:
-		if (m_fPlayTime > m_vecLimitTime[DualKnife][1])
+		if (m_fPlayTime > m_vecLimitTime[Raven_ClawNear][1])
 		{
-			//
+			m_bCollision[COLLIDERTYPE_CLAW] = false;
 		}
-		else if (m_fPlayTime > m_vecLimitTime[DualKnife][0])
+		else if (m_fPlayTime > m_vecLimitTime[Raven_ClawNear][0])
 		{
-			CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_WEAPON, m_pColliderCom[COLLIDERTYPE_CLAW], this);
+			m_bCollision[COLLIDERTYPE_CLAW] = true;
 		}
 		break;
 	case Client::CPlayer::Strong_Jump:
@@ -1044,8 +1115,12 @@ void CPlayer::AfterAnim()
 	case Client::CPlayer::Tackle_F:
 		break;
 	case Client::CPlayer::ParryR:
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::GAMEOBJ_TYPE::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
+		
 		break;
 	case Client::CPlayer::ParryL:
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::GAMEOBJ_TYPE::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
+		
 		break;
 	case Client::CPlayer::DualKnife:
 		break;
@@ -1141,19 +1216,28 @@ void CPlayer::Get_AnimMat()
 
 _bool CPlayer::Collision(_float fTimeDelta)
 {
-	CGameObject* _pTarget = static_cast<CCollider*>(m_pBaseParts[BASE_DAGGER]->Get_ComponentPtr(TEXT("Com_OBB")))->Get_Target();
-
+	CGameObject* _pTarget = //static_cast<CCollider*>(m_pBaseParts[BASE_DAGGER]->Get_ComponentPtr(TEXT("Com_OBB")))->Get_Target();
+		m_pColliderCom[COLLIDERTYPE_PARRY]->Get_Target();
 	if (_pTarget)
 	{
-		MSG_BOX(TEXT("Parry"));
+		//MSG_BOX(TEXT("Parry"));
+		static_cast<CMonster*>(_pTarget)->Set_MonsterState(CMonster::ATTACK_STUN);
 	}
 	else
 	{
-		_pTarget = static_cast<CCollider*>(m_pColliderCom[COLLIDERTYPE_BODY])->Get_Target();
+		_pTarget = (m_pColliderCom[COLLIDERTYPE_BODY])->Get_Target();
 		if (_pTarget)
 		{
 			//패링 안되고 몸 충돌되었을때
-			m_eCurState = SD_HurtIdle;
+			
+			if (m_eCurState == SD_HurtIdle)
+			{
+				m_eCurState = SD_StrongHurt_Start;
+			}
+			else
+			{
+				m_eCurState = SD_HurtIdle;
+			}
 
 			for (auto& _Part : m_pBaseParts)
 			{
@@ -1328,6 +1412,10 @@ HRESULT CPlayer::Ready_AnimLimit()
 	//클로
 	m_vecLimitTime[Raven_ClawNear].push_back(5.f);
 	m_vecLimitTime[Raven_ClawNear].push_back(50.f);
+
+	//패리
+	m_vecLimitTime[ParryL].push_back(0.f);
+	m_vecLimitTime[ParryL].push_back(50.f);
 	
 
 	return S_OK;
@@ -1354,6 +1442,14 @@ HRESULT CPlayer::Ready_Collider()
 	ColliderDesc.vCenter = vCenter;
 	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Claw"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_CLAW], &ColliderDesc)))
+		return E_FAIL;
+
+	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
+
+	ColliderDesc.vSize = _float3(0.7f, 1.6f, 0.3f);
+	ColliderDesc.vCenter = _float3(0.f, 0.8f/*ColliderDesc.vSize.y * 0.5f*/, 0.5f);
+	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Parry"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_PARRY], &ColliderDesc)))
 		return E_FAIL;
 
 	return S_OK;

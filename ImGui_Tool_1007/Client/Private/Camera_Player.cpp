@@ -104,11 +104,12 @@ void CCamera_Player::Tick(_float fTimeDelta)
 	{
 		vWorldPos.m128_f32[1] = 0.2f;
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vWorldPos);
-	}*/
+	}*/	
 	POINT			ptMouse;
-	GetCursorPos(&ptMouse);
-	ScreenToClient(g_hWnd, &ptMouse);
-	SetCursorPos(g_iWinSizeX / 2, g_iWinSizeY / 2);
+	ptMouse.x = g_iWinSizeX / 2;
+	ptMouse.y = g_iWinSizeY / 2;
+	ClientToScreen(g_hWnd, &ptMouse);
+	SetCursorPos(ptMouse.x, ptMouse.y);
 
 	Safe_Release(pGameInstance);
 	__super::Tick(fTimeDelta);

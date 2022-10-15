@@ -40,7 +40,7 @@ void CDagger::Tick(_float fTimeDelta)
 	{
 		m_pTrailCom->TrailOn(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 	}
-	//m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+	m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 }
 
 void CDagger::Tick(_float fTimeDelta, CGameObject * _pUser)
@@ -100,8 +100,8 @@ HRESULT CDagger::Render()
 	m_pTrailCom->Render();
 
 #ifdef _DEBUG
-	if (nullptr != m_pColliderCom && m_bColliderOn)
-		m_pColliderCom->Render();
+	//if (nullptr != m_pColliderCom && m_bColliderOn)
+	//	m_pColliderCom->Render();
 #endif
 	return S_OK;
 }
@@ -149,7 +149,8 @@ HRESULT CDagger::Ready_Components()
 	CCollider::COLLIDERDESC		ColliderDesc;
 	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
 
-	ColliderDesc.vSize = _float3(50.0f, 10.f, 5.f);
+	//ColliderDesc.vSize = _float3(50.0f, 10.f, 5.f);
+	ColliderDesc.vSize = _float3(50.0f, 50.f, 30.f);
 	ColliderDesc.vCenter = _float3(20.f, ColliderDesc.vSize.y * 0.5f - 5.f, 0.f);
 	ColliderDesc.vRotation = _float3(0.f, XMConvertToRadians(0.f), 0.f);
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pColliderCom, &ColliderDesc)))

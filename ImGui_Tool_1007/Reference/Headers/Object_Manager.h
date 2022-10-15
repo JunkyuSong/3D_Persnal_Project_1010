@@ -31,15 +31,7 @@ public:
 	void Clear(const _uint& iLevelIndex);
 	
 public: //Tool
-	class CLayer*									Get_Layer(_uint iLevelIndex, _tchar* _pLayerTag)
-	{
-		auto	iter = find_if(m_pLayers[iLevelIndex].begin(), m_pLayers[iLevelIndex].end(), CTag_Finder(_pLayerTag));
-
-		if (iter == m_pLayers[iLevelIndex].end())
-			return nullptr;
-
-		return iter->second;
-	}
+	class CLayer*									Get_Layer(_uint iLevelIndex, _tchar* _pLayerTag);
 
 
 private: /* 원형객체들을 보관할 컨테이너 */

@@ -108,6 +108,24 @@ HRESULT CObject_Manager::Add_Layer(_uint iLevelIndex, const _tchar * pLayerTag)
 	return S_OK;
 }
 
+CLayer*	CObject_Manager::Get_Layer(_uint iLevelIndex, _tchar* _pLayerTag)
+{
+	auto	iter = find_if(m_pLayers[iLevelIndex].begin(), m_pLayers[iLevelIndex].end(), CTag_Finder(_pLayerTag));
+
+	if (iter == m_pLayers[iLevelIndex].end())
+	{
+		CLayer* pLayer = CLayer::Create();
+		if (nullptr == pLayer)
+			return nullptr;
+
+
+		m_pLayers[iLevelIndex].emplace(_pLayerTag, pLayer);
+		return pLayer;
+	}
+
+	return iter->second;
+}
+
 map<const _tchar*, class CLayer*> CObject_Manager::Get_Layers(_uint iLevelIndex)
 {
 	return m_pLayers[iLevelIndex];

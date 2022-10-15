@@ -77,12 +77,14 @@ PS_OUT PS_MAIN_HP(PS_IN In)
 	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
 
 	if (In.vTexUV.x > g_PreHpPer)
+	{
 		Out.vColor.a = 0.f;
+	}
+		
 	else if (In.vTexUV.x > g_HpPer)
 	{
 		Out.vColor.r = 1.f;
 	}
-
 
 	if (0 >= Out.vColor.a)
 		discard;

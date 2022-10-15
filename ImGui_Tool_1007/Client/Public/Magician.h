@@ -99,8 +99,6 @@ private:
 	void CheckAnim();
 	void CheckState(_float fTimeDelta);
 
-	void AnimTick(_float fTimeDelta);
-
 	void ChangeCanesword(CANESWORD _eCanesword);
 	
 	void CheckLimit();
