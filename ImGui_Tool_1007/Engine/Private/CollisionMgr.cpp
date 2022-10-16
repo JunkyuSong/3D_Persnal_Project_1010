@@ -44,6 +44,8 @@ void CCollisionMgr::Tick()
 
 	// 1. 플레이어 바디 vs 몬스터 무기
 
+	PlayerBody_vs_MonsterBody();
+
 	PlayerParry_vs_MonsterWeapon();
 
 	if (MonsterWeapon_vs_PlayerBody())
@@ -160,7 +162,7 @@ void CCollisionMgr::PlayerWeapon_vs_MonsterBody()
 
 void CCollisionMgr::PlayerBody_vs_MonsterBody()
 {
-	for (auto& _WeaponPair : m_CollisionList[TYPE_MONSTER_BODY])
+	for (auto& _WeaponPair : m_CollisionList[TYPE_MONSTER_PUSH])
 	{
 
 		switch (_WeaponPair.second->Get_ColliderType())
@@ -168,7 +170,7 @@ void CCollisionMgr::PlayerBody_vs_MonsterBody()
 		case CCollider::TYPE_AABB:
 		{
 			CAABB* _Collider = static_cast<CAABB*>(_WeaponPair.second);
-			for (auto& _Body_Pair : m_CollisionList[TYPE_PLAYER_BODY])
+			for (auto& _Body_Pair : m_CollisionList[TYPE_PLAYER_PUSH])
 			{
 				if (_Collider->Collision(_Body_Pair.second))
 				{
@@ -182,7 +184,7 @@ void CCollisionMgr::PlayerBody_vs_MonsterBody()
 		case CCollider::TYPE_OBB:
 		{
 			COBB* _Collider = static_cast<COBB*>(_WeaponPair.second);
-			for (auto& _Body_Pair : m_CollisionList[TYPE_PLAYER_BODY])
+			for (auto& _Body_Pair : m_CollisionList[TYPE_PLAYER_PUSH])
 			{
 				if (_Collider->Collision(_Body_Pair.second))
 				{
@@ -196,7 +198,21 @@ void CCollisionMgr::PlayerBody_vs_MonsterBody()
 		case CCollider::TYPE_SPHERE:
 		{
 			CSphere* _Collider = static_cast<CSphere*>(_WeaponPair.second);
-			for (auto& _Body_Pair : m_CollisionList[TYPE_PLAYER_BODY])
+			for (auto& _Body_Pair : m_CollisionList[TYPE_PLAYER_PUSH])
+			{
+				if (_Collider->Collision(_Body_Pair.second))
+				{
+					_Collider->Set_Target(_Body_Pair.first);
+					_Body_Pair.second->Set_Target(_WeaponPair.first);
+					return;
+				}
+			}
+		}
+		break;
+		case CCollider::TYPE_CAPSULE:
+		{
+			CCapsule* _Collider = static_cast<CCapsule*>(_WeaponPair.second);
+			for (auto& _Body_Pair : m_CollisionList[TYPE_PLAYER_PUSH])
 			{
 				if (_Collider->Collision(_Body_Pair.second))
 				{

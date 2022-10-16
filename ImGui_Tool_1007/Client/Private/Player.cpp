@@ -141,6 +141,9 @@ void CPlayer::Tick( _float fTimeDelta)
 	}*/
 
 	Update_Weapon(fTimeDelta);
+
+	m_pColliderCom[COLLIDERTYPE_PUSH]->Update(m_pTransformCom->Get_WorldMatrix());
+	CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_PUSH, m_pColliderCom[COLLIDERTYPE_PUSH], this);
 	if (m_bCollision[COLLIDERTYPE_CLAW])
 	{
 		m_pColliderCom[COLLIDERTYPE_CLAW]->Update(m_pHands[HAND_RIGHT]->Get_CombinedTransformation()*XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())*m_pTransformCom->Get_WorldMatrix());
@@ -1002,7 +1005,11 @@ void CPlayer::CheckLimit()
 		break;
 	case Client::CPlayer::SD_ParryToMob:
 		break;
-	case Client::CPlayer::SD_HurtIdle:
+	case Client::CPlayer::SD_HurtIdle:		
+		if (m_fPlayTime > 5.f)
+		{
+			m_bCollision[COLLIDERTYPE_BODY] = true;
+		}
 		break;
 	case Client::CPlayer::SD_StrongHurt_Start:
 		break;
@@ -1070,24 +1077,26 @@ void CPlayer::AfterAnim()
 	switch (m_eCurState)
 	{
 	case Client::CPlayer::STATE_ATT1:
-		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::GAMEOBJ_TYPE::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
+		//CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::GAMEOBJ_TYPE::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
+		m_bCollision[COLLIDERTYPE_BODY] = true;
 		break;
 	case Client::CPlayer::STATE_ATT2:
-		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::GAMEOBJ_TYPE::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
+		//CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::GAMEOBJ_TYPE::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
+		m_bCollision[COLLIDERTYPE_BODY] = true;
 		break;
 	case Client::CPlayer::STATE_ATT3:
-		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::GAMEOBJ_TYPE::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
+		m_bCollision[COLLIDERTYPE_BODY] = true;
 		break;
 	case Client::CPlayer::STATE_ATT4:
-		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::GAMEOBJ_TYPE::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
+		m_bCollision[COLLIDERTYPE_BODY] = true;
 		break;
 	case Client::CPlayer::STATE_ATT5:
-		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::GAMEOBJ_TYPE::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
+		m_bCollision[COLLIDERTYPE_BODY] = true;
 		break;
 	case Client::CPlayer::STATE_RUN_B:
 		break;
 	case Client::CPlayer::STATE_RUN_F:
-		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::GAMEOBJ_TYPE::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
+		m_bCollision[COLLIDERTYPE_BODY] = true;
 		break;
 	case Client::CPlayer::STATE_RUN_L:
 		break;
@@ -1098,7 +1107,7 @@ void CPlayer::AfterAnim()
 	case Client::CPlayer::STATE_WALK:
 		break;
 	case Client::CPlayer::STATE_IDLE:
-		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::GAMEOBJ_TYPE::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
+		m_bCollision[COLLIDERTYPE_BODY] = true;
 		break;
 	case Client::CPlayer::STATE_AVOIDATTACK:
 		if (m_pBaseParts[BASE_SABER]->Trail_GetOn())
@@ -1117,11 +1126,11 @@ void CPlayer::AfterAnim()
 	case Client::CPlayer::Tackle_F:
 		break;
 	case Client::CPlayer::ParryR:
-		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::GAMEOBJ_TYPE::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
+		m_bCollision[COLLIDERTYPE_BODY] = true;
 		
 		break;
 	case Client::CPlayer::ParryL:
-		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::GAMEOBJ_TYPE::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
+		m_bCollision[COLLIDERTYPE_BODY] = true;
 		
 		break;
 	case Client::CPlayer::DualKnife:
@@ -1251,6 +1260,7 @@ _bool CPlayer::Collision(_float fTimeDelta)
 				_Part->Set_CollisionOn(false);
 			}
 			m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack());
+			m_bCollision[COLLIDERTYPE_BODY] = false;
 			return true;
 		}
 	}
@@ -1433,6 +1443,12 @@ HRESULT CPlayer::Ready_Collider()
 	ColliderDesc.vCenter = _float3(0.f, ColliderDesc.vSize.y * 0.5f, 0.f);
 	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_BODY], &ColliderDesc)))
+		return E_FAIL;
+
+	ColliderDesc.vSize = _float3(0.7f, 1.4f, 0.7f);
+	ColliderDesc.vCenter = _float3(0.f, ColliderDesc.vSize.y * 0.5f, 0.f);
+	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_Capsule"), TEXT("Com_Capsule"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_PUSH], &ColliderDesc)))
 		return E_FAIL;
 
 	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));

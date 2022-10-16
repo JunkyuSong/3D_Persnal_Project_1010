@@ -112,6 +112,7 @@ _bool CCapsule::CapsuleCollision(CCollider * pTargetCollider)
 	_vector _LineEdge = _Normal * m_ColliderDesc.vSize.x / 2.f;
 	_vector _LineTop = _Top - _LineEdge;
 	_vector _LineBottom = _Bottom + _LineEdge;
+	_Normal = XMVector3Normalize(_LineBottom - _LineTop);
 
 	// Target Capsule
 	CCapsule* pTarget = (CCapsule*)pTargetCollider;
@@ -122,6 +123,7 @@ _bool CCapsule::CapsuleCollision(CCollider * pTargetCollider)
 	_vector _pTarget_LineEdge = _pTarget_Normal * pTarget->m_ColliderDesc.vSize.x / 2.f;
 	_vector _pTarget_LineTop = _pTarget_Top - _pTarget_LineEdge;
 	_vector _pTarget_LineBottom = _pTarget_Bottom + _pTarget_LineEdge;
+	_pTarget_Normal = XMVector3Normalize(_pTarget_LineBottom - _pTarget_LineTop);
 
 	_vector vDistance0 = _pTarget_LineTop - _LineTop;
 	_vector vDistance1 = _pTarget_LineBottom - _LineTop;
@@ -135,23 +137,23 @@ _bool CCapsule::CapsuleCollision(CCollider * pTargetCollider)
 
 	_vector Point, TargetPoint;
 	if (_fDistance2 < _fDistance0 || _fDistance2 < _fDistance1 || _fDistance3 < _fDistance0 || _fDistance3 < _fDistance1)
-		Point = _Bottom;
+		Point = _LineBottom;
 	else
-		Point = _Top;
+		Point = _LineTop;
 
-	_float _Ratio = XMVectorGetX(XMVector3Dot(Point - _pTarget_Top, _pTarget_Normal));
-	TargetPoint = _pTarget_Top + _Ratio * _pTarget_Normal;
+	_float _Ratio = XMVectorGetX(XMVector3Dot(Point - _pTarget_LineTop, _pTarget_Normal));
+	TargetPoint = _pTarget_LineTop + (_Ratio * _pTarget_Normal);
 
-	_Ratio = XMVectorGetX(XMVector3Dot(TargetPoint - _Top, _Normal));
-	Point = _Top + _Ratio * _Normal;
+	_Ratio = XMVectorGetX(XMVector3Dot(TargetPoint - _LineTop, _Normal));
+	Point = _LineTop + (_Ratio * _Normal);
 
 	_vector _vSphereDistance = TargetPoint - Point;
 	_float _fSphereDistance = fabs(XMVectorGetX(XMVector3Length(_vSphereDistance)));
 
-	if (_fSphereDistance > (m_ColliderDesc.vSize.x + pTarget->m_ColliderDesc.vSize.x)/2.f)
-		m_isColl = true;
+	if (_fSphereDistance < (m_ColliderDesc.vSize.x + pTarget->m_ColliderDesc.vSize.x) / 2.f)
+		return true;
 
-	return m_isColl;
+	return false;
 }
 
 BoundingSphere CCapsule::Get_Sphere(CCollider * pTargetCollider, TYPE _eType)
@@ -160,10 +162,12 @@ BoundingSphere CCapsule::Get_Sphere(CCollider * pTargetCollider, TYPE _eType)
 	_vector _Top = XMLoadFloat3(&m_Top);
 	_vector _Bottom = XMLoadFloat3(&m_Bottom);
 
-	_vector _Normal = XMVector3Normalize(_Top - _Bottom);
+	_vector _Normal = XMVector3Normalize(_Bottom - _Top);
 	_vector _LineEdge = _Normal * m_ColliderDesc.vSize.x / 2.f;
 	_vector _LineTop = _Top - _LineEdge;
 	_vector _LineBottom = _Bottom + _LineEdge;
+
+	_Normal = XMVector3Normalize(_LineBottom - _LineTop);
 
 	_vector _TargetCenter;
 	_float3 _float3_TargetCenter;
@@ -184,7 +188,7 @@ BoundingSphere CCapsule::Get_Sphere(CCollider * pTargetCollider, TYPE _eType)
 		break;
 	}	
 
-	_float _Ratio = XMVectorGetX(XMVector3Dot(_TargetCenter - _Top, _Normal));
+	_float _Ratio = XMVectorGetX(XMVector3Dot(_TargetCenter - _LineTop, _Normal));
 	_float3 _vCenter;
 	XMStoreFloat3(&_vCenter, _Top + _Ratio * _Normal);
 	return BoundingSphere(_vCenter, m_ColliderDesc.vSize.x);
