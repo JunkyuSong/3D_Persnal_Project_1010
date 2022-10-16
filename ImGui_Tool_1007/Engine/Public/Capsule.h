@@ -23,6 +23,9 @@ public:
 	virtual void Update(_fmatrix TransformMatrix);
 	virtual _bool Collision(CCollider* pTargetCollider);
 
+	_bool	CapsuleCollision(CCollider* pTargetCollider);
+	_vector	FindCenter(CCollider* pTargetCollider, TYPE _eType);
+
 #ifdef _DEBUG
 public:
 	virtual HRESULT Render();
@@ -31,6 +34,10 @@ public:
 private:
 	BoundingBox*			m_pOriginal_Capsule = nullptr;
 	BoundingBox*			m_pCapsule = nullptr;
+
+	_float3					m_Top;
+	_float3					m_Bottom;
+
 
 
 public:

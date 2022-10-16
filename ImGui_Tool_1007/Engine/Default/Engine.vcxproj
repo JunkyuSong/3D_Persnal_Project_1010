@@ -185,6 +185,7 @@
     <ClCompile Include="..\Private\Object_Manager.cpp" />
     <ClCompile Include="..\Private\Picking.cpp" />
     <ClCompile Include="..\private\PipeLine.cpp" />
+    <ClCompile Include="..\Private\RandMgr.cpp" />
     <ClCompile Include="..\Private\Renderer.cpp" />
     <ClCompile Include="..\private\Shader.cpp" />
     <ClCompile Include="..\Private\Sphere.cpp" />
@@ -237,6 +238,7 @@
     <ClInclude Include="..\Public\Object_Manager.h" />
     <ClInclude Include="..\Public\Picking.h" />
     <ClInclude Include="..\public\PipeLine.h" />
+    <ClInclude Include="..\Public\RandMgr.h" />
     <ClInclude Include="..\Public\Renderer.h" />
     <ClInclude Include="..\public\Shader.h" />
     <ClInclude Include="..\Public\Sphere.h" />

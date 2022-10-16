@@ -110,6 +110,8 @@ private:
 
 	void On_Collider(MAGICIANCOLLIDER _eCollider, _bool _bCollision);
 
+	_float	m_fAppear = 0.f;
+
 private:
 	STATE					m_eReserveState = STATE_END;
 	STATE					m_eCurState = Magician_Idle;

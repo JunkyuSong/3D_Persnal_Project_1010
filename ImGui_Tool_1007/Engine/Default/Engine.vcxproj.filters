@@ -127,6 +127,9 @@
     <ClCompile Include="..\Private\CollisionMgr.cpp">
       <Filter>04.Utility\04. Collision</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\RandMgr.cpp">
+      <Filter>04.Utility\05. Rand</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -276,6 +279,9 @@
     <ClInclude Include="..\Public\CollisionMgr.h">
       <Filter>04.Utility\04. Collision</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\RandMgr.h">
+      <Filter>04.Utility\05. Rand</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="99.Defines">
@@ -412,6 +418,9 @@
     </Filter>
     <Filter Include="04.Utility\04. Collision">
       <UniqueIdentifier>{833da33b-6cb3-40f8-b0ee-f41c43d3181f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Utility\05. Rand">
+      <UniqueIdentifier>{cd712c6e-6907-45be-b38b-23027b07a9df}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

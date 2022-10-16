@@ -52,10 +52,10 @@ HRESULT CMagician::Initialize(void * pArg)
 	/*if (m_pModelCom != nullptr)
 		m_pModelCom->Set_AnimationIndex(STATE_END);*/
 
-	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
+	m_pTransformCom->Rotation(XMVectorSet(0.f, 3.f, 0.f, 0.f), XMConvertToRadians(180.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(5.f, 0.f, 5.f, 1.f));
 
-	m_eCurState = Kick_Combo;
+	m_eCurState = Walk_Disappear_F;
 	return S_OK;
 }
 
@@ -225,13 +225,25 @@ void CMagician::CheckEndAnim()
 	case Client::CMagician::Walk_B:
 		m_eCurState = Magician_Idle;
 		break;
+	case Client::CMagician::Walk_Disappear_B:
+		m_eCurState = Magician_Idle;
+		break;
 	case Client::CMagician::Walk_F:
 		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Walk_Disappear_F:
+		m_eCurState = Walk_Disappear_F;
 		break;
 	case Client::CMagician::Walk_L:
 		m_eCurState = Magician_Idle;
 		break;
+	case Client::CMagician::Walk_Disappear_L:
+		m_eCurState = Magician_Idle;
+		break;
 	case Client::CMagician::Walk_R:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Walk_Disappear_R:
 		m_eCurState = Magician_Idle;
 		break;
 	case Client::CMagician::Magician_Parry01:
@@ -422,6 +434,7 @@ void CMagician::CheckState(_float fTimeDelta)
 	case Client::CMagician::Appear_B:
 		break;
 	case Client::CMagician::Appear_F:
+			
 		break;
 	case Client::CMagician::Cane_Att3:
 		break;
@@ -450,11 +463,45 @@ void CMagician::CheckState(_float fTimeDelta)
 		break;
 	case Client::CMagician::Walk_B:
 		break;
+	case Client::CMagician::Walk_Disappear_B:
+		break;
 	case Client::CMagician::Walk_F:
+		m_fAppear += 0.1f;
+		//만약 1 이상 되면 공격패턴으로 바뀜.
+		if (m_fAppear >= 1.0f)
+		{
+			m_fAppear = 1.f;
+			m_eCurState = Kick_Combo;
+			//랜덤매니져---- 공격패턴
+		}
+		break;
+	case Client::CMagician::Walk_Disappear_F:
+		//여기서 0.1씩 줄여서 사라지게끔
+		m_fAppear -= 0.05f;
+		//0 이하면 (중간텀) 플레이어 주변에 나타나서 다시 증가
+		if (m_fAppear <= -5.f)
+		{
+			m_eCurState = Walk_F;
+			m_fAppear = 0.f;
+			//플레이어 포인터로 트렌스폼 가져와서 공격
+			AUTOINSTANCE(CGameInstance, _Intance);
+			CTransform* _Trans =
+			static_cast<CTransform*>(_Intance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
+
+			_vector _vTargetPos = _Trans->Get_State(CTransform::STATE_POSITION);
+			_vTargetPos.m128_f32[2] += 3.f;
+
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vTargetPos);
+			
+		}
 		break;
 	case Client::CMagician::Walk_L:
 		break;
+	case Client::CMagician::Walk_Disappear_L:
+		break;
 	case Client::CMagician::Walk_R:
+		break;
+	case Client::CMagician::Walk_Disappear_R:
 		break;
 	case Client::CMagician::Magician_Parry01:
 		break;

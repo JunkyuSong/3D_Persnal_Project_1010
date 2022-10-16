@@ -12,6 +12,7 @@ CGameInstance::CGameInstance()
 	, m_pPipeLine(CPipeLine::Get_Instance())
 	, m_pLight_Manager(CLight_Manager::Get_Instance())
 	, m_pCollision_Mgr(CCollisionMgr::Get_Instance())
+	, m_pRand_Mgr(CRandMgr::Get_Instance())
 {	
 	Safe_AddRef(m_pLight_Manager);
 	Safe_AddRef(m_pPipeLine);
@@ -22,6 +23,7 @@ CGameInstance::CGameInstance()
 	Safe_AddRef(m_pInput_Device);
 	Safe_AddRef(m_pGraphic_Device);
 	Safe_AddRef(m_pCollision_Mgr);
+	Safe_AddRef(m_pRand_Mgr);
 }
 
 HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, HINSTANCE hInst, const GRAPHICDESC& GraphicDesc, ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext)
@@ -356,6 +358,16 @@ HRESULT CGameInstance::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * p
 	return m_pLight_Manager->Add_Light(pDevice, pContext, LightDesc);
 }
 
+const _float & CGameInstance::Rand_Float(const _float & _fMin, const _float & _fMax)
+{
+	return m_pRand_Mgr->Rand_Float(_fMin, _fMax);
+}
+
+const _int & CGameInstance::Rand_Int(const _int & _iMin, const _int & _iMax)
+{
+	return m_pRand_Mgr->Rand_Int(_iMin, _iMax);
+}
+
 void CGameInstance::Release_Engine()
 {
 	CGameInstance::Get_Instance()->Destroy_Instance();
@@ -379,6 +391,8 @@ void CGameInstance::Release_Engine()
 	CPicking::Destroy_Instance();
 	
 	CGraphic_Device::Get_Instance()->Destroy_Instance();
+
+	CRandMgr::Destroy_Instance();
 }
 
 void CGameInstance::Free()
@@ -392,5 +406,5 @@ void CGameInstance::Free()
 	Safe_Release(m_pInput_Device);
 	Safe_Release(m_pGraphic_Device);
 	Safe_Release(m_pCollision_Mgr);
-	
+	Safe_Release(m_pRand_Mgr);
 }
