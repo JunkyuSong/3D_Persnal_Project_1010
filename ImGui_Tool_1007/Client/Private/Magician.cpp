@@ -52,10 +52,10 @@ HRESULT CMagician::Initialize(void * pArg)
 	/*if (m_pModelCom != nullptr)
 		m_pModelCom->Set_AnimationIndex(STATE_END);*/
 
-	m_pTransformCom->Rotation(XMVectorSet(0.f, 3.f, 0.f, 0.f), XMConvertToRadians(180.f));
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(5.f, 0.f, 5.f, 1.f));
+	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
+	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(5.f, 0.f, 5.f, 1.f));
 
-	m_eCurState = Walk_Disappear_F;
+	m_eCurState = Magician_Idle;
 	return S_OK;
 }
 
@@ -871,12 +871,20 @@ HRESULT CMagician::Ready_Components()
 		return E_FAIL;
 
 
-	CCollider::COLLIDERDESC		ColliderDesc;
+	/*CCollider::COLLIDERDESC		ColliderDesc;
 	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
 	ColliderDesc.vSize = _float3(0.7f, 1.8f, 0.7f);
 	ColliderDesc.vCenter = _float3(0.f, ColliderDesc.vSize.y * 0.5f, 0.f);
 	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_BODY], &ColliderDesc)))
+		return E_FAIL;*/
+
+	CCollider::COLLIDERDESC		ColliderDesc;
+	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
+	ColliderDesc.vSize = _float3(0.7f, 1.8f, 0.7f);
+	ColliderDesc.vCenter = _float3(0.f, ColliderDesc.vSize.y * 0.5f, 0.f);
+	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_Capsule"), TEXT("Com_Capsule"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_BODY], &ColliderDesc)))
 		return E_FAIL;
 
 	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));

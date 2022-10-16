@@ -27,6 +27,7 @@ public:
 	TYPE Get_ColliderType() const {
 		return m_eColliderType;
 	}
+	COLLIDERDESC	Get_Colliderdesc() { return m_ColliderDesc; }
 
 public:
 	virtual HRESULT Initialize_Prototype(TYPE eColliderType);

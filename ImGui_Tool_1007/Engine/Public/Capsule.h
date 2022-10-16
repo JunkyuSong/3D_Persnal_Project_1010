@@ -24,7 +24,7 @@ public:
 	virtual _bool Collision(CCollider* pTargetCollider);
 
 	_bool	CapsuleCollision(CCollider* pTargetCollider);
-	_vector	FindCenter(CCollider* pTargetCollider, TYPE _eType);
+	BoundingSphere	Get_Sphere(CCollider* pTargetCollider, TYPE _eType);
 
 #ifdef _DEBUG
 public:
@@ -37,6 +37,8 @@ private:
 
 	_float3					m_Top;
 	_float3					m_Bottom;
+
+	_float3					vOriginal_Center;
 
 
 

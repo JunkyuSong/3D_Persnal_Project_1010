@@ -374,6 +374,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CSphere::Create(m_pDevice, m_pContext, CCollider::TYPE_SPHERE))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_Collider_Capsule */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_Capsule"),
+		CCapsule::Create(m_pDevice, m_pContext, CCollider::TYPE_CAPSULE))))
+		return E_FAIL;
+
 
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));

@@ -22,7 +22,7 @@ HRESULT CCapsule::Initialize_Prototype(CCollider::TYPE eColliderType)
 {
 	if (FAILED(__super::Initialize_Prototype(eColliderType)))
 		return E_FAIL;
-	m_eColliderType = CCollider::TYPE_AABB;
+	m_eColliderType = CCollider::TYPE_CAPSULE;
 	return S_OK;
 }
 
@@ -38,18 +38,35 @@ HRESULT CCapsule::Initialize(void * pArg)
 	_matrix		RotationMatrix = XMMatrixRotationX(m_ColliderDesc.vRotation.x) *
 		XMMatrixRotationY(m_ColliderDesc.vRotation.y) *
 		XMMatrixRotationZ(m_ColliderDesc.vRotation.z);
+	vOriginal_Center = m_ColliderDesc.vCenter;
+	_vector _vDir = XMVector3TransformNormal(XMVectorSet(0.f, 1.f, 0.f, 0.f), RotationMatrix);
 
-	_vector _vDir = XMVector3TransformCoord(XMVectorSet(0.f, 1.f, 0.f, 0.f), RotationMatrix);
+	XMStoreFloat3(&m_Top, XMLoadFloat3(&m_ColliderDesc.vCenter) + (m_ColliderDesc.vSize.y  * 0.5f * _vDir));
+	XMStoreFloat3(&m_Bottom, XMLoadFloat3(&m_ColliderDesc.vCenter) - (m_ColliderDesc.vSize.y  * 0.5f * _vDir));
 
-	XMStoreFloat3(&m_Top, XMLoadFloat3(&m_ColliderDesc.vCenter) + (m_ColliderDesc.vSize.y * _vDir));
-	XMStoreFloat3(&m_Bottom, XMLoadFloat3(&m_ColliderDesc.vCenter) - (m_ColliderDesc.vSize.y * _vDir));
 
 	return S_OK;
 }
 
 void CCapsule::Update(_fmatrix TransformMatrix)
 {
-	//m_pOriginal_AABB->Transform(*m_pAABB, Remove_Rotation(TransformMatrix));
+	XMStoreFloat3(&m_ColliderDesc.vCenter, XMVector3TransformCoord(XMLoadFloat3(&vOriginal_Center), TransformMatrix));
+
+	_matrix fd = TransformMatrix;
+	fd.r[3].m128_f32[0] = 0.f;
+	fd.r[3].m128_f32[1] = 0.f;
+	fd.r[3].m128_f32[2] = 0.f;
+
+	fd.r[0] = XMVector3Normalize(fd.r[0]);
+	fd.r[1] = XMVector3Normalize(fd.r[1]);
+	fd.r[2] = XMVector3Normalize(fd.r[2]);
+
+	_vector _vDir = XMVector3TransformNormal(XMVectorSet(0.f, 1.f, 0.f, 0.f), fd);
+
+	XMStoreFloat3(&m_Top, XMLoadFloat3(&m_ColliderDesc.vCenter) + (m_ColliderDesc.vSize.y * 0.5f * _vDir));
+	XMStoreFloat3(&m_Bottom, XMLoadFloat3(&m_ColliderDesc.vCenter) - (m_ColliderDesc.vSize.y * 0.5f * _vDir));
+
+	return;
 }
 
 _bool CCapsule::Collision(CCollider * pTargetCollider)
@@ -57,24 +74,24 @@ _bool CCapsule::Collision(CCollider * pTargetCollider)
 	CCollider::TYPE		eType = pTargetCollider->Get_ColliderType();
 
 	m_isColl = false;
-	_float3 _vCenter;
-	BoundingSphere _Sphere(_vCenter, m_ColliderDesc.vSize.x);
+	//_float3 _vCenter;
+	BoundingSphere _Sphere;
 	switch (eType)
 	{
 	case CCollider::TYPE_AABB:
-		XMStoreFloat3(&_vCenter, FindCenter(pTargetCollider, eType));
-		_Sphere.Center = _vCenter;
+		_Sphere = Get_Sphere(pTargetCollider, eType);
+		//_Sphere.Center = _vCenter;
 		m_isColl = _Sphere.Intersects(((CAABB*)pTargetCollider)->Get_Collider());
 		break;
 	case CCollider::TYPE_OBB:
-		XMStoreFloat3(&_vCenter, FindCenter(pTargetCollider, eType));
-		_Sphere.Center = _vCenter;
+		_Sphere = Get_Sphere(pTargetCollider, eType);
+		//_Sphere.Center = _vCenter;
 		m_isColl = _Sphere.Intersects(((COBB*)pTargetCollider)->Get_Collider());
 		break;
 
 	case CCollider::TYPE_SPHERE:
-		XMStoreFloat3(&_vCenter, FindCenter(pTargetCollider, eType));
-		_Sphere.Center = _vCenter;
+		_Sphere = Get_Sphere(pTargetCollider, eType);
+		//_Sphere.Center = _vCenter;
 		m_isColl = _Sphere.Intersects(((CSphere*)pTargetCollider)->Get_Collider());
 		break;
 	case CCollider::TYPE_CAPSULE:
@@ -92,7 +109,7 @@ _bool CCapsule::CapsuleCollision(CCollider * pTargetCollider)
 	_vector _Bottom = XMLoadFloat3(&m_Bottom);
 
 	_vector _Normal = XMVector3Normalize(_Top - _Bottom);
-	_vector _LineEdge = _Normal * m_ColliderDesc.vSize.x;
+	_vector _LineEdge = _Normal * m_ColliderDesc.vSize.x / 2.f;
 	_vector _LineTop = _Top - _LineEdge;
 	_vector _LineBottom = _Bottom + _LineEdge;
 
@@ -102,7 +119,7 @@ _bool CCapsule::CapsuleCollision(CCollider * pTargetCollider)
 	_vector _pTarget_Bottom = XMLoadFloat3(&pTarget->m_Bottom);
 
 	_vector _pTarget_Normal = XMVector3Normalize(_pTarget_Top - _pTarget_Bottom);
-	_vector _pTarget_LineEdge = _pTarget_Normal * pTarget->m_ColliderDesc.vSize.x;
+	_vector _pTarget_LineEdge = _pTarget_Normal * pTarget->m_ColliderDesc.vSize.x / 2.f;
 	_vector _pTarget_LineTop = _pTarget_Top - _pTarget_LineEdge;
 	_vector _pTarget_LineBottom = _pTarget_Bottom + _pTarget_LineEdge;
 
@@ -131,20 +148,20 @@ _bool CCapsule::CapsuleCollision(CCollider * pTargetCollider)
 	_vector _vSphereDistance = TargetPoint - Point;
 	_float _fSphereDistance = fabs(XMVectorGetX(XMVector3Length(_vSphereDistance)));
 
-	if (_fSphereDistance > m_ColliderDesc.vSize.x + pTarget->m_ColliderDesc.vSize.x)
+	if (_fSphereDistance > (m_ColliderDesc.vSize.x + pTarget->m_ColliderDesc.vSize.x)/2.f)
 		m_isColl = true;
 
 	return m_isColl;
 }
 
-_vector CCapsule::FindCenter(CCollider * pTargetCollider, TYPE _eType)
+BoundingSphere CCapsule::Get_Sphere(CCollider * pTargetCollider, TYPE _eType)
 {
 	// this Capsule
 	_vector _Top = XMLoadFloat3(&m_Top);
 	_vector _Bottom = XMLoadFloat3(&m_Bottom);
 
 	_vector _Normal = XMVector3Normalize(_Top - _Bottom);
-	_vector _LineEdge = _Normal * m_ColliderDesc.vSize.x;
+	_vector _LineEdge = _Normal * m_ColliderDesc.vSize.x / 2.f;
 	_vector _LineTop = _Top - _LineEdge;
 	_vector _LineBottom = _Bottom + _LineEdge;
 
@@ -154,21 +171,23 @@ _vector CCapsule::FindCenter(CCollider * pTargetCollider, TYPE _eType)
 	switch (_eType)
 	{
 	case Engine::CCollider::TYPE_AABB:
-		_float3_TargetCenter = static_cast<CAABB*>(pTargetCollider)->Get_Colliderdesc().vCenter;
+		_float3_TargetCenter = static_cast<CAABB*>(pTargetCollider)->Get_Collider().Center;
 		_TargetCenter = XMLoadFloat3(&_float3_TargetCenter);
 		break;
 	case Engine::CCollider::TYPE_OBB:
-		_float3_TargetCenter = static_cast<COBB*>(pTargetCollider)->Get_Colliderdesc().vCenter;
+		_float3_TargetCenter = static_cast<COBB*>(pTargetCollider)->Get_Collider().Center;
 		_TargetCenter = XMLoadFloat3(&_float3_TargetCenter);
 		break;
 	case Engine::CCollider::TYPE_SPHERE:
-		_float3_TargetCenter = static_cast<CSphere*>(pTargetCollider)->Get_Colliderdesc().vCenter;
+		_float3_TargetCenter = static_cast<CSphere*>(pTargetCollider)->Get_Collider().Center;
 		_TargetCenter = XMLoadFloat3(&_float3_TargetCenter);
 		break;
 	}	
 
 	_float _Ratio = XMVectorGetX(XMVector3Dot(_TargetCenter - _Top, _Normal));
-	return  _Top + _Ratio * _Normal;
+	_float3 _vCenter;
+	XMStoreFloat3(&_vCenter, _Top + _Ratio * _Normal);
+	return BoundingSphere(_vCenter, m_ColliderDesc.vSize.x);
 }
 
 #ifdef _DEBUG

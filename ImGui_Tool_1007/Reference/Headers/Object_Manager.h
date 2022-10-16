@@ -17,6 +17,7 @@ private:
 public:
 	class CComponent* Get_ComponentPtr(_uint iLevelIndex, const _tchar* pLayerTag, const _tchar* pComponentTag, _uint iLayerIndex);
 
+
 public:
 	HRESULT Reserve_Container(_uint iNumLevels);
 	class CGameObject* Clone_GameObject(const _tchar* pPrototypeTag, void* pArg = nullptr);

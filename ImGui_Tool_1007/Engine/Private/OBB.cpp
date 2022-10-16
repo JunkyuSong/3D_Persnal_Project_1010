@@ -1,6 +1,7 @@
 #include "..\Public\OBB.h"
 #include "AABB.h"
 #include "Sphere.h"
+#include "Capsule.h"
 
 COBB::COBB(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CCollider(pDevice, pContext)
@@ -69,6 +70,16 @@ _bool COBB::Collision(CCollider * pTargetCollider)
 
 	case CCollider::TYPE_SPHERE:
 		m_isColl = m_pOBB->Intersects(((CSphere*)pTargetCollider)->Get_Collider());
+		break;
+	case CCollider::TYPE_CAPSULE:
+	{
+		BoundingSphere _Sphere;
+		//_Sphere = Get_Sphere(pTargetCollider, eType);
+		_Sphere = static_cast<CCapsule*>(pTargetCollider)->Get_Sphere(this, CCollider::TYPE_OBB);
+		m_isColl = m_pOBB->Intersects(_Sphere);
+	}
+		
+		
 		break;
 	}
 
