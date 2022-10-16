@@ -151,7 +151,12 @@ _bool CCapsule::CapsuleCollision(CCollider * pTargetCollider)
 	_float _fSphereDistance = fabs(XMVectorGetX(XMVector3Length(_vSphereDistance)));
 
 	if (_fSphereDistance < (m_ColliderDesc.vSize.x + pTarget->m_ColliderDesc.vSize.x) / 2.f)
+	{
+		XMStoreFloat3(&m_vDir, _vSphereDistance);
+		m_fDis = _fSphereDistance - (m_ColliderDesc.vSize.x + pTarget->m_ColliderDesc.vSize.x) / 2.f;
 		return true;
+	}
+		
 
 	return false;
 }

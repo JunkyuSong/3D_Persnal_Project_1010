@@ -800,6 +800,14 @@ _bool CMagician::Collision(_float fTimeDelta)
 {
 	CGameObject* _pTarget = nullptr;
 
+	if (_pTarget = m_pColliderCom[COLLIDERTYPE_PUSH]->Get_Target())
+	{
+		_vector _vDir =	XMLoadFloat3(&(static_cast<CCapsule*>(m_pColliderCom[COLLIDERTYPE_PUSH])->Get_Dir()));
+		_float	_vDis = (static_cast<CCapsule*>(m_pColliderCom[COLLIDERTYPE_PUSH])->Get_Dis());
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+		m_pTransformCom->Get_State(CTransform::STATE_POSITION) + XMVector3Normalize( _vDir) * _vDis);
+	}
+
 	if ((_pTarget = m_pColliderCom[COLLIDERTYPE_BODY]->Get_Target()) && (CPlayer::ParryL != *static_cast<CPlayer*>(_pTarget)->Get_AnimState()))
 	{
 		if (m_eCurState == Hurt_Long)

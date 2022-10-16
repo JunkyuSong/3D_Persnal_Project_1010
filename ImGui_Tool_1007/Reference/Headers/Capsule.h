@@ -26,6 +26,16 @@ public:
 	_bool	CapsuleCollision(CCollider* pTargetCollider);
 	BoundingSphere	Get_Sphere(CCollider* pTargetCollider, TYPE _eType);
 
+	void	Set_Dis(_float _fDis) {
+		m_fDis = _fDis;
+	}
+	void	Set_Dir(_float3 _vDir) {
+		m_vDir = _vDir;
+	}
+
+	_float	Get_Dis() { return m_fDis; }
+	_float3	Get_Dir() { return m_vDir; }
+
 #ifdef _DEBUG
 public:
 	virtual HRESULT Render();
@@ -39,6 +49,9 @@ private:
 	_float3					m_Bottom;
 
 	_float3					vOriginal_Center;
+
+	_float3					m_vDir;
+	_float					m_fDis;
 
 
 

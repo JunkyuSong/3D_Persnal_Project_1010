@@ -218,6 +218,10 @@ void CCollisionMgr::PlayerBody_vs_MonsterBody()
 				{
 					_Collider->Set_Target(_Body_Pair.first);
 					_Body_Pair.second->Set_Target(_WeaponPair.first);
+					CCapsule* _Second_Collider = static_cast<CCapsule*>(_Body_Pair.second);
+					_Second_Collider->Set_Dir(_Collider->Get_Dir());
+					_Second_Collider->Set_Dis(_Collider->Get_Dis());
+					
 					return;
 				}
 			}
