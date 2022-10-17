@@ -5,6 +5,8 @@
 #include "Camera_Free.h"
 #include "Camera_Player.h"
 
+#include "PipeLine.h"
+
 IMPLEMENT_SINGLETON(CCameraMgr)
 
 CCameraMgr::CCameraMgr()
@@ -54,6 +56,8 @@ void CCameraMgr::Tick(_float fTimedelta)
 	}
 	if (m_pCameras[m_eCameraType])
 		m_pCameras[m_eCameraType]->Tick(fTimedelta);
+
+	//CPipeLine::Get_Instance()->Update();
 }
 
 void CCameraMgr::Change_Camera(CAMERATYPE _eCameraType)

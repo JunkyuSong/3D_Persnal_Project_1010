@@ -54,7 +54,7 @@ HRESULT CMagician::Initialize(void * pArg)
 
 	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(5.f, 0.f, 5.f, 1.f));
-	m_bCollision[COLLIDERTYPE_PARRY] = true;
+	
 	m_eCurState = Walk_Disappear_F;
 	return S_OK;
 }
@@ -365,11 +365,12 @@ void CMagician::CheckEndAnim()
 
 void CMagician::CheckState(_float fTimeDelta)
 {
+	m_bCollision[COLLIDERTYPE_PARRY] = false;
 	switch (m_eCurState)
 	{
 	case Client::CMagician::Magician_Idle:
 	{
-		m_eMonsterState = ATTACK::ATTACK_IDLE;
+		m_bCollision[COLLIDERTYPE_PARRY] = true;
 		//콜라이더 넣음
 		On_Collider(COLLIDERTYPE_BODY, true);
 		//플레이어 쳐다봄 => 서서히 쳐다보도록!
@@ -381,7 +382,8 @@ void CMagician::CheckState(_float fTimeDelta)
 	}		
 		break;
 	case Client::CMagician::Magician_Idle2:
-		m_eMonsterState = ATTACK::ATTACK_IDLE;
+		m_bCollision[COLLIDERTYPE_PARRY] = true;
+		//m_eMonsterState = ATTACK::ATTACK_IDLE;
 		break;
 	case Client::CMagician::Hurt_Short:
 		break;
@@ -390,7 +392,6 @@ void CMagician::CheckState(_float fTimeDelta)
 	case Client::CMagician::Boss_Enter:
 		break;
 	case Client::CMagician::Cane_Att1:
-		//On_Collider(COLLIDERTYPE_BODY, false);
 		if (m_eMonsterState == CMonster::ATTACK_STUN)
 		{
 			if (m_pParts[PART_CANESWORD]->Trail_GetOn())
@@ -407,6 +408,7 @@ void CMagician::CheckState(_float fTimeDelta)
 		}
 		break;
 	case Client::CMagician::Cane_Att2:
+		m_bCollision[COLLIDERTYPE_PARRY] = false;
 		if (m_eMonsterState == CMonster::ATTACK_STUN)
 		{
 			if (m_pParts[PART_CANESWORD]->Trail_GetOn())
@@ -423,9 +425,10 @@ void CMagician::CheckState(_float fTimeDelta)
 		}
 		break;
 	case Client::CMagician::SP_Att1_Start:
-
+		m_bCollision[COLLIDERTYPE_PARRY] = false;
 		break;
 	case Client::CMagician::SP_Att1_Suc:
+		m_bCollision[COLLIDERTYPE_PARRY] = false;
 		break;
 	case Client::CMagician::SP_Att2_Start:
 		break;
@@ -451,13 +454,16 @@ void CMagician::CheckState(_float fTimeDelta)
 	case Client::CMagician::SP_Att2_Suc:
 		break;
 	case Client::CMagician::Appear_L:
+		m_bCollision[COLLIDERTYPE_PARRY] = true;
 		break;
 	case Client::CMagician::Appear_R:
+		m_bCollision[COLLIDERTYPE_PARRY] = true;
 		break;
 	case Client::CMagician::Appear_B:
+		m_bCollision[COLLIDERTYPE_PARRY] = true;
 		break;
 	case Client::CMagician::Appear_F:
-			
+		m_bCollision[COLLIDERTYPE_PARRY] = true;			
 		break;
 	case Client::CMagician::Cane_Att3:
 		break;
@@ -487,10 +493,13 @@ void CMagician::CheckState(_float fTimeDelta)
 		
 		break;
 	case Client::CMagician::Walk_B:
+		m_bCollision[COLLIDERTYPE_PARRY] = true;
 		break;
 	case Client::CMagician::Walk_Disappear_B:
+		m_bCollision[COLLIDERTYPE_PARRY] = true;
 		break;
 	case Client::CMagician::Walk_F:
+		m_bCollision[COLLIDERTYPE_PARRY] = true;
 		m_fAppear += 0.1f;
 		//만약 1 이상 되면 공격패턴으로 바뀜.
 		if (m_fAppear >= 1.0f)
@@ -501,6 +510,7 @@ void CMagician::CheckState(_float fTimeDelta)
 		}
 		break;
 	case Client::CMagician::Walk_Disappear_F:
+		m_bCollision[COLLIDERTYPE_PARRY] = true;
 		//여기서 0.1씩 줄여서 사라지게끔
 		m_fAppear -= 0.05f;
 		//0 이하면 (중간텀) 플레이어 주변에 나타나서 다시 증가
@@ -516,20 +526,28 @@ void CMagician::CheckState(_float fTimeDelta)
 		}
 		break;
 	case Client::CMagician::Walk_L:
+		m_bCollision[COLLIDERTYPE_PARRY] = true;
 		break;
 	case Client::CMagician::Walk_Disappear_L:
+		m_bCollision[COLLIDERTYPE_PARRY] = true;
 		break;
 	case Client::CMagician::Walk_R:
+		m_bCollision[COLLIDERTYPE_PARRY] = true;
 		break;
 	case Client::CMagician::Walk_Disappear_R:
+		m_bCollision[COLLIDERTYPE_PARRY] = true;
 		break;
 	case Client::CMagician::Magician_Parry01:
+		m_bCollision[COLLIDERTYPE_PARRY] = true;
 		break;
 	case Client::CMagician::Magician_ParryAttack01:
+		m_bCollision[COLLIDERTYPE_PARRY] = true;
 		break;
 	case Client::CMagician::Magician_ParryAttack02:
+		m_bCollision[COLLIDERTYPE_PARRY] = true;
 		break;
 	case Client::CMagician::Magician_ParryJump:
+		m_bCollision[COLLIDERTYPE_PARRY] = true;
 		break;
 	case Client::CMagician::Magician_Shoot1:
 		break;
@@ -540,6 +558,7 @@ void CMagician::CheckState(_float fTimeDelta)
 	case Client::CMagician::Magician_ShotJump:
 		break;
 	case Client::CMagician::Magician_Disappear:
+		m_bCollision[COLLIDERTYPE_PARRY] = true;
 		break;
 	case Client::CMagician::Magician_Stage2_Attakc01:
 		break;
@@ -605,6 +624,7 @@ void CMagician::CheckState(_float fTimeDelta)
 	case Client::CMagician::Magician_HurtSR:
 		break;
 	case Client::CMagician::Magician_DisppearIdle:
+		m_bCollision[COLLIDERTYPE_PARRY] = true;
 		break;
 	case Client::CMagician::Magician_JumpAppear:
 		break;
@@ -938,42 +958,35 @@ _bool CMagician::Collision(_float fTimeDelta)
 		m_pTransformCom->Get_State(CTransform::STATE_POSITION) + XMVector3Normalize( _vDir) * _vDis);
 	}
 
-	if (m_eMonsterState == ATTACK::ATTACK_IDLE)
-	{
-		AUTOINSTANCE(CGameInstance, _instance);
+	AUTOINSTANCE(CGameInstance, _instance);
 		
-		if (_pTarget = m_pColliderCom[COLLIDERTYPE_PARRY]->Get_Target())
+	if (_pTarget = m_pColliderCom[COLLIDERTYPE_PARRY]->Get_Target())
+	{
+		CPlayer* _pPlayer = static_cast<CPlayer*>(_pTarget);
+		if (_instance->Rand_Int(1, 10) > 0 && *(_pPlayer->Get_AnimState()) == CPlayer::STATE_ATT1)//임시 확률
 		{
-			if (_instance->Rand_Int(1, 10) > 2)
-			{
-				CPlayer* _pPlayer = static_cast<CPlayer*>(_pTarget);
-				//m_eCurState = Magician_Parry01;
-				m_eCurState = Magician_ParryAttack01;
-				_pPlayer->Set_AnimState(CPlayer::SD_HurtIdle);
-				_pPlayer->Cancle();
-				Look_Player();
-				return true;
-			}
+			m_eMonsterState = ATTACK_PARRY;
+			m_eCurState = Magician_ParryAttack01;
+			Look_Player();
 		}
 	}
+	
 
 	if ((_pTarget = m_pColliderCom[COLLIDERTYPE_BODY]->Get_Target()) && (CPlayer::ParryL != *static_cast<CPlayer*>(_pTarget)->Get_AnimState()))
 	{
-		//if (m_eMonsterState == ATTACK::ATTACK_IDLE)
-		//{
-		//	AUTOINSTANCE(CGameInstance, _instance);
-		//	CPlayer* _pPlayer = static_cast<CPlayer*>(_pTarget);
-		//	if (_instance->Rand_Int(1, 10) > 2)
-		//	{
-		//		//m_eCurState = Magician_Parry01;
-		//		m_eCurState = Magician_ParryAttack01;
-		//		_pPlayer->Set_AnimState(CPlayer::SD_HurtIdle);
-		//		_pPlayer->Cancle();
-		//		Look_Player();
-		//		return true;
-		//	}	
-		//}
-
+		CPlayer* _pPlayer = static_cast<CPlayer*>(_pTarget);
+		if (m_eMonsterState == ATTACK_PARRY)
+		{
+			
+			//m_eCurState = Magician_Parry01;
+			
+			_pPlayer->Set_AnimState(CPlayer::SD_HurtIdle);
+			_pPlayer->Cancle();
+			
+			m_eMonsterState = ATTACK_IDLE;
+			return true;
+		}
+		
 		if (m_eCurState == Hurt_Long)
 		{
 			m_eCurState = Hurt_Short;
