@@ -132,33 +132,11 @@ void CPlayer::Tick( _float fTimeDelta)
 
 	}
 
-	/*if (m_pTarget != nullptr)
-	{
-		_vector _vTargetPos = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
-		m_pTransformCom->LookAt_ForLandObject(_vTargetPos); 
-		
-
-	}*/
+	
 
 	Update_Weapon(fTimeDelta);
 
-	m_pColliderCom[COLLIDERTYPE_PUSH]->Update(m_pTransformCom->Get_WorldMatrix());
-	CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_PUSH, m_pColliderCom[COLLIDERTYPE_PUSH], this);
-	if (m_bCollision[COLLIDERTYPE_CLAW])
-	{
-		m_pColliderCom[COLLIDERTYPE_CLAW]->Update(m_pHands[HAND_RIGHT]->Get_CombinedTransformation()*XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())*m_pTransformCom->Get_WorldMatrix());
-		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_WEAPON, m_pColliderCom[COLLIDERTYPE_CLAW], this);
-	}
-	if (m_bCollision[COLLIDERTYPE_BODY])
-	{
-		m_pColliderCom[COLLIDERTYPE_BODY]->Update(m_pTransformCom->Get_WorldMatrix());
-		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
-	}
-	if (m_bCollision[COLLIDERTYPE_PARRY])
-	{
-		m_pColliderCom[COLLIDERTYPE_PARRY]->Update(m_pTransformCom->Get_WorldMatrix());
-		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_PARRY, m_pColliderCom[COLLIDERTYPE_PARRY], this);
-	}
+	Update_Collider();
 
 	
 	
@@ -439,21 +417,7 @@ void CPlayer::KeyInput_Idle( _float fTimeDelta)
 	}
 	if (CGameInstance::Get_Instance()->MouseDown(DIMK_WHEEL))
 	{
-		list<CGameObject*> Monsters = *m_MonsterLayer->Get_ListFromLayer();
-		for (auto iter : Monsters)
-		{
-			//일정 범위 안에 있어야 한다, 일단은 보스몹 하나니까 
-			if (m_pTarget == nullptr)
-			{
-				m_pTarget = (CMonster*)iter;
-				break;
-			}
-			else
-			{
-				m_pTarget = nullptr;
-				break;
-			}
-		}
+		Targeting();
 	}
 }
 
@@ -686,6 +650,43 @@ void CPlayer::KP_ClawNear(_float fTimeDelta)
 	if (CGameInstance::Get_Instance()->KeyDown(DIK_SPACE))
 	{
 		m_eCurState = STATE_AVOIDATTACK;
+	}
+}
+
+void CPlayer::Targeting()
+{
+	/*if (m_pTarget != nullptr)
+	{
+	_vector _vTargetPos = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
+	m_pTransformCom->LookAt_ForLandObject(_vTargetPos);
+	}*/
+	if (m_pTarget == nullptr)
+	{
+		list<CGameObject*> Monsters = *m_MonsterLayer->Get_ListFromLayer();
+
+		_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+		_float _fClosedDis(15.f);
+		for (auto iter : Monsters)
+		{
+			_float _fDis = fabs(XMVectorGetX(XMVector3Length(static_cast<CTransform*>(iter->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION)
+				- _vPos)));
+			if (_fDis < 15.f)
+			{
+				if (_fClosedDis > _fDis)
+				{
+					m_pTarget = iter;
+					_fClosedDis = _fDis;
+				}
+			}
+		}
+		if (m_pTarget != nullptr)
+		{
+			Safe_AddRef(m_pTarget);
+		}
+	}
+	else
+	{
+		Safe_Release(m_pTarget);
 	}
 }
 
@@ -1260,6 +1261,27 @@ void CPlayer::Cancle()
 		_pParts->Set_CollisionOn(false);
 	}
 
+}
+
+void CPlayer::Update_Collider()
+{
+	m_pColliderCom[COLLIDERTYPE_PUSH]->Update(m_pTransformCom->Get_WorldMatrix());
+	CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_PUSH, m_pColliderCom[COLLIDERTYPE_PUSH], this);
+	if (m_bCollision[COLLIDERTYPE_CLAW])
+	{
+		m_pColliderCom[COLLIDERTYPE_CLAW]->Update(m_pHands[HAND_RIGHT]->Get_CombinedTransformation()*XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())*m_pTransformCom->Get_WorldMatrix());
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_WEAPON, m_pColliderCom[COLLIDERTYPE_CLAW], this);
+	}
+	if (m_bCollision[COLLIDERTYPE_BODY])
+	{
+		m_pColliderCom[COLLIDERTYPE_BODY]->Update(m_pTransformCom->Get_WorldMatrix());
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
+	}
+	if (m_bCollision[COLLIDERTYPE_PARRY])
+	{
+		m_pColliderCom[COLLIDERTYPE_PARRY]->Update(m_pTransformCom->Get_WorldMatrix());
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_PARRY, m_pColliderCom[COLLIDERTYPE_PARRY], this);
+	}
 }
 
 _bool CPlayer::Collision(_float fTimeDelta)

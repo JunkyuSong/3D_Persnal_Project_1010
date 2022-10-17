@@ -113,6 +113,7 @@ private:
 public:
 	void	Cancle();
 private:
+	void	Update_Collider();
 	_bool	Collision(_float fTimeDelta);
 
 private:
@@ -168,7 +169,7 @@ private:
 	_float					m_MaxMotionTrail = 0.07f;
 	_float					m_CurMotionTrail = 0.f;
 
-	class CMonster*			m_pTarget = nullptr;
+	CGameObject*			m_pTarget = nullptr;
 	CLayer*					m_MonsterLayer = nullptr;
 
 	
@@ -215,6 +216,9 @@ private:
 	void KP_Parry(_float fTimeDelta);
 	void KP_AVOIDATTACK(_float fTimeDelta);
 	void KP_ClawNear(_float fTimeDelta);
+
+private:
+	void Targeting();
 
 };
 
