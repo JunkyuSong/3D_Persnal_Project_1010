@@ -150,6 +150,8 @@ private:
 
 	void	Update_Collider();
 
+	HRESULT Shoot();
+
 public:
 	static CMagician* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CMonster* Clone(void* pArg);

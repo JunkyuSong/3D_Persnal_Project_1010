@@ -20,6 +20,8 @@ CMagician::CMagician(const CMagician & rhs)
 	, m_pSockets(rhs.m_pSockets)
 	, m_pParts(rhs.m_pParts)
 {
+	/*if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Weapon_Card"), LEVEL_GAMEPLAY, pLayerTag)))
+		return E_FAIL;*/
 }
 
 HRESULT CMagician::Initialize_Prototype()
@@ -1370,4 +1372,13 @@ void CMagician::Update_Collider()
 		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_WEAPON, m_pColliderCom[COLLIDERTYPE_FOOT_L], this);
 	}
 		
+}
+
+HRESULT CMagician::Shoot()
+{
+	AUTOINSTANCE(CGameInstance, pGameInstance);
+	//pos값 넣어주는데 z랑 y를 좀 올려서...
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Weapon_Card"), LEVEL_GAMEPLAY, TEXT("Layer_Bullet"), m_pTransformCom)))
+		return E_FAIL;
+	return S_OK;
 }

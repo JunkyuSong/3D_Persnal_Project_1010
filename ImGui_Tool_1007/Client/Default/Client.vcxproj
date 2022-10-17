@@ -185,6 +185,7 @@
     <ClInclude Include="..\public\Cam_Tool.h" />
     <ClInclude Include="..\Public\Cane.h" />
     <ClInclude Include="..\Public\Cane_Sword.h" />
+    <ClInclude Include="..\Public\Card.h" />
     <ClInclude Include="..\public\Client_Camere.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\Public\Dagger.h" />
@@ -238,6 +239,7 @@
     <ClCompile Include="..\private\Cam_Tool.cpp" />
     <ClCompile Include="..\Private\Cane.cpp" />
     <ClCompile Include="..\Private\Cane_Sword.cpp" />
+    <ClCompile Include="..\Private\Card.cpp" />
     <ClCompile Include="..\private\Client_Camere.cpp" />
     <ClCompile Include="..\Private\Dagger.cpp" />
     <ClCompile Include="..\private\Dummy.cpp" />

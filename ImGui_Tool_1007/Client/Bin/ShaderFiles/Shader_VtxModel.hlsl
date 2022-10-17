@@ -187,6 +187,22 @@ PS_OUT PS_MAIN_ADD(PS_IN In)
 	return Out;
 }
 
+PS_OUT PS_MAIN4(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	Out.vColor = (vector)1.f;
+
+	Out.vColor.r = 1.f;
+	Out.vColor.g = 1.f;
+	Out.vColor.b = 0.f;
+
+	
+	if (0 == Out.vColor.a)
+		discard;
+	return Out;
+}
+
 technique11 DefaultTechnique
 {
 
@@ -233,5 +249,15 @@ technique11 DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN_2();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_3();
+	}
+
+	pass MagicianCard
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		VertexShader = compile vs_5_0 VS_MAIN_2();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN4();
 	}
 }

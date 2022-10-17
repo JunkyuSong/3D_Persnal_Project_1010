@@ -327,6 +327,9 @@
     <ClInclude Include="..\Public\Status.h">
       <Filter>03. Component\01. Status</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Card.h">
+      <Filter>02.GameObjects\04. Weapon\01. Magician\02. Card</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -472,6 +475,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Status.cpp">
       <Filter>03. Component\01. Status</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Card.cpp">
+      <Filter>02.GameObjects\04. Weapon\01. Magician\02. Card</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
