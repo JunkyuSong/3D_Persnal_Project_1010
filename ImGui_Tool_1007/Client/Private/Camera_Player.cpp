@@ -22,7 +22,7 @@ HRESULT CCamera_Player::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
-	XMStoreFloat3(&m_vDis, XMVectorSet(0.f, 0.f, -7.f, 1.f));
+	XMStoreFloat3(&m_vDis, XMVectorSet(0.f, 0.f, -5.f, 1.f));
 	return S_OK;
 }
 
@@ -93,7 +93,7 @@ void CCamera_Player::Tick(_float fTimeDelta)
 			_vCamPos + (_vDir*0.025f));
 		XMStoreFloat4(&(m_CameraDesc.vAt), _vCamPos + (_vDir*0.025f));
 	}
-	
+	m_CameraDesc.vAt.y = 1.5f;
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&(m_CameraDesc.vAt)));
 	
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, (XMVector3TransformCoord(XMLoadFloat3(&m_vDis), m_pTransformCom->Get_WorldMatrix())));

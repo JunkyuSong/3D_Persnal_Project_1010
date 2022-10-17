@@ -59,7 +59,7 @@ private:
 	CAnimModel*				m_pModelCom = nullptr;
 
 	STATE					m_eReserveState = STATE_END;
-	STATE					m_eCurState = STATE_IDLE;
+	STATE					m_eCurState = STATE_ATT1;
 	STATE					m_ePreState = STATE_END;
 
 	_float4					m_AnimPos;

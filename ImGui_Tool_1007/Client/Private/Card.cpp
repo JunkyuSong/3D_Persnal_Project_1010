@@ -23,20 +23,24 @@ HRESULT CCard::Initialize_Prototype()
 HRESULT CCard::Initialize(void * pArg)
 {
 	if (FAILED(Ready_Components()))
-		return E_FAIL;	
+		return E_FAIL;
 	
 	m_pTransformCom->Set_WorldFloat4x4(
 		static_cast<CTransform*>(pArg)->Get_WorldFloat4x4()
 	);
 
 	m_pTransformCom->Set_Scale(XMVectorSet(0.01f, 0.01f, 0.01f, 1.f));
-	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), XMConvertToRadians(-90.0f));
+	m_pTransformCom->Turn_Angle(m_pTransformCom->Get_State(CTransform::STATE_RIGHT), XMConvertToRadians(90.0f));
 	
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-		m_pTransformCom->Get_State(CTransform::STATE_POSITION) + XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK))
-	);
-
-	//손에서 나가게 하는 방법이 있었네 근데 그럼 y값이 다를수도 있어서 안되겠다리ㅏㄴ멀민
+	_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION) 
+		+ XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK))
+		+ XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_UP))
+			+ (XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT)) *(-0.1f));
+	
+	_vPos.m128_f32[1] = 1.5f;
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
+	XMStoreFloat3(&m_vOriginPos, _vPos);
+	
 	return S_OK;
 }
 
@@ -44,10 +48,16 @@ void CCard::Tick(_float fTimeDelta)
 {
 	//m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix());
 
-	
+	m_pTransformCom->Go_Up(fTimeDelta*5.f);
 	m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix());
-
+	//CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_WEAPON, m_pColliderCom, this);
 	//일정 거리 이상 가면 ㅃㅇ
+	
+	
+	if (5.f < fabs(XMVectorGetX(XMVector3Length(XMLoadFloat3(&m_vOriginPos) - m_pTransformCom->Get_State(CTransform::STATE_POSITION)))))
+	{
+		
+	}
 }
 
 void CCard::Tick(_float fTimeDelta, CGameObject * _pUser)

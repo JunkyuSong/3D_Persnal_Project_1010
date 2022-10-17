@@ -19,7 +19,7 @@ BEGIN(Client)
 class CMagician final : public CMonster
 {
 public:
-	enum MAGICIANCOLLIDER { COLLIDERTYPE_BODY, COLLIDERTYPE_FOOT_R, COLLIDERTYPE_FOOT_L, COLLIDERTYPE_PUSH, COLLIDERTYPE_PARRY, COLLILDERTYPE_END };
+	enum MAGICIANCOLLIDER { COLLIDERTYPE_BODY, COLLIDERTYPE_FOOT_R, COLLIDERTYPE_FOOT_L, COLLIDERTYPE_PUSH, COLLIDERTYPE_PARRY, COLLIDERTYPE_CARD, COLLILDERTYPE_END };
 	enum STATE {
 		Magician_Idle, Magician_Idle2,
 		Hurt_Short, Hurt_Long,
@@ -66,7 +66,7 @@ public:
 		Magician_DisppearIdle,
 		Magician_JumpAppear,
 		Magician_Sprinkle,
-
+		Magician_ParrySword,
 		STATE_END
 	};
 private:

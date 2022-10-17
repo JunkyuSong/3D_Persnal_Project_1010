@@ -57,7 +57,7 @@ HRESULT CMagician::Initialize(void * pArg)
 	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(5.f, 0.f, 5.f, 1.f));
 	
-	m_eCurState = Walk_Disappear_F;
+	m_eCurState = Magician_StunStart_Sword;
 	return S_OK;
 }
 
@@ -74,11 +74,11 @@ void CMagician::Tick( _float fTimeDelta)
 	}
 	else if (_Instance->KeyDown(DIK_NUMPAD3))
 	{
-		m_eCurState = Magician_ParryAttack01;
+		m_eCurState = Cane_Att3;
 	}
 	else if (_Instance->KeyDown(DIK_NUMPAD4))
 	{
-		m_eCurState = Magician_ParryJump;
+		m_eCurState = Magician_Stage2_Attakc01;
 	}
 	
 	if (m_pModelCom != nullptr)
@@ -95,6 +95,7 @@ void CMagician::Tick( _float fTimeDelta)
 			pPart->Tick(fTimeDelta, this);
 	}
 	Update_Collider();
+	
 }
 
 void CMagician::LateTick( _float fTimeDelta)
@@ -269,9 +270,11 @@ void CMagician::CheckEndAnim()
 		m_eCurState = Magician_Idle;
 		break;
 	case Client::CMagician::Magician_Shoot1:
+		m_bCollision[COLLIDERTYPE_CARD] = false;
 		m_eCurState = Magician_Idle;
 		break;
 	case Client::CMagician::Magician_Shoot2:
+		m_bCollision[COLLIDERTYPE_CARD] = false;
 		m_eCurState = Magician_Idle;
 		break;
 	case Client::CMagician::Magician_Shoot2_Slow:
@@ -357,6 +360,9 @@ void CMagician::CheckEndAnim()
 		m_eCurState = Magician_Idle;
 		break;
 	case Client::CMagician::Magician_Sprinkle:
+		m_eCurState = Magician_Idle;
+		break;
+	case Client::CMagician::Magician_ParrySword:
 		m_eCurState = Magician_Idle;
 		break;
 	}
@@ -632,6 +638,8 @@ void CMagician::CheckState(_float fTimeDelta)
 		break;
 	case Client::CMagician::Magician_Sprinkle:
 		break;
+	case Client::CMagician::Magician_ParrySword:
+		break;
 	}
 
 	Get_AnimMat();
@@ -822,8 +830,24 @@ void CMagician::CheckLimit()
 	case Client::CMagician::Magician_ParryJump:
 		break;
 	case Client::CMagician::Magician_Shoot1:
+		if (m_vecLimitTime[Magician_Shoot1][0] < m_fPlayTime)
+		{
+			if (m_bCollision[COLLIDERTYPE_CARD] == false)
+			{
+				Shoot();
+				m_bCollision[COLLIDERTYPE_CARD] = true;
+			}
+		}
 		break;
 	case Client::CMagician::Magician_Shoot2:
+		if (m_vecLimitTime[Magician_Shoot2][0] < m_fPlayTime)
+		{
+			if (m_bCollision[COLLIDERTYPE_CARD] == false)
+			{
+				Shoot();
+				m_bCollision[COLLIDERTYPE_CARD] = true;
+			}
+		}
 		break;
 	case Client::CMagician::Magician_Shoot2_Slow:
 		break;
@@ -903,6 +927,8 @@ void CMagician::CheckLimit()
 		break;
 	case Client::CMagician::Magician_Sprinkle:
 		break;
+	case Client::CMagician::Magician_ParrySword:
+		break;
 	}
 }
 
@@ -913,6 +939,7 @@ void CMagician::Set_Anim(STATE _eState)
 	m_PreAnimPos = m_AnimPos;
 	m_eMonsterState = CMonster::ATTACK_IDLE;
 	m_pModelCom->Set_AnimationIndex(m_eCurState);
+	m_fPlayTime = 0.f;
 }
 
 void CMagician::CheckAnim()
@@ -1203,6 +1230,10 @@ void CMagician::Ready_LimitTime()
 	
 	m_vecLimitTime[Magician_ParryAttack01].push_back(150.f);
 	m_vecLimitTime[Magician_ParryAttack01].push_back(250.f);
+
+	m_vecLimitTime[Magician_Shoot1].push_back(45.f);
+
+	m_vecLimitTime[Magician_Shoot2].push_back(20.f);
 	
 }
 

@@ -301,7 +301,8 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Monster/", "magician2.dat", PivotMatrix))))
 		return E_FAIL;
 
-	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Magician"),
 		CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Monster/", "magician1_All.dat", PivotMatrix))))
 		return E_FAIL;
