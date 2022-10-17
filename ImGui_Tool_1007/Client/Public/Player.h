@@ -110,6 +110,8 @@ private:
 
 	void	Get_AnimMat();
 
+public:
+	void	Cancle();
 private:
 	_bool	Collision(_float fTimeDelta);
 

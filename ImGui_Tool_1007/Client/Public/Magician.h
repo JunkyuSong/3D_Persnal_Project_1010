@@ -19,7 +19,7 @@ BEGIN(Client)
 class CMagician final : public CMonster
 {
 public:
-	enum MAGICIANCOLLIDER { COLLIDERTYPE_BODY, COLLIDERTYPE_FOOT_R, COLLIDERTYPE_FOOT_L, COLLIDERTYPE_PUSH, COLLILDERTYPE_END };
+	enum MAGICIANCOLLIDER { COLLIDERTYPE_BODY, COLLIDERTYPE_FOOT_R, COLLIDERTYPE_FOOT_L, COLLIDERTYPE_PUSH, COLLIDERTYPE_PARRY, COLLILDERTYPE_END };
 	enum STATE {
 		Magician_Idle, Magician_Idle2,
 		Hurt_Short, Hurt_Long,
@@ -92,6 +92,7 @@ public:
 	void		Set_AnimReserveState(STATE	_eState) { m_eReserveState = _eState; }
 	STATE*		Get_AnimState() { return &m_eCurState; }
 	STATE*		Get_AnimReserveState() { return &m_eReserveState; }
+	_float*		Get_Alpha() { return &m_fAppear; }
 
 private:
 	void CheckEndAnim();
@@ -110,7 +111,10 @@ private:
 
 	void On_Collider(MAGICIANCOLLIDER _eCollider, _bool _bCollision);
 
-	_float	m_fAppear = 0.f;
+	void Look_Move_Player(_float _fPosX, _float _fPosZ);
+	void Look_Player();
+
+	_float	m_fAppear = 1.f;
 
 private:
 	STATE					m_eReserveState = STATE_END;

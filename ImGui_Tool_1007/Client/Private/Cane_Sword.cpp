@@ -2,7 +2,7 @@
 #include "..\Public\Cane_Sword.h"
 #include "GameInstance.h"
 
-
+#include "Magician.h"
 #include "Trail.h"
 
 CCane_Sword::CCane_Sword(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -28,7 +28,7 @@ HRESULT CCane_Sword::Initialize(void * pArg)
 	m_pTransformCom->Set_Scale(XMVectorSet(0.01f, 0.01f, 0.01f, 1.f));
 	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), XMConvertToRadians(-90.0f));
 
-
+	m_fParentAlpha = static_cast<CMagician*>(pArg)->Get_Alpha();
 	
 	return S_OK;
 }
@@ -80,6 +80,9 @@ HRESULT CCane_Sword::Render()
 	if (FAILED(m_pShaderCom->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
+	if (FAILED(m_pShaderCom->Set_RawValue("g_fAlpha", m_fParentAlpha, sizeof(_float))))
+		return E_FAIL;
+
 	RELEASE_INSTANCE(CGameInstance);
 	_uint		iNumMeshes = m_pModelCom->Get_NumMesh();
 
@@ -90,7 +93,7 @@ HRESULT CCane_Sword::Render()
 		/*if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
 		return E_FAIL;*/
 
-		if (FAILED(m_pShaderCom->Begin(0)))
+		if (FAILED(m_pShaderCom->Begin(3)))
 			return E_FAIL;
 
 		if (FAILED(m_pModelCom->Render(i)))

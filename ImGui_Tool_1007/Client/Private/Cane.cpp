@@ -2,6 +2,7 @@
 #include "..\Public\Cane.h"
 #include "GameInstance.h"
 
+#include "Magician.h"
 
 #include "Trail.h"
 
@@ -28,13 +29,14 @@ HRESULT CCane::Initialize(void * pArg)
 	m_pTransformCom->Set_Scale(XMVectorSet(0.01f, 0.01f, 0.01f, 1.f));
 	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), XMConvertToRadians(-90.0f));
 
+	m_fParentAlpha = static_cast<CMagician*>(pArg)->Get_Alpha();
 
 	return S_OK;
 }
 
 void CCane::Tick(_float fTimeDelta)
 {
-	//m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+	m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 
 	if (m_bColliderOn)
 		m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
@@ -42,7 +44,7 @@ void CCane::Tick(_float fTimeDelta)
 
 void CCane::Tick(_float fTimeDelta, CGameObject * _pUser)
 {
-	//m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
+	m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix());
 
 	if (m_bColliderOn)
 	{
@@ -78,6 +80,9 @@ HRESULT CCane::Render()
 	if (FAILED(m_pShaderCom->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
+	if (FAILED(m_pShaderCom->Set_RawValue("g_fAlpha", m_fParentAlpha, sizeof(_float))))
+		return E_FAIL;
+
 	RELEASE_INSTANCE(CGameInstance);
 	_uint		iNumMeshes = m_pModelCom->Get_NumMesh();
 
@@ -88,13 +93,13 @@ HRESULT CCane::Render()
 		/*if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
 		return E_FAIL;*/
 
-		if (FAILED(m_pShaderCom->Begin(0)))
+		if (FAILED(m_pShaderCom->Begin(3)))
 			return E_FAIL;
 
 		if (FAILED(m_pModelCom->Render(i)))
 			return E_FAIL;
 	}
-	//m_pTrailCom->Render();
+	m_pTrailCom->Render();
 #ifdef _DEBUG
 	if (nullptr != m_pColliderCom && m_bColliderOn)
 		m_pColliderCom->Render();
@@ -137,8 +142,8 @@ HRESULT CCane::Ready_Components()
 	/* For.Com_Trail */
 	CTrail::TRAILINFO _tInfo;
 	_tInfo._Color = _float4(0.f, 1.f, 0.f, 1.f);
-	_tInfo._HighAndLow.vHigh = _float3(100.0f, 0.f, 0.f);
-	_tInfo._HighAndLow.vLow = _float3(-5.f, 0.f, 0.f);
+	_tInfo._HighAndLow.vHigh = _float3(-90.0f, 0.f, 0.f);
+	_tInfo._HighAndLow.vLow = _float3(20.f, 0.f, 0.f);
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Trail"), TEXT("Com_Trail"), (CComponent**)&m_pTrailCom, &_tInfo)))
 	{
 		MSG_BOX(TEXT("fail to trail in saber"));

@@ -729,15 +729,18 @@ void CPlayer::CheckEndAnim()
 	case Client::CPlayer::STATE_IDLE:
 		break;
 	case Client::CPlayer::STATE_AVOIDATTACK:
+		m_bCollision[COLLIDERTYPE_BODY] = true;
 		m_eCurState = STATE_IDLE;
 		break;
 	case Client::CPlayer::STATE_JUMPAVOID:
 		m_eCurState = STATE_IDLE;
 		break;
 	case Client::CPlayer::STATE_AVOIDBACK:
+		m_bCollision[COLLIDERTYPE_BODY] = true;
 		m_eCurState = STATE_IDLE;
 		break;
 	case Client::CPlayer::Corvus_PW_Axe:
+		m_bCollision[COLLIDERTYPE_BODY] = true;
 		m_eCurState = STATE_IDLE;
 		m_bMotionPlay = false;
 		break;
@@ -1009,9 +1012,23 @@ void CPlayer::CheckLimit()
 		if (m_fPlayTime > 5.f)
 		{
 			m_bCollision[COLLIDERTYPE_BODY] = true;
+			//m_eWeapon = WEAPON_BASE;
+		}
+		else if (m_fPlayTime > 0.f)
+		{
+			//m_eWeapon = WEAPON_NONE;
 		}
 		break;
 	case Client::CPlayer::SD_StrongHurt_Start:
+		if (m_fPlayTime > 5.f)
+		{
+			m_bCollision[COLLIDERTYPE_BODY] = true;
+			//m_eWeapon = WEAPON_BASE;
+		}
+		else if (m_fPlayTime > 0.f)
+		{
+			//m_eWeapon = WEAPON_NONE;
+		}
 		break;
 	case Client::CPlayer::SD_StrongHurt_End:
 		break;
@@ -1112,6 +1129,7 @@ void CPlayer::AfterAnim()
 	case Client::CPlayer::STATE_AVOIDATTACK:
 		if (m_pBaseParts[BASE_SABER]->Trail_GetOn())
 			m_pBaseParts[BASE_SABER]->TrailOff();
+		m_bCollision[COLLIDERTYPE_BODY] = false;
 		break;
 	case Client::CPlayer::STATE_JUMPAVOID:
 		m_bMotionPlay = true;
@@ -1120,6 +1138,7 @@ void CPlayer::AfterAnim()
 		m_bMotionPlay = true;
 		if (m_pBaseParts[BASE_SABER]->Trail_GetOn())
 			m_pBaseParts[BASE_SABER]->TrailOff();
+		m_bCollision[COLLIDERTYPE_BODY] = false;
 		break;
 	case Client::CPlayer::Corvus_PW_Axe:
 		break;
@@ -1225,6 +1244,24 @@ void CPlayer::Get_AnimMat()
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
 }
 
+void CPlayer::Cancle()
+{
+	//무기들 전부 끄고, 근데 스킬 중엔 충돌 자체가 없을거고, 패링이 없을텐데...
+
+	m_bCollision[COLLIDERTYPE_BODY] = true;
+	m_bCollision[COLLIDERTYPE_CLAW] = false;
+	m_bCollision[COLLIDERTYPE_PARRY] = false;
+
+	for (auto& _pParts : m_pBaseParts)
+	{
+		if (_pParts->Trail_GetOn())
+			_pParts->TrailOff();
+		
+		_pParts->Set_CollisionOn(false);
+	}
+
+}
+
 _bool CPlayer::Collision(_float fTimeDelta)
 {
 	CGameObject* _pTarget = //static_cast<CCollider*>(m_pBaseParts[BASE_DAGGER]->Get_ComponentPtr(TEXT("Com_OBB")))->Get_Target();
@@ -1259,6 +1296,10 @@ _bool CPlayer::Collision(_float fTimeDelta)
 				
 				_Part->Set_CollisionOn(false);
 			}
+			m_pTransformCom->LookAt_ForLandObject(
+				static_cast<CTransform*>(_pTarget->Get_ComponentPtr(TEXT("Com_Transform")))
+				->Get_State(CTransform::STATE_POSITION));
+
 			m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack());
 			m_bCollision[COLLIDERTYPE_BODY] = false;
 			return true;
