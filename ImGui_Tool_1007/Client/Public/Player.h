@@ -221,6 +221,7 @@ private:
 
 private:
 	void Targeting();
+	void TargetCheck();
 
 };
 

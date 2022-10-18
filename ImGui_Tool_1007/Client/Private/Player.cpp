@@ -133,7 +133,10 @@ void CPlayer::Tick( _float fTimeDelta)
 
 	}
 
-	
+	if (m_pTarget)
+	{
+		TargetCheck();
+	}
 
 	Update_Weapon(fTimeDelta);
 
@@ -245,7 +248,6 @@ void CPlayer::KeySetting()
 	KeyInput[STATE_ATT5] = &CPlayer::KP_ATT;
 	KeyInput[STATE_IDLE] = &CPlayer::KeyInput_Idle;
 	KeyInput[STATE_RUN_F] = &CPlayer::KeyInput_Idle;
-	
 }
 
 void CPlayer::KeyInputMain( _float fTimeDelta)
@@ -297,7 +299,7 @@ void CPlayer::KeyInputMain( _float fTimeDelta)
 		
 		break;
 	case Client::CPlayer::STATE_AVOIDBACK:
-		
+		KP_AVOIDATTACK(fTimeDelta);
 		break;
 	case Client::CPlayer::Corvus_PW_Axe:
 		break;
@@ -355,6 +357,7 @@ void CPlayer::KeyInputMain( _float fTimeDelta)
 	case Client::CPlayer::SD_ParryToMob:
 		break;
 	case Client::CPlayer::SD_HurtIdle:
+		KP_AVOIDATTACK(fTimeDelta);
 		break;
 	case Client::CPlayer::SD_StrongHurt_Start:
 		break;
@@ -775,7 +778,17 @@ void CPlayer::KP_Parry(_float fTimeDelta)
 
 void CPlayer::KP_AVOIDATTACK(_float fTimeDelta)
 {
-
+	if (5.f < m_fPlayTime)
+	{
+		if (CGameInstance::Get_Instance()->KeyDown(DIK_SPACE))
+		{
+			m_eCurState = STATE_AVOIDATTACK;
+			if (CGameInstance::Get_Instance()->KeyPressing(DIK_S))
+			{
+				m_eCurState = STATE_AVOIDBACK;
+			}
+		}
+	}	
 }
 
 void CPlayer::KP_ClawNear(_float fTimeDelta)
@@ -824,6 +837,15 @@ void CPlayer::Targeting()
 		static_cast<CCamera_Player*>(CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER))->Get_Target(nullptr);
 	}
 	
+}
+
+void CPlayer::TargetCheck()
+{
+	if (static_cast<CMonster*>(m_pTarget)->Get_MonsterState() == CMonster::ATTACK_DISAPPEAR)
+	{
+		Safe_Release(m_pTarget);
+		static_cast<CCamera_Player*>(CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER))->Get_Target(nullptr);
+	}
 }
 
 void CPlayer::CheckEndAnim()

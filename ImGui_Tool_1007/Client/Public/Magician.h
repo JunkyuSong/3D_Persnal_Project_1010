@@ -152,6 +152,11 @@ private:
 
 	HRESULT Shoot();
 
+private:
+	_float	m_fStay = 0.f;
+	void Pattern(_float fTimeDelta);
+	void Pattern_Appear();
+
 public:
 	static CMagician* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CMonster* Clone(void* pArg);

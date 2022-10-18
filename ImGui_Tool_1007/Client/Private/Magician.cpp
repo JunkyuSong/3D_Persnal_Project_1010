@@ -20,8 +20,6 @@ CMagician::CMagician(const CMagician & rhs)
 	, m_pSockets(rhs.m_pSockets)
 	, m_pParts(rhs.m_pParts)
 {
-	/*if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Weapon_Card"), LEVEL_GAMEPLAY, pLayerTag)))
-		return E_FAIL;*/
 }
 
 HRESULT CMagician::Initialize_Prototype()
@@ -94,8 +92,11 @@ void CMagician::Tick( _float fTimeDelta)
 		if (pPart != nullptr)
 			pPart->Tick(fTimeDelta, this);
 	}
+	if (m_fAppear < 1.f)
+	{
+		m_bCollision[COLLIDERTYPE_BODY] = false;
+	}
 	Update_Collider();
-	
 }
 
 void CMagician::LateTick( _float fTimeDelta)
@@ -387,6 +388,7 @@ void CMagician::CheckState(_float fTimeDelta)
 		m_pTransformCom->Turn(m_pTransformCom->Get_State(CTransform::STATE_LOOK), 
 			_vPlayerPos->Get_State(CTransform::STATE_POSITION) - m_pTransformCom->Get_State(CTransform::STATE_POSITION)
 			, 0.9f);
+		Pattern(fTimeDelta);
 	}		
 		break;
 	case Client::CMagician::Magician_Idle2:
@@ -394,8 +396,22 @@ void CMagician::CheckState(_float fTimeDelta)
 		//m_eMonsterState = ATTACK::ATTACK_IDLE;
 		break;
 	case Client::CMagician::Hurt_Short:
+		if (m_pParts[PART_CANESWORD]->Trail_GetOn())
+			m_pParts[PART_CANESWORD]->TrailOff();
+		m_pParts[PART_CANESWORD]->Set_CollisionOn(false);
+
+		if (m_pParts[PART_CANE]->Trail_GetOn())
+			m_pParts[PART_CANE]->TrailOff();
+		m_pParts[PART_CANE]->Set_CollisionOn(false);
 		break;
 	case Client::CMagician::Hurt_Long:
+		if (m_pParts[PART_CANESWORD]->Trail_GetOn())
+			m_pParts[PART_CANESWORD]->TrailOff();
+		m_pParts[PART_CANESWORD]->Set_CollisionOn(false);
+
+		if (m_pParts[PART_CANE]->Trail_GetOn())
+			m_pParts[PART_CANE]->TrailOff();
+		m_pParts[PART_CANE]->Set_CollisionOn(false);
 		break;
 	case Client::CMagician::Boss_Enter:
 		break;
@@ -508,17 +524,19 @@ void CMagician::CheckState(_float fTimeDelta)
 		break;
 	case Client::CMagician::Walk_F:
 		m_bCollision[COLLIDERTYPE_PARRY] = true;
-		m_fAppear += 0.1f;
+		m_fAppear += 0.2f;
 		//만약 1 이상 되면 공격패턴으로 바뀜.
 		if (m_fAppear >= 1.0f)
 		{
 			m_fAppear = 1.f;
 			m_eCurState = Kick_Combo;
 			//랜덤매니져---- 공격패턴
+			m_eMonsterState = ATTACK_IDLE;
 		}
 		break;
 	case Client::CMagician::Walk_Disappear_F:
 		m_bCollision[COLLIDERTYPE_PARRY] = true;
+		m_eMonsterState = ATTACK_DISAPPEAR;
 		//여기서 0.1씩 줄여서 사라지게끔
 		m_fAppear -= 0.05f;
 		//0 이하면 (중간텀) 플레이어 주변에 나타나서 다시 증가
@@ -708,7 +726,14 @@ void CMagician::CheckLimit()
 			}
 		break;
 	case Client::CMagician::SP_Att1_Start:
-		if (m_vecLimitTime[SP_Att1_Start][0] < m_fPlayTime)
+		if (m_vecLimitTime[SP_Att1_Start][1] < m_fPlayTime)
+		{
+			m_pParts[PART_CANE]->Set_CollisionOn(false);
+			On_Collider(COLLIDERTYPE_BODY, true);
+			if (!m_pParts[PART_CANE]->Trail_GetOn())
+				m_pParts[PART_CANE]->TrailOn();
+		}
+		else if (m_vecLimitTime[SP_Att1_Start][0] < m_fPlayTime)
 		{
 			m_pParts[PART_CANE]->Set_CollisionOn(true);
 			On_Collider(COLLIDERTYPE_BODY, false);
@@ -992,7 +1017,7 @@ _bool CMagician::Collision(_float fTimeDelta)
 	if (_pTarget = m_pColliderCom[COLLIDERTYPE_PARRY]->Get_Target())
 	{
 		CPlayer* _pPlayer = static_cast<CPlayer*>(_pTarget);
-		if (_instance->Rand_Int(1, 10) > 0 && *(_pPlayer->Get_AnimState()) == CPlayer::STATE_ATT1)//임시 확률
+		if (_instance->Rand_Int(1, 10) > 4 && *(_pPlayer->Get_AnimState()) == CPlayer::STATE_ATT1)//임시 확률
 		{
 			m_eMonsterState = ATTACK_PARRY;
 			m_eCurState = Magician_ParryAttack01;
@@ -1219,6 +1244,7 @@ void CMagician::Ready_LimitTime()
 	m_vecLimitTime[Cane_Att2].push_back(45.f);
 
 	m_vecLimitTime[SP_Att1_Start].push_back(10.f);
+	m_vecLimitTime[SP_Att1_Start].push_back(40.f);
 
 	m_vecLimitTime[SP_Att1_Suc].push_back(10.f);
 	m_vecLimitTime[SP_Att1_Suc].push_back(120.f);
@@ -1412,4 +1438,38 @@ HRESULT CMagician::Shoot()
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Weapon_Card"), LEVEL_GAMEPLAY, TEXT("Layer_Bullet"), m_pTransformCom)))
 		return E_FAIL;
 	return S_OK;
+}
+
+void CMagician::Pattern(_float fTimeDelta)
+{
+	AUTOINSTANCE(CGameInstance, _pInstance);
+	m_fStay += fTimeDelta;
+	_float _fStayTime = _pInstance->Rand_Float(1.5f, 3.5f);
+	if (m_fStay < _fStayTime)
+		return;
+	m_fStay = 0.f;
+	
+	CTransform* _pPlayer_Trans = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
+	_float _fDis = fabs(XMVectorGetX(XMVector3Length(_pPlayer_Trans->Get_State(CTransform::STATE_POSITION) - m_pTransformCom->Get_State(CTransform::STATE_POSITION))));
+	if (_fDis > 5.f)
+	{
+		//원거리상태
+		m_eCurState = Walk_Disappear_F;
+	}
+	else
+	{
+		//어느정도 근거리상태
+		m_eCurState = SP_Att1_Start;
+	}
+}
+
+void CMagician::Pattern_Appear()
+{
+	/*일단 사라져 어디서 나타날진 몰라
+
+플레이어 방향에서 저 멀리 나타날지도…
+
+거기서 갑자기 나타나서 확 공격할수도 있음*/
+	//각 공격마다 거리 재어서 해야할거같음...
+	// 나타나는 곳이 다르고..
 }
