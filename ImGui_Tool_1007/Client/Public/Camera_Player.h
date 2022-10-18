@@ -20,12 +20,18 @@ public:
 	virtual HRESULT Render() override;
 
 public:
+	void Get_Target(CTransform* _pTarget) { m_pTarget = _pTarget; }
+	void Check_Dis();
+	void Targeting();
+
+public:
 	static CCamera_Player* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 
 private:
 	CGameObject*	m_pPlayer;
+	CTransform	*	m_pTarget;
 	_float3			m_vDis;
 	_float			m_fAngleY;
 };

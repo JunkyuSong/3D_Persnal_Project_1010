@@ -68,7 +68,7 @@ void CGameInstance::Tick_Engine( _float fTimeDelta)
 	m_pLevel_Manager->Tick(fTimeDelta);
 	m_pObject_Manager->Tick(fTimeDelta);
 	m_pCollision_Mgr->Tick();
-	m_pPipeLine->Update();
+	//m_pPipeLine->Update();
 	CPicking::Get_Instance()->Tick();
 	m_pObject_Manager->LateTick(fTimeDelta);
 

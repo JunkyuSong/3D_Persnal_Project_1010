@@ -14,7 +14,8 @@
 
 #include "Monster.h"
 
-
+#include "CameraMgr.h"
+#include "Camera_Player.h"
 
 CPlayer::CPlayer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -137,9 +138,6 @@ void CPlayer::Tick( _float fTimeDelta)
 	Update_Weapon(fTimeDelta);
 
 	Update_Collider();
-
-	
-	
 
 	Check_MotionTrail(fTimeDelta);
 }
@@ -364,6 +362,18 @@ void CPlayer::KeyInputMain( _float fTimeDelta)
 		break;
 	case Client::CPlayer::SD_Dead:
 		break;
+	case Client::CPlayer::STATE_RUN_BL:
+		KeyInput_Idle(fTimeDelta);
+		break;
+	case Client::CPlayer::STATE_RUN_BR:
+		KeyInput_Idle(fTimeDelta);
+		break;
+	case Client::CPlayer::STATE_RUN_FL:
+		KeyInput_Idle(fTimeDelta);
+		break;
+	case Client::CPlayer::STATE_RUN_FR:
+		KeyInput_Idle(fTimeDelta);
+		break;
 	case Client::CPlayer::STATE_END:
 		break;
 	default:
@@ -374,7 +384,15 @@ void CPlayer::KeyInputMain( _float fTimeDelta)
 
 void CPlayer::KeyInput_Idle( _float fTimeDelta)
 {
-	Move(fTimeDelta);
+	if (m_pTarget)
+	{
+		TargetingMove(fTimeDelta);
+	}
+	else
+	{
+		Move(fTimeDelta);
+	}
+	
 	//if (CGameInstance::Get_Instance()->KeyDown(DIK_SPACE))
 	if (CGameInstance::Get_Instance()->MouseDown(DIMK_LBUTTON))
 	{
@@ -532,6 +550,121 @@ void CPlayer::Move(_float fTimeDelta)
 	}
 }
 
+void CPlayer::TargetingMove(_float fTimeDelta)
+{
+	if (CGameInstance::Get_Instance()->KeyPressing(DIK_A))
+	{
+		if (CGameInstance::Get_Instance()->KeyPressing(DIK_W))
+		{
+			m_eDir = DIR_FL;
+		}
+		else if (CGameInstance::Get_Instance()->KeyPressing(DIK_S))
+		{
+			m_eDir = DIR_BL;
+		}
+		else
+		{
+			m_eDir = DIR_L;
+		}
+	}
+	else if (CGameInstance::Get_Instance()->KeyPressing(DIK_D))
+	{
+		if (CGameInstance::Get_Instance()->KeyPressing(DIK_W))
+		{
+			m_eDir = DIR_FR;
+		}
+		else if (CGameInstance::Get_Instance()->KeyPressing(DIK_S))
+		{
+			m_eDir = DIR_BR;
+		}
+		else
+		{
+			m_eDir = DIR_R;
+		}
+	}
+	else
+	{
+		if (CGameInstance::Get_Instance()->KeyPressing(DIK_W))
+		{
+			m_eDir = DIR_F;
+		}
+		else if (CGameInstance::Get_Instance()->KeyPressing(DIK_S))
+		{
+			m_eDir = DIR_B;
+		}
+		else
+		{
+			m_eDir = DIR_END;
+		}
+	}
+
+	_float4x4 _CamMatix;
+	XMStoreFloat4x4(&_CamMatix, XMMatrixInverse(nullptr, CGameInstance::Get_Instance()->Get_TransformMatrix(CPipeLine::D3DTS_VIEW)));
+
+	_vector	_vCamLook, _vCamRight, _vLook, _vRight;
+	_float _fRatio = 0.8f;
+	_vCamLook = XMLoadFloat4((_float4*)&_CamMatix.m[2][0]);
+	_vCamRight = XMVector3Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), _vCamLook));
+	_vCamLook = XMVector3Normalize(XMVector3Cross(_vCamRight, XMVectorSet(0.f, 1.f, 0.f, 0.f)));
+
+	_vLook = m_pTransformCom->Get_State(CTransform::STATE_LOOK);
+	_vRight = m_pTransformCom->Get_State(CTransform::STATE_RIGHT);
+
+	switch (m_eDir)
+	{
+	case Client::CPlayer::DIR_F:
+		m_eCurState = STATE_RUN_F;
+		m_pTransformCom->Turn(_vLook, _vCamLook, _fRatio);
+		m_pTransformCom->Go_Straight(fTimeDelta);
+		break;
+	case Client::CPlayer::DIR_B:
+		m_eCurState = STATE_RUN_B;
+
+		m_pTransformCom->Turn(_vLook, _vCamLook, _fRatio);
+		m_pTransformCom->Go_Straight(-fTimeDelta);
+		break;
+	case Client::CPlayer::DIR_R:
+		m_eCurState = STATE_RUN_R;
+
+		m_pTransformCom->Turn(_vLook, _vCamLook, _fRatio);
+		m_pTransformCom->Go_Right(fTimeDelta);
+		break;
+	case Client::CPlayer::DIR_L:
+		m_eCurState = STATE_RUN_L;
+
+		m_pTransformCom->Turn(_vLook, _vCamLook, _fRatio);
+		m_pTransformCom->Go_Right(-fTimeDelta);
+		break;
+	case Client::CPlayer::DIR_FR:
+		m_eCurState = STATE_RUN_FR;
+		m_pTransformCom->Turn(_vLook, _vCamLook, _fRatio);
+		m_pTransformCom->Go_Straight((fTimeDelta) / (sqrtf(2.f)));
+		m_pTransformCom->Go_Right((fTimeDelta) / (sqrtf(2.f)));
+		break;
+	case Client::CPlayer::DIR_BR:
+		m_eCurState = STATE_RUN_BR;
+		m_pTransformCom->Turn(_vLook, _vCamLook, _fRatio);
+		m_pTransformCom->Go_Straight((-fTimeDelta) / (sqrtf(2.f)));
+		m_pTransformCom->Go_Right((fTimeDelta) / (sqrtf(2.f)));
+		break;
+	case Client::CPlayer::DIR_FL:
+		m_eCurState = STATE_RUN_FL;
+		m_pTransformCom->Turn(_vLook, _vCamLook, _fRatio);
+		m_pTransformCom->Go_Straight((fTimeDelta) / (sqrtf(2.f)));
+		m_pTransformCom->Go_Right((-fTimeDelta) / (sqrtf(2.f)));
+		break;
+	case Client::CPlayer::DIR_BL:
+		m_eCurState = STATE_RUN_BL;
+		m_pTransformCom->Turn(_vLook, _vCamLook, _fRatio);
+		m_pTransformCom->Go_Straight((-fTimeDelta) / (sqrtf(2.f)));
+		m_pTransformCom->Go_Right((-fTimeDelta) / (sqrtf(2.f)));
+		break;
+	case Client::CPlayer::DIR_END:
+		m_eCurState = STATE_IDLE;
+		break;
+	}
+}
+
 void CPlayer::KP_ATT(_float fTimeDelta)
 {
 	//1. 리미트 시간 전에 눌렀을때 반응하는 상태 : 다음 공격키(예약)
@@ -682,12 +815,15 @@ void CPlayer::Targeting()
 		if (m_pTarget != nullptr)
 		{
 			Safe_AddRef(m_pTarget);
+			static_cast<CCamera_Player*>(CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER))->Get_Target(static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(TEXT("Com_Transform"))));
 		}
 	}
 	else
 	{
 		Safe_Release(m_pTarget);
+		static_cast<CCamera_Player*>(CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER))->Get_Target(nullptr);
 	}
+	
 }
 
 void CPlayer::CheckEndAnim()
@@ -832,6 +968,18 @@ void CPlayer::CheckEndAnim()
 		m_eCurState = STATE_IDLE;
 		break;
 	case Client::CPlayer::SD_Dead:
+		m_eCurState = STATE_IDLE;
+		break;
+	case Client::CPlayer::STATE_RUN_BL:
+		m_eCurState = STATE_IDLE;
+		break;
+	case Client::CPlayer::STATE_RUN_BR:
+		m_eCurState = STATE_IDLE;
+		break;
+	case Client::CPlayer::STATE_RUN_FL:
+		m_eCurState = STATE_IDLE;
+		break;
+	case Client::CPlayer::STATE_RUN_FR:
 		m_eCurState = STATE_IDLE;
 		break;
 	default:
@@ -1818,4 +1966,5 @@ void CPlayer::Free()
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);
 	Safe_Release(m_pStatusCom);
+	Safe_Release(m_pTarget);
 }

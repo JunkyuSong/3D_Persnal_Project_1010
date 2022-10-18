@@ -66,6 +66,7 @@ void CMainApp::Tick(const _float& fTimeDelta)
 	CImGui::Get_Instance()->Tick();
 	m_pGameInstance->Tick_Engine(fTimeDelta);
 	CCameraMgr::Get_Instance()->Tick(fTimeDelta);
+	CPipeLine::Get_Instance()->Update();
 	CCollisionMgr::Get_Instance()->Clear_CollisoinList();
 }
 

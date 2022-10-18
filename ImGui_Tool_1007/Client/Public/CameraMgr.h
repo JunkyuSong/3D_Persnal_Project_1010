@@ -21,7 +21,7 @@ public:
 public:
 	void		Change_Camera(CAMERATYPE _eCameraType);
 	CAMERATYPE	Get_CameraType() { return m_eCameraType; }
-	
+	class CCamera* Get_Cam(CAMERATYPE _eCameraType);
 
 public:
 	//void		Slow_Change();

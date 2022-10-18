@@ -68,6 +68,11 @@ void CCameraMgr::Change_Camera(CAMERATYPE _eCameraType)
 	m_pCameras[m_eCameraType]->Get_Transform()->Set_WorldFloat4x4(matCamera);
 }
 
+CCamera * CCameraMgr::Get_Cam(CAMERATYPE _eCameraType)
+{
+	return m_pCameras[_eCameraType];
+}
+
 void CCameraMgr::Free()
 {
 	for (auto& camera : m_pCameras)

@@ -50,6 +50,7 @@ public:
 		SD_HurtIdle,
 		SD_StrongHurt_Start, SD_StrongHurt_End,
 		SD_Dead,
+		STATE_RUN_BL, STATE_RUN_BR, STATE_RUN_FL, STATE_RUN_FR,
 		STATE_END
 	};
 
@@ -210,6 +211,7 @@ private:
 	void KeyInput_Idle(_float fTimeDelta);
 
 	void Move(_float fTimeDelta);
+	void TargetingMove(_float fTimeDelta);
 
 	void KP_ATT(_float fTimeDelta);
 
