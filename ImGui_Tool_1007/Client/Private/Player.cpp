@@ -181,11 +181,11 @@ HRESULT CPlayer::Render()
 	}
 
 #ifdef _DEBUG
-	//for (_uint i = 0; i < COLLILDERTYPE_END; ++i)
-	//{
-	//	if (nullptr != m_pColliderCom[i])
-	//		m_pColliderCom[i]->Render();
-	//}
+	/*for (_uint i = 0; i < COLLILDERTYPE_END; ++i)
+	{
+		if (nullptr != m_pColliderCom[i])
+			m_pColliderCom[i]->Render();
+	}*/
 #endif
 
 
@@ -413,6 +413,7 @@ void CPlayer::KeyInput_Idle( _float fTimeDelta)
 		if (CGameInstance::Get_Instance()->KeyPressing(DIK_S))
 		{
 			m_eCurState = STATE_AVOIDBACK;
+			m_eWeapon = WEAPON_BASE;
 		}
 	}
 
@@ -430,11 +431,12 @@ void CPlayer::KeyInput_Idle( _float fTimeDelta)
 		m_eCurState = DualKnife;
 		m_eWeapon = WEAPON::WEAPON_SKILL;
 		m_eCurSkill = SKILL_DUAL;
+		m_bCollision[COLLIDERTYPE_BODY] = false;
 	}
 	if (CGameInstance::Get_Instance()->KeyDown(DIK_2))
-	{
-		
+	{		
 		m_eCurState = Corvus_PW_Axe;
+		m_bCollision[COLLIDERTYPE_BODY] = false;
 	}
 	if (CGameInstance::Get_Instance()->MouseDown(DIMK_WHEEL))
 	{
@@ -612,7 +614,7 @@ void CPlayer::TargetingMove(_float fTimeDelta)
 
 	_vLook = m_pTransformCom->Get_State(CTransform::STATE_LOOK);
 	_vRight = m_pTransformCom->Get_State(CTransform::STATE_RIGHT);
-
+	
 	switch (m_eDir)
 	{
 	case Client::CPlayer::DIR_F:
@@ -786,6 +788,7 @@ void CPlayer::KP_AVOIDATTACK(_float fTimeDelta)
 			if (CGameInstance::Get_Instance()->KeyPressing(DIK_S))
 			{
 				m_eCurState = STATE_AVOIDBACK;
+				m_eWeapon = WEAPON_BASE;
 			}
 		}
 	}	
@@ -1076,6 +1079,8 @@ void CPlayer::CheckLimit()
 			m_bMotionPlay = true;
 			AUTOINSTANCE(CGameInstance, pGame);
 			pGame->Set_TimeSpeed(TEXT("Timer_Main"), 0.5f);
+			m_eCurSkill = SKILL_AXE;
+			m_eWeapon = WEAPON_SKILL;
 		}
 		else if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][0])//무기 스왑
 		{
@@ -1188,6 +1193,7 @@ void CPlayer::CheckLimit()
 		else if (m_fPlayTime > 0.f)
 		{
 			//m_eWeapon = WEAPON_NONE;
+			m_bCollision[COLLIDERTYPE_PARRY] = false;
 		}
 		break;
 	case Client::CPlayer::SD_StrongHurt_Start:
@@ -1199,6 +1205,7 @@ void CPlayer::CheckLimit()
 		else if (m_fPlayTime > 0.f)
 		{
 			//m_eWeapon = WEAPON_NONE;
+			m_bCollision[COLLIDERTYPE_PARRY] = false;
 		}
 		break;
 	case Client::CPlayer::SD_StrongHurt_End:
@@ -1215,12 +1222,32 @@ void CPlayer::CheckLimit()
 
 _bool CPlayer::CheckLimit_Att(STATE _eAtt)
 {
+	
+
 	if (m_fPlayTime > m_vecLimitTime[_eAtt][ATTACKLIMIT_CHANGE])
 	{
 		if (m_eReserveState != STATE_END)
 		{
 			Change_Anim();
 			return true;
+		}
+	}
+
+	if (m_fPlayTime < m_vecLimitTime[_eAtt][ATTACKLIMIT_MOVE])
+	{
+		if (m_pTarget)
+		{
+			_float4x4 _CamMatix;
+			XMStoreFloat4x4(&_CamMatix, XMMatrixInverse(nullptr, CGameInstance::Get_Instance()->Get_TransformMatrix(CPipeLine::D3DTS_VIEW)));
+
+			_vector	_vCamLook, _vCamRight, _vLook;
+			_float _fRatio = 0.8f;
+			_vCamLook = XMLoadFloat4((_float4*)&_CamMatix.m[2][0]);
+			_vCamRight = XMVector3Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), _vCamLook));
+			_vCamLook = XMVector3Normalize(XMVector3Cross(_vCamRight, XMVectorSet(0.f, 1.f, 0.f, 0.f)));
+
+			_vLook = m_pTransformCom->Get_State(CTransform::STATE_LOOK);
+			m_pTransformCom->Turn(_vLook, _vCamLook, _fRatio);
 		}
 	}
 
@@ -1613,18 +1640,21 @@ void CPlayer::Add_Render()
 HRESULT CPlayer::Ready_AnimLimit()
 {
 	//공격
+	m_vecLimitTime[STATE_ATT1].push_back(10.f);
 	m_vecLimitTime[STATE_ATT1].push_back(20.f);
 	m_vecLimitTime[STATE_ATT1].push_back(10.f);
 	m_vecLimitTime[STATE_ATT1].push_back(25.f);
 	m_vecLimitTime[STATE_ATT1].push_back(10.f);
 	m_vecLimitTime[STATE_ATT1].push_back(25.f);
 
+	m_vecLimitTime[STATE_ATT2].push_back(30.f);
 	m_vecLimitTime[STATE_ATT2].push_back(20.f);
 	m_vecLimitTime[STATE_ATT2].push_back(10.f);
 	m_vecLimitTime[STATE_ATT2].push_back(25.f);
 	m_vecLimitTime[STATE_ATT2].push_back(10.f);
 	m_vecLimitTime[STATE_ATT2].push_back(25.f);
 
+	m_vecLimitTime[STATE_ATT3].push_back(30.f);
 	m_vecLimitTime[STATE_ATT3].push_back(25.f);
 	m_vecLimitTime[STATE_ATT3].push_back(10.f);
 	m_vecLimitTime[STATE_ATT3].push_back(25.f);
@@ -1632,11 +1662,13 @@ HRESULT CPlayer::Ready_AnimLimit()
 	m_vecLimitTime[STATE_ATT3].push_back(25.f);
 
 	m_vecLimitTime[STATE_ATT4].push_back(40.f);
+	m_vecLimitTime[STATE_ATT4].push_back(40.f);
 	m_vecLimitTime[STATE_ATT4].push_back(10.f);
 	m_vecLimitTime[STATE_ATT4].push_back(40.f);
 	m_vecLimitTime[STATE_ATT4].push_back(10.f);
 	m_vecLimitTime[STATE_ATT4].push_back(40.f);
 
+	m_vecLimitTime[STATE_ATT5].push_back(20.f);
 	m_vecLimitTime[STATE_ATT5].push_back(50.f);
 	m_vecLimitTime[STATE_ATT5].push_back(20.f);
 	m_vecLimitTime[STATE_ATT5].push_back(50.f);
@@ -1644,7 +1676,7 @@ HRESULT CPlayer::Ready_AnimLimit()
 	m_vecLimitTime[STATE_ATT5].push_back(50.f);
 	
 	//도끼스킬
-	m_vecLimitTime[Corvus_PW_Axe].push_back(20.f);
+	m_vecLimitTime[Corvus_PW_Axe].push_back(40.f);
 	m_vecLimitTime[Corvus_PW_Axe].push_back(40.f);
 	m_vecLimitTime[Corvus_PW_Axe].push_back(65.f);
 	m_vecLimitTime[Corvus_PW_Axe].push_back(120.f);
@@ -1660,7 +1692,7 @@ HRESULT CPlayer::Ready_AnimLimit()
 
 	//패리
 	m_vecLimitTime[ParryL].push_back(0.f);
-	m_vecLimitTime[ParryL].push_back(50.f);
+	m_vecLimitTime[ParryL].push_back(90.f);
 	
 
 	return S_OK;
@@ -1697,8 +1729,8 @@ HRESULT CPlayer::Ready_Collider()
 
 	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
 
-	ColliderDesc.vSize = _float3(0.7f, 1.6f, 0.3f);
-	ColliderDesc.vCenter = _float3(0.f, 0.8f/*ColliderDesc.vSize.y * 0.5f*/, 0.5f);
+	ColliderDesc.vSize = _float3(0.9f, 1.6f, 0.7f);
+	ColliderDesc.vCenter = _float3(0.f, 0.8f/*ColliderDesc.vSize.y * 0.5f*/, 0.3f);
 	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Parry"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_PARRY], &ColliderDesc)))
 		return E_FAIL;

@@ -126,6 +126,7 @@ private:
 
 	_bool					m_bAnimStop = false;
 	_float					m_fPlayTime = 0.f;
+	_float					m_fPlaySpeed = 1.f;
 	vector<_float>			m_vecLimitTime[STATE_END];
 
 	CCollider*				m_pColliderCom[COLLILDERTYPE_END] = { nullptr };
@@ -151,11 +152,14 @@ private:
 	void	Update_Collider();
 
 	HRESULT Shoot();
+	void	Check_Stun();
 
 private:
 	_float	m_fStay = 0.f;
 	void Pattern(_float fTimeDelta);
 	void Pattern_Appear();
+	void Pattern_Short(_float fDis);
+	void Pattern_Long(_float fDis);
 
 public:
 	static CMagician* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

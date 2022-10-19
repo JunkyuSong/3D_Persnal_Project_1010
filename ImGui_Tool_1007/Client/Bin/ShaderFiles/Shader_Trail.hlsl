@@ -79,11 +79,11 @@ PS_OUT PS_MAIN(PS_IN In)
 
 	//Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
 
-	Out.vColor.a = 1.f - In.vTexUV.y;
+	Out.vColor.a = (1.f - In.vTexUV.y) * 0.5f + In.vTexUV.x * 0.5f;
 
-	Out.vColor.x = g_Color.x + In.vTexUV.y;
-	Out.vColor.y = g_Color.y + In.vTexUV.y;
-	Out.vColor.z = g_Color.z + In.vTexUV.y;
+	Out.vColor.x = g_Color.x;
+	Out.vColor.y = g_Color.y;
+	Out.vColor.z = g_Color.z;
 
 	/*if (In.vTexUV.y > 0.3f)
 	{

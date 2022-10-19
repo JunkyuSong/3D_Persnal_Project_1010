@@ -171,9 +171,9 @@ void CTrail::Tick(const _float& _fTimeDelta, _matrix _matWeapon)
 
 	m_fCurTime += _fTimeDelta;
 
-	if (m_fCurTime > m_fMaxTIme)
+	//if (m_fCurTime > m_fMaxTIme)
 	{
-		m_fCurTime = 0.f;
+		m_fCurTime -= 0.01f;
 		if (m_iVtxCount >= m_iNumVertices)
 		{
 			m_iVtxCount = 20;

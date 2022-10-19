@@ -81,6 +81,7 @@ void CMagician::Tick( _float fTimeDelta)
 	
 	if (m_pModelCom != nullptr)
 	{
+		Check_Stun();
 		CheckAnim();
 
 		CheckState(fTimeDelta);
@@ -134,11 +135,11 @@ HRESULT CMagician::Render()
 			return E_FAIL;
 	}
 
-	for (_uint i = 0; i < COLLILDERTYPE_END; ++i)
+	/*for (_uint i = 0; i < COLLILDERTYPE_END; ++i)
 	{
 		if (nullptr != m_pColliderCom[i])
 			m_pColliderCom[i]->Render();
-	}
+	}*/
 
 	return S_OK;
 }
@@ -149,7 +150,7 @@ void CMagician::PlayAnimation( _float fTimeDelta)
 		return;
 	_float4 _vAnim;
 	XMStoreFloat4(&_vAnim, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-	if (m_pModelCom->Play_Animation(fTimeDelta, &_vAnim, &m_fPlayTime))
+	if (m_pModelCom->Play_Animation(fTimeDelta * m_fPlaySpeed, &_vAnim, &m_fPlayTime))
 	{
 		CheckEndAnim();
 	}
@@ -161,6 +162,7 @@ void CMagician::PlayAnimation( _float fTimeDelta)
 
 void CMagician::CheckEndAnim()
 {
+	m_fPlaySpeed = 1.f;
 	switch (m_eCurState)
 	{
 	case Client::CMagician::Magician_Idle:
@@ -375,6 +377,7 @@ void CMagician::CheckEndAnim()
 void CMagician::CheckState(_float fTimeDelta)
 {
 	m_bCollision[COLLIDERTYPE_PARRY] = false;
+	
 	switch (m_eCurState)
 	{
 	case Client::CMagician::Magician_Idle:
@@ -403,6 +406,7 @@ void CMagician::CheckState(_float fTimeDelta)
 		if (m_pParts[PART_CANE]->Trail_GetOn())
 			m_pParts[PART_CANE]->TrailOff();
 		m_pParts[PART_CANE]->Set_CollisionOn(false);
+
 		break;
 	case Client::CMagician::Hurt_Long:
 		if (m_pParts[PART_CANESWORD]->Trail_GetOn())
@@ -412,41 +416,16 @@ void CMagician::CheckState(_float fTimeDelta)
 		if (m_pParts[PART_CANE]->Trail_GetOn())
 			m_pParts[PART_CANE]->TrailOff();
 		m_pParts[PART_CANE]->Set_CollisionOn(false);
+
 		break;
 	case Client::CMagician::Boss_Enter:
 		break;
 	case Client::CMagician::Cane_Att1:
-		if (m_eMonsterState == CMonster::ATTACK_STUN)
-		{
-			if (m_pParts[PART_CANESWORD]->Trail_GetOn())
-				m_pParts[PART_CANESWORD]->TrailOff();
-			m_pParts[PART_CANESWORD]->Set_CollisionOn(false);
-
-			if (m_pParts[PART_CANE]->Trail_GetOn())
-				m_pParts[PART_CANE]->TrailOff();
-			m_pParts[PART_CANE]->Set_CollisionOn(false);
-
-			m_eCurState = Hurt_Long;
-			m_eMonsterState = CMonster::ATTACK_IDLE;
-			CheckAnim();
-		}
+		
 		break;
 	case Client::CMagician::Cane_Att2:
 		m_bCollision[COLLIDERTYPE_PARRY] = false;
-		if (m_eMonsterState == CMonster::ATTACK_STUN)
-		{
-			if (m_pParts[PART_CANESWORD]->Trail_GetOn())
-				m_pParts[PART_CANESWORD]->TrailOff();
-			m_pParts[PART_CANESWORD]->Set_CollisionOn(false);
-
-			if (m_pParts[PART_CANE]->Trail_GetOn())
-				m_pParts[PART_CANE]->TrailOff();
-			m_pParts[PART_CANE]->Set_CollisionOn(false);
-
-			m_eCurState = Hurt_Long;
-			m_eMonsterState = CMonster::ATTACK_IDLE;
-			CheckAnim();
-		}
+	
 		break;
 	case Client::CMagician::SP_Att1_Start:
 		m_bCollision[COLLIDERTYPE_PARRY] = false;
@@ -458,22 +437,6 @@ void CMagician::CheckState(_float fTimeDelta)
 		break;
 	case Client::CMagician::SP_Att2_Loop:
 		On_Collider(COLLIDERTYPE_BODY, false);
-		if (m_eMonsterState == CMonster::ATTACK_STUN)
-		{
-			if (m_pParts[PART_CANESWORD]->Trail_GetOn())
-				m_pParts[PART_CANESWORD]->TrailOff();
-			m_pParts[PART_CANESWORD]->Set_CollisionOn(false);
-
-			ChangeCanesword(CANESWORD_R);
-
-			if (m_pParts[PART_CANE]->Trail_GetOn())
-				m_pParts[PART_CANE]->TrailOff();
-			m_pParts[PART_CANE]->Set_CollisionOn(false);
-
-			m_eCurState = Hurt_Long;
-			m_eMonsterState = CMonster::ATTACK_IDLE;
-			CheckAnim();
-		}
 		break;
 	case Client::CMagician::SP_Att2_Suc:
 		break;
@@ -492,23 +455,6 @@ void CMagician::CheckState(_float fTimeDelta)
 	case Client::CMagician::Cane_Att3:
 		break;
 	case Client::CMagician::Kick_Combo:
-		if (m_eMonsterState == CMonster::ATTACK_STUN)
-		{
-			On_Collider(COLLIDERTYPE_BODY, false);
-			if (m_pParts[PART_CANESWORD]->Trail_GetOn())
-				m_pParts[PART_CANESWORD]->TrailOff();
-			m_pParts[PART_CANESWORD]->Set_CollisionOn(false);
-
-			if (m_pParts[PART_CANE]->Trail_GetOn())
-				m_pParts[PART_CANE]->TrailOff();
-			m_pParts[PART_CANE]->Set_CollisionOn(false);
-			On_Collider(COLLIDERTYPE_FOOT_R, false);
-			On_Collider(COLLIDERTYPE_FOOT_L, false);
-			m_eCurState = Hurt_Long;
-			m_eMonsterState = CMonster::ATTACK_IDLE;
-			CheckAnim();
-		}
-		else
 		{
 			On_Collider(COLLIDERTYPE_FOOT_R, true);
 			On_Collider(COLLIDERTYPE_FOOT_L, true);
@@ -523,13 +469,15 @@ void CMagician::CheckState(_float fTimeDelta)
 		m_bCollision[COLLIDERTYPE_PARRY] = true;
 		break;
 	case Client::CMagician::Walk_F:
+		Look_Player();
 		m_bCollision[COLLIDERTYPE_PARRY] = true;
 		m_fAppear += 0.2f;
 		//만약 1 이상 되면 공격패턴으로 바뀜.
 		if (m_fAppear >= 1.0f)
 		{
 			m_fAppear = 1.f;
-			m_eCurState = Kick_Combo;
+			m_eCurState = m_eReserveState;
+			m_eReserveState = STATE_END;
 			//랜덤매니져---- 공격패턴
 			m_eMonsterState = ATTACK_IDLE;
 		}
@@ -544,11 +492,8 @@ void CMagician::CheckState(_float fTimeDelta)
 		{
 			m_eCurState = Walk_F;
 			m_fAppear = 0.f;
-			//플레이어 포인터로 트렌스폼 가져와서 공격
-			Look_Move_Player(0.f,2.f);
-			/*m_pTransformCom->Turn(m_pTransformCom->Get_State(CTransform::STATE_LOOK),
-				_Trans->Get_State(CTransform::STATE_POSITION) - m_pTransformCom->Get_State(CTransform::STATE_POSITION)
-				, 0.9f);*/
+			
+			Pattern_Appear();			
 		}
 		break;
 	case Client::CMagician::Walk_L:
@@ -595,37 +540,21 @@ void CMagician::CheckState(_float fTimeDelta)
 	case Client::CMagician::Magician_Stage2_JumpAppear:
 		break;
 	case Client::CMagician::Magician_StunStart_Sword:
+		m_bCollision[COLLIDERTYPE_PARRY] = false;
+		m_bCollision[COLLIDERTYPE_BODY] = true;
 		break;
 	case Client::CMagician::Magician_StunLoop_Sword:
 		break;
 	case Client::CMagician::Magician_StunEnd_Sword:
 		break;
 	case Client::CMagician::Magician_StunStart_Cane:
+		m_pTransformCom->Go_Backward(fTimeDelta/* * 0.8f*/);
 		break;
 	case Client::CMagician::Magician_StunLoop_Cane:
 		break;
 	case Client::CMagician::Magician_StunEnd_Cane:
 		break;
 	case Client::CMagician::Magician_SwordAttack1:
-		if (m_eMonsterState == CMonster::ATTACK_STUN)
-		{
-			if (m_pParts[PART_CANESWORD]->Trail_GetOn())
-				m_pParts[PART_CANESWORD]->TrailOff();
-			m_pParts[PART_CANESWORD]->Set_CollisionOn(false);
-
-			if (m_pParts[PART_CANE]->Trail_GetOn())
-				m_pParts[PART_CANE]->TrailOff();
-			m_pParts[PART_CANE]->Set_CollisionOn(false);
-
-			m_eCurState = Hurt_Long;
-			m_eMonsterState = CMonster::ATTACK_IDLE;
-			CheckAnim();
-		}
-		else
-		{
-			//On_Collider(COLLIDERTYPE_BODY, true);
-		}
-		
 		break;
 	case Client::CMagician::Magician_SwordAttack2:
 		break;
@@ -895,6 +824,10 @@ void CMagician::CheckLimit()
 	case Client::CMagician::Magician_StunEnd_Sword:
 		break;
 	case Client::CMagician::Magician_StunStart_Cane:
+		if (m_vecLimitTime[Magician_StunStart_Cane][0] < m_fPlayTime)
+		{
+			m_eCurState = Magician_ParrySword;
+		}
 		break;
 	case Client::CMagician::Magician_StunLoop_Cane:
 		break;
@@ -953,6 +886,28 @@ void CMagician::CheckLimit()
 	case Client::CMagician::Magician_Sprinkle:
 		break;
 	case Client::CMagician::Magician_ParrySword:
+		if (m_vecLimitTime[Magician_ParrySword][1] < m_fPlayTime)
+		{
+			//충돌체 빼고, 여기서부터 공격당할 수 있고
+			On_Collider(COLLIDERTYPE_BODY, true);
+			m_pParts[PART_CANESWORD]->Set_CollisionOn(false);
+			if (m_pParts[PART_CANESWORD]->Trail_GetOn())
+			{
+				m_pParts[PART_CANESWORD]->TrailOff();
+			}
+			ChangeCanesword(CANESWORD_R);
+
+		}
+		else if (m_vecLimitTime[Magician_ParrySword][0] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, false);
+			m_pParts[PART_CANESWORD]->Set_CollisionOn(true);
+			if (!m_pParts[PART_CANESWORD]->Trail_GetOn())
+			{
+				m_pParts[PART_CANESWORD]->TrailOn();
+			}
+			ChangeCanesword(CANESWORD_L);
+		}
 		break;
 	}
 }
@@ -1017,10 +972,19 @@ _bool CMagician::Collision(_float fTimeDelta)
 	if (_pTarget = m_pColliderCom[COLLIDERTYPE_PARRY]->Get_Target())
 	{
 		CPlayer* _pPlayer = static_cast<CPlayer*>(_pTarget);
-		if (_instance->Rand_Int(1, 10) > 4 && *(_pPlayer->Get_AnimState()) == CPlayer::STATE_ATT1)//임시 확률
+		if (_instance->Rand_Int(1, 10) > 2 && *(_pPlayer->Get_AnimState()) == CPlayer::STATE_ATT1)//임시 확률
 		{
+			AUTOINSTANCE(CGameInstance, _pInstance);
+			if (_pInstance->Rand_Int(0, 1) == 0)
+			{
+				m_eCurState = Magician_ParryAttack01;
+			}
+			else
+			{
+				m_eCurState = Magician_Parry01;
+			}
 			m_eMonsterState = ATTACK_PARRY;
-			m_eCurState = Magician_ParryAttack01;
+			
 			Look_Player();
 		}
 	}
@@ -1043,15 +1007,41 @@ _bool CMagician::Collision(_float fTimeDelta)
 		
 		if (m_eCurState == Hurt_Long)
 		{
-			m_eCurState = Hurt_Short;
+
+			if (_instance->Rand_Int(0, 4) == 0)
+			{
+				m_eCurState = Walk_Disappear_F;
+			}
+			else
+			{
+				m_eCurState = Hurt_Short;
+				m_fAppear = 1.f;
+			}
+			
 		}
 		else if (m_eCurState == Hurt_Short)
 		{
-			m_eCurState = Hurt_Long;
+			if (_instance->Rand_Int(0, 4) == 0)
+			{
+				m_eCurState = Walk_Disappear_F;
+			}
+			else
+			{
+				m_eCurState = Hurt_Long;
+				m_fAppear = 1.f;
+			}
 		}
 		else
 		{
-			m_eCurState = Hurt_Short;
+			if (_instance->Rand_Int(0, 4) == 0)
+			{
+				m_eCurState = Walk_Disappear_F;
+			}
+			else
+			{
+				m_eCurState = Hurt_Short;
+				m_fAppear = 1.f;
+			}
 		}
 		m_pTransformCom->LookAt_ForLandObject(
 			static_cast<CTransform*>(_pTarget->Get_ComponentPtr(TEXT("Com_Transform")))
@@ -1229,22 +1219,22 @@ void CMagician::Ready_LimitTime()
 {
 	m_vecLimitTime[SP_Att2_Loop].push_back(0.f);
 	m_vecLimitTime[SP_Att2_Loop].push_back(20.f);
-	m_vecLimitTime[SP_Att2_Loop].push_back(150.f);
-	m_vecLimitTime[SP_Att2_Suc].push_back(220.f);
+	m_vecLimitTime[SP_Att2_Loop].push_back(150.f);//10까지
+	m_vecLimitTime[SP_Att2_Suc].push_back(220.f);//10.1
 
 	m_vecLimitTime[Hurt_Long].push_back(25.f);
 
 	m_vecLimitTime[Magician_SwordAttack1].push_back(160.f);
-	m_vecLimitTime[Magician_SwordAttack1].push_back(430.f);
+	m_vecLimitTime[Magician_SwordAttack1].push_back(430.f);//안움직임
 
 	m_vecLimitTime[Cane_Att1].push_back(50.f);
-	m_vecLimitTime[Cane_Att1].push_back(200.f);
+	m_vecLimitTime[Cane_Att1].push_back(200.f);//5.7
 
 	m_vecLimitTime[Cane_Att2].push_back(10.f);
-	m_vecLimitTime[Cane_Att2].push_back(45.f);
+	m_vecLimitTime[Cane_Att2].push_back(45.f);//5.5까지 감
 
 	m_vecLimitTime[SP_Att1_Start].push_back(10.f);
-	m_vecLimitTime[SP_Att1_Start].push_back(40.f);
+	m_vecLimitTime[SP_Att1_Start].push_back(40.f);//5.5
 
 	m_vecLimitTime[SP_Att1_Suc].push_back(10.f);
 	m_vecLimitTime[SP_Att1_Suc].push_back(120.f);
@@ -1261,6 +1251,10 @@ void CMagician::Ready_LimitTime()
 
 	m_vecLimitTime[Magician_Shoot2].push_back(20.f);
 	
+	m_vecLimitTime[Magician_StunStart_Cane].push_back(45.f);
+
+	m_vecLimitTime[Magician_ParrySword].push_back(70.f);
+	m_vecLimitTime[Magician_ParrySword].push_back(150.f);//7.6
 }
 
 CMagician * CMagician::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -1440,6 +1434,33 @@ HRESULT CMagician::Shoot()
 	return S_OK;
 }
 
+void CMagician::Check_Stun()
+{
+	if (m_eMonsterState == CMonster::ATTACK_STUN)
+	{
+		AUTOINSTANCE(CGameInstance, _pInstance);
+		if (m_pParts[PART_CANESWORD]->Trail_GetOn())
+			m_pParts[PART_CANESWORD]->TrailOff();
+		m_pParts[PART_CANESWORD]->Set_CollisionOn(false);
+
+		if (m_pParts[PART_CANE]->Trail_GetOn())
+			m_pParts[PART_CANE]->TrailOff();
+		m_pParts[PART_CANE]->Set_CollisionOn(false);
+		Look_Player();
+		_int _iTemp = _pInstance->Rand_Int(0, 3);
+		if (_iTemp == 0)
+		{
+			m_eCurState = Magician_StunStart_Cane;			
+		}
+		else
+		{
+			m_eCurState = Magician_StunStart_Sword;
+		}
+		
+		m_eMonsterState = CMonster::ATTACK_IDLE;
+	}
+}
+
 void CMagician::Pattern(_float fTimeDelta)
 {
 	AUTOINSTANCE(CGameInstance, _pInstance);
@@ -1451,25 +1472,146 @@ void CMagician::Pattern(_float fTimeDelta)
 	
 	CTransform* _pPlayer_Trans = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
 	_float _fDis = fabs(XMVectorGetX(XMVector3Length(_pPlayer_Trans->Get_State(CTransform::STATE_POSITION) - m_pTransformCom->Get_State(CTransform::STATE_POSITION))));
-	if (_fDis > 5.f)
+	if (_fDis > 6.f)
 	{
-		//원거리상태
-		m_eCurState = Walk_Disappear_F;
+		AUTOINSTANCE(CGameInstance, _pInstance);
+		_int iPattern = _pInstance->Rand_Int(0, 4);
+		if (iPattern < 3)
+			Pattern_Long(_fDis);
+		else
+			m_eCurState = Walk_Disappear_F;
 	}
 	else
 	{
-		//어느정도 근거리상태
-		m_eCurState = SP_Att1_Start;
+		Pattern_Short(_fDis);
 	}
 }
 
 void CMagician::Pattern_Appear()
 {
-	/*일단 사라져 어디서 나타날진 몰라
+	//한대 맞고 사라지면?
+	AUTOINSTANCE(CGameInstance, _pInstance);
+	_int iPattern = _pInstance->Rand_Int(0,8);
+	_int iDir = _pInstance->Rand_Int(0, 3);
+	_float	_fZ(0.f), _fX(0.f);
+	switch (iDir)
+	{
+	case 0://Z
+		_fZ = 0.7f;
+		break;
+	case 1://-Z
+		_fZ = -0.7f;
+		break;
+	case 2://X
+		_fX = 0.7f;
+		break;
+	case 3://-X
+		_fX = -0.7f;
+		break;
+	}
 
-플레이어 방향에서 저 멀리 나타날지도…
+	switch (iPattern)
+	{
+	case 0:
+		m_eReserveState = Kick_Combo;
+		Look_Move_Player(3.f * _fX, 3.f*_fZ);
+		break;
+	case 1:
+		m_eReserveState = SP_Att2_Start;
+		Look_Move_Player(10.f * _fX, 10.f*_fZ);
+		break;
+	case 2:
+		m_eReserveState = SP_Att1_Start;
+		Look_Move_Player(5.5f * _fX, 5.5f*_fZ);
+		break;
+	case 3:
+		m_eReserveState = Cane_Att1;
+		Look_Move_Player(5.5f * _fX, 5.5f*_fZ);
+		break;
+	case 4:
+		m_eReserveState = Cane_Att2;
+		Look_Move_Player(5.5f * _fX, 5.5f*_fZ);
+		break;
+	case 5:
+		m_eReserveState = Magician_SwordAttack1;
+		Look_Move_Player(2.f * _fX, 2.f*_fZ);
+		break;
+	default:
+		m_eReserveState = Magician_Idle;
+		Look_Move_Player(3.f * _fX, 3.f*_fZ);
+		break;
+	}
+	m_fPlaySpeed = 3.f;
+}
 
-거기서 갑자기 나타나서 확 공격할수도 있음*/
-	//각 공격마다 거리 재어서 해야할거같음...
-	// 나타나는 곳이 다르고..
+void CMagician::Pattern_Short(_float fDis)
+{
+	AUTOINSTANCE(CGameInstance, _pInstance);
+	_int iPattern = _pInstance->Rand_Int(0, 5);
+	//거리에 따라서 어느정도는 패턴 줄까
+
+	if (fDis < 2.f)
+	{
+		if (iPattern < 3)
+			m_eCurState = Magician_SwordAttack1;
+		else
+			m_eCurState = Walk_Disappear_F;
+		return;
+	}
+
+	switch (iPattern)
+	{
+	case 0:
+		m_eCurState = Kick_Combo;
+		break;
+	case 1:
+		m_eCurState = SP_Att1_Start;
+		break;
+	case 2:
+		m_eCurState = Cane_Att1;
+		break;
+	case 3:
+		m_eCurState = Cane_Att2;
+		break;
+	default:
+		m_eCurState = Walk_Disappear_F;
+		break;
+	}
+}
+
+void CMagician::Pattern_Long(_float fDis)
+{
+	AUTOINSTANCE(CGameInstance, _pInstance);
+	_int iPattern = _pInstance->Rand_Int(0, 3);
+
+	if (fDis < 10.f)
+	{
+		switch (iPattern)
+		{
+		case 0:
+			m_eCurState = SP_Att2_Start;
+			m_fPlaySpeed = 3.f;
+			break;
+		case 1:
+			m_eCurState = Magician_ParrySword;
+			break;
+		case 2:
+			m_eCurState = Magician_Shoot1;
+			break;
+		case 3:
+			m_eCurState = Magician_Shoot2;
+			break;
+		}
+	}
+	else
+	{
+		if (iPattern < 2)
+		{
+			m_eCurState = Magician_Shoot1;
+		}
+		else
+		{
+			m_eCurState = Magician_Shoot2;
+		}
+	}
 }
