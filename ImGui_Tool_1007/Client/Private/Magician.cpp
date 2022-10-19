@@ -479,11 +479,13 @@ void CMagician::CheckState(_float fTimeDelta)
 			m_eCurState = m_eReserveState;
 			m_eReserveState = STATE_END;
 			//랜덤매니져---- 공격패턴
+			m_bCollision[COLLIDERTYPE_BODY] = true;
 			m_eMonsterState = ATTACK_IDLE;
 		}
 		break;
 	case Client::CMagician::Walk_Disappear_F:
 		m_bCollision[COLLIDERTYPE_PARRY] = true;
+		m_bCollision[COLLIDERTYPE_BODY] = false;
 		m_eMonsterState = ATTACK_DISAPPEAR;
 		//여기서 0.1씩 줄여서 사라지게끔
 		m_fAppear -= 0.05f;
@@ -1491,7 +1493,7 @@ void CMagician::Pattern_Appear()
 {
 	//한대 맞고 사라지면?
 	AUTOINSTANCE(CGameInstance, _pInstance);
-	_int iPattern = _pInstance->Rand_Int(0,8);
+	_int iPattern = _pInstance->Rand_Int(0,10);
 	_int iDir = _pInstance->Rand_Int(0, 3);
 	_float	_fZ(0.f), _fX(0.f);
 	switch (iDir)
@@ -1509,7 +1511,7 @@ void CMagician::Pattern_Appear()
 		_fX = -0.7f;
 		break;
 	}
-
+	m_fPlaySpeed = 3.f;
 	switch (iPattern)
 	{
 	case 0:
@@ -1536,12 +1538,22 @@ void CMagician::Pattern_Appear()
 		m_eReserveState = Magician_SwordAttack1;
 		Look_Move_Player(2.f * _fX, 2.f*_fZ);
 		break;
+	case 6:
+		m_eReserveState = Magician_Shoot1;
+		Look_Move_Player(10.f * _fX, 10.f*_fZ);
+		m_fPlaySpeed = 1.f;
+		break;
+	case 7:
+		m_eReserveState = Magician_Shoot2;
+		Look_Move_Player(10.f * _fX, 10.f*_fZ);
+		m_fPlaySpeed = 1.f;
+		break;
 	default:
 		m_eReserveState = Magician_Idle;
 		Look_Move_Player(3.f * _fX, 3.f*_fZ);
 		break;
 	}
-	m_fPlaySpeed = 3.f;
+
 }
 
 void CMagician::Pattern_Short(_float fDis)
@@ -1584,7 +1596,7 @@ void CMagician::Pattern_Long(_float fDis)
 	AUTOINSTANCE(CGameInstance, _pInstance);
 	_int iPattern = _pInstance->Rand_Int(0, 3);
 
-	if (fDis < 10.f)
+	if (fDis < 7.f)
 	{
 		switch (iPattern)
 		{

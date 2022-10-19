@@ -48,7 +48,7 @@ void CCard::Tick(_float fTimeDelta)
 {
 	//m_pTrailCom->Tick(fTimeDelta, m_pTransformCom->Get_WorldMatrix());
 
-	m_pTransformCom->Go_Up(fTimeDelta*5.f);
+	m_pTransformCom->Go_Up(fTimeDelta*20.f);
 	m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix());
 	//CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_WEAPON, m_pColliderCom, this);
 	//일정 거리 이상 가면 ㅃㅇ
