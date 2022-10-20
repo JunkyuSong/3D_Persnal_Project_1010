@@ -139,6 +139,9 @@
     <ClCompile Include="..\Private\VIBuffer_Cell.cpp">
       <Filter>03.Components\02.VIBuffer\Cell</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\PointInCell.cpp">
+      <Filter>03.Components\08. Navigation\Point</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -300,6 +303,9 @@
     <ClInclude Include="..\Public\VIBuffer_Cell.h">
       <Filter>03.Components\02.VIBuffer\Cell</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\PointInCell.h">
+      <Filter>03.Components\08. Navigation\Point</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="99.Defines">
@@ -451,6 +457,9 @@
     </Filter>
     <Filter Include="03.Components\02.VIBuffer\Cell">
       <UniqueIdentifier>{87b3b5be-3d04-426c-802b-f82fae0f0f35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\08. Navigation\Point">
+      <UniqueIdentifier>{c6e45efb-8412-46c5-9dfe-9dac02b3ca50}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

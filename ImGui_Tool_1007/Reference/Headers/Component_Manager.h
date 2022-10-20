@@ -14,6 +14,8 @@
 #include "Sphere.h"
 #include "Capsule.h"
 
+#include "Navigation.h"
+
 BEGIN(Engine)
 
 class CComponent_Manager final : public CBase

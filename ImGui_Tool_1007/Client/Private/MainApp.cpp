@@ -52,6 +52,8 @@ HRESULT CMainApp::Initialize()
 	CImGui::Get_Instance()->Initailize(m_pDevice, m_pContext);
 
 	m_pGameInstance->Add_Layer(LEVEL_STATIC,TEXT("Layer_UI"));
+
+	//Ready_Gara();
 	return S_OK;
 }
 
@@ -112,6 +114,45 @@ HRESULT CMainApp::Open_Level(LEVEL eLevelID)
 	/* 할당한 레벨을 레벨매니져에 보관할 수 있또록. gksek. */
 	//if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, eLevelID))))
 	//	return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CMainApp::Ready_Gara()
+{
+	_ulong		dwByte = 0;
+	HANDLE		hFile = CreateFile(TEXT("../Bin/Data/NavigationData.dat"), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+	if (0 == hFile)
+		return E_FAIL;
+
+	_float3		vPoints[3];
+
+	/**/
+	ZeroMemory(vPoints, sizeof(_float3) * 3);
+	vPoints[0] = _float3(0.0f, 0.f, 5.f);
+	vPoints[1] = _float3(5.0f, 0.f, 0.f);
+	vPoints[2] = _float3(0.0f, 0.f, 0.f);
+	WriteFile(hFile, vPoints, sizeof(_float3) * 3, &dwByte, nullptr);
+
+	ZeroMemory(vPoints, sizeof(_float3) * 3);
+	vPoints[0] = _float3(0.0f, 0.f, 5.f);
+	vPoints[1] = _float3(5.0f, 0.f, 5.f);
+	vPoints[2] = _float3(5.f, 0.f, 0.f);
+	WriteFile(hFile, vPoints, sizeof(_float3) * 3, &dwByte, nullptr);
+
+	ZeroMemory(vPoints, sizeof(_float3) * 3);
+	vPoints[0] = _float3(0.0f, 0.f, 10.f);
+	vPoints[1] = _float3(5.0f, 0.f, 5.f);
+	vPoints[2] = _float3(0.0f, 0.f, 5.f);
+	WriteFile(hFile, vPoints, sizeof(_float3) * 3, &dwByte, nullptr);
+
+	ZeroMemory(vPoints, sizeof(_float3) * 3);
+	vPoints[0] = _float3(5.f, 0.f, 5.f);
+	vPoints[1] = _float3(10.0f, 0.f, 0.f);
+	vPoints[2] = _float3(5.f, 0.f, 0.f);
+	WriteFile(hFile, vPoints, sizeof(_float3) * 3, &dwByte, nullptr);
+
+	CloseHandle(hFile);
 
 	return S_OK;
 }

@@ -11,18 +11,50 @@ CCell::CCell(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	Safe_AddRef(m_pContext);
 }
 
+void CCell::Mapping_Point()
+{
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+
+	m_pVIBuffer->Map(&mappedResource);
+	VTXCOL _Temp[3];
+	memcpy(_Temp, mappedResource.pData, sizeof(VTXCOL) * 3);
+	_Temp[0].vPosition = m_vPoints[0];
+	_Temp[1].vPosition = m_vPoints[1];
+	_Temp[2].vPosition = m_vPoints[2];
+	memcpy(mappedResource.pData, _Temp, sizeof(VTXCOL) * 3);
+	m_pVIBuffer->UnMap();
+
+}
+
 HRESULT CCell::Initialize(const _float3 * pPoints, _int iIndex)
 {
 	memcpy(m_vPoints, pPoints, sizeof(_float3) * POINT_END);
 
 	_vector		vLine[LINE_END];
 	
-
+	//여기서 체크하고
 	vLine[LINE_AB] = XMVector3Normalize(XMLoadFloat3(&m_vPoints[POINT_B]) - XMLoadFloat3(&m_vPoints[POINT_A]));	
+	m_vNormal[LINE_AB] = _float3(XMVectorGetZ(vLine[LINE_AB]) * -1.f, 0.f, XMVectorGetX(vLine[LINE_AB]));
+
+	_vector vAtoC = XMVector3Normalize(XMLoadFloat3(&m_vPoints[POINT_C]) - XMLoadFloat3(&m_vPoints[POINT_A]));
+
+	_float _fCos = XMVectorGetX(XMVector3Dot(XMVector3Normalize(vAtoC), XMLoadFloat3(&m_vNormal[LINE_AB])));
+
+	if (_fCos > 0)
+	{
+		_float3 _vTemp = m_vPoints[POINT_B];
+		m_vPoints[POINT_B] = m_vPoints[POINT_C];
+		m_vPoints[POINT_C] = _vTemp;
+		vLine[LINE_AB] = XMVector3Normalize(XMLoadFloat3(&m_vPoints[POINT_B]) - XMLoadFloat3(&m_vPoints[POINT_A]));
+		m_vNormal[LINE_AB] = _float3(XMVectorGetZ(vLine[LINE_AB]) * -1.f, 0.f, XMVectorGetX(vLine[LINE_AB]));
+	}
+	
 	vLine[LINE_BC] = XMVector3Normalize(XMLoadFloat3(&m_vPoints[POINT_C]) - XMLoadFloat3(&m_vPoints[POINT_B]));
 	vLine[LINE_CA] = XMVector3Normalize(XMLoadFloat3(&m_vPoints[POINT_A]) - XMLoadFloat3(&m_vPoints[POINT_C]));
-
-	m_vNormal[LINE_AB] = _float3(XMVectorGetZ(vLine[LINE_AB]) * -1.f, 0.f, XMVectorGetX(vLine[LINE_AB]));
+	
+	
 	m_vNormal[LINE_BC] = _float3(XMVectorGetZ(vLine[LINE_BC]) * -1.f, 0.f, XMVectorGetX(vLine[LINE_BC]));
 	m_vNormal[LINE_CA] = _float3(XMVectorGetZ(vLine[LINE_CA]) * -1.f, 0.f, XMVectorGetX(vLine[LINE_CA]));
 
@@ -120,6 +152,18 @@ HRESULT CCell::Render_Cell(_float fHeight, _float4 vColor)
 	m_pVIBuffer->Render();
 
 	return S_OK;
+}
+void CCell::Set_Normal()
+{
+	_vector		vLine[LINE_END];
+
+	vLine[LINE_AB] = XMVector3Normalize(XMLoadFloat3(&m_vPoints[POINT_B]) - XMLoadFloat3(&m_vPoints[POINT_A]));
+	vLine[LINE_BC] = XMVector3Normalize(XMLoadFloat3(&m_vPoints[POINT_C]) - XMLoadFloat3(&m_vPoints[POINT_B]));
+	vLine[LINE_CA] = XMVector3Normalize(XMLoadFloat3(&m_vPoints[POINT_A]) - XMLoadFloat3(&m_vPoints[POINT_C]));
+
+	m_vNormal[LINE_AB] = _float3(XMVectorGetZ(vLine[LINE_AB]) * -1.f, 0.f, XMVectorGetX(vLine[LINE_AB]));
+	m_vNormal[LINE_BC] = _float3(XMVectorGetZ(vLine[LINE_BC]) * -1.f, 0.f, XMVectorGetX(vLine[LINE_BC]));
+	m_vNormal[LINE_CA] = _float3(XMVectorGetZ(vLine[LINE_CA]) * -1.f, 0.f, XMVectorGetX(vLine[LINE_CA]));
 }
 #endif // _DEBUG
 

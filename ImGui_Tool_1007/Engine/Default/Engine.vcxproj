@@ -193,6 +193,7 @@
     <ClCompile Include="..\Private\Object_Manager.cpp" />
     <ClCompile Include="..\Private\Picking.cpp" />
     <ClCompile Include="..\private\PipeLine.cpp" />
+    <ClCompile Include="..\private\PointInCell.cpp" />
     <ClCompile Include="..\Private\RandMgr.cpp" />
     <ClCompile Include="..\Private\Renderer.cpp" />
     <ClCompile Include="..\private\Shader.cpp" />
@@ -249,6 +250,7 @@
     <ClInclude Include="..\Public\Object_Manager.h" />
     <ClInclude Include="..\Public\Picking.h" />
     <ClInclude Include="..\public\PipeLine.h" />
+    <ClInclude Include="..\public\PointInCell.h" />
     <ClInclude Include="..\Public\RandMgr.h" />
     <ClInclude Include="..\Public\Renderer.h" />
     <ClInclude Include="..\public\Shader.h" />

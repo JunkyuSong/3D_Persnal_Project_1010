@@ -9,6 +9,8 @@ class CTexture;
 class CRenderer;
 class CTransform;
 class CVIBuffer_Terrain;
+
+class CNavigation;
 END
 
 BEGIN(Client)
@@ -29,12 +31,16 @@ public:
 
 	_bool			Picking(_float3& _vPos);
 
+	void			Set_Navi(CNavigation* _pNavigationCom);
+
 private:
 	CShader*				m_pShaderCom = nullptr;
 	CTexture*				m_pTextureCom = nullptr;
 	CRenderer*				m_pRendererCom = nullptr;
 	CTransform*				m_pTransformCom = nullptr;
 	CVIBuffer_Terrain*		m_pVIBufferCom = nullptr;
+
+	CNavigation*			m_pNavigationCom = nullptr;
 
 private:
 	HRESULT Ready_Components();

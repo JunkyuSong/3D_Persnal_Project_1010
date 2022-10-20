@@ -76,6 +76,13 @@ HRESULT CTerrain::Render()
 	if (FAILED(m_pVIBufferCom->Render()))
 		return E_FAIL;
 
+#ifdef _DEBUG
+
+	if(m_pNavigationCom)
+		m_pNavigationCom->Render();
+
+#endif
+
 	return S_OK;
 }
 
@@ -88,6 +95,13 @@ _bool CTerrain::Picking(_float3& _vPos)
 		XMStoreFloat3(&_vPos, vPickPos);
 	}
 	return _bPick;
+}
+
+void CTerrain::Set_Navi(CNavigation * _pNavigationCom)
+{
+	Safe_Release(m_pNavigationCom);
+	m_pNavigationCom = _pNavigationCom;
+	Safe_AddRef(m_pNavigationCom);
 }
 
 HRESULT CTerrain::Ready_Components()
@@ -111,6 +125,10 @@ HRESULT CTerrain::Ready_Components()
 	/* For.Com_Texture */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
+
+	/* For.Com_Navigation */
+	/*if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom)))
+		return E_FAIL;*/
 
 	return S_OK;
 }
@@ -182,4 +200,7 @@ void CTerrain::Free()
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);
+
+
+	Safe_Release(m_pNavigationCom);
 }

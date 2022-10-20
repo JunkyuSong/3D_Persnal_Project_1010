@@ -22,9 +22,13 @@ public:
 	virtual void Update(_fmatrix TransformMatrix);
 	virtual _bool Collision(CCollider* pTargetCollider);
 
+public:
+	_bool		Picking();
+
 #ifdef _DEBUG
 public:
 	virtual HRESULT Render();
+	BoundingSphere*			Get_Sphere() { return m_pSphere; }
 #endif // _DEBUG
 
 private:

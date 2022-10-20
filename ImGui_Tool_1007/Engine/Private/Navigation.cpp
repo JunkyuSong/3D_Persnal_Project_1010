@@ -1,5 +1,6 @@
 #include "..\Public\Navigation.h"
 #include "Cell.h"
+#include "PointInCell.h"
 
 CNavigation::CNavigation(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CComponent(pDevice, pContext)
@@ -52,9 +53,16 @@ HRESULT CNavigation::Initialize_Prototype(const _tchar * pNavigationDataFilePath
 	return S_OK;
 }
 
+HRESULT CNavigation::Initialize_Prototype()
+{
+	if (FAILED(__super::Initialize_Prototype()))
+		return E_FAIL;
+	return S_OK;
+}
+
 HRESULT CNavigation::Initialize(void * pArg)
 {
-
+	
 	if(nullptr != pArg)
 		memcpy(&m_NavigationDesc, pArg, sizeof(NAVIGATIONDESC));
 
@@ -104,7 +112,7 @@ _bool CNavigation::isMove(_fvector vPosition)
 	}
 	
 
-	return _bool();
+	return true;
 }
 
 #ifdef _DEBUG
@@ -122,8 +130,117 @@ HRESULT CNavigation::Render()
 	else
 		m_Cells[m_NavigationDesc.iCurrentIndex]->Render_Cell(0.05f, _float4(1.f, 0.f, 0.f, 1.f));
 	
-
+	for (auto& _pPoint : m_Points)
+	{
+		_pPoint->Render();
+	}
 	return S_OK;
+}
+
+void CNavigation::MakeCell(CPointInCell* _p1, CPointInCell* _p2, CPointInCell* _p3)
+{
+	vector<CPointInCell*> _Temp;
+	_Temp.push_back(_p1);
+	_Temp.push_back(_p2);
+	_Temp.push_back(_p3);
+	_float3 _vPoints[CCell::POINT_END];
+	_vPoints[CCell::POINT_A] = _p1->Get_Point();
+	_vPoints[CCell::POINT_B] = _p2->Get_Point();
+	_vPoints[CCell::POINT_C] = _p3->Get_Point();
+
+	CCell*			pCell = CCell::Create(m_pDevice, m_pContext, _vPoints, m_Cells.size());
+	if (nullptr == pCell)
+		return;
+	
+	//인덱스 맞는지 다시 확인
+	_vPoints[CCell::POINT_A] = pCell->Get_Point(CCell::POINT_A);
+	_vPoints[CCell::POINT_B] = pCell->Get_Point(CCell::POINT_B);
+	_vPoints[CCell::POINT_C] = pCell->Get_Point(CCell::POINT_C);
+
+	for (auto& _p : _Temp)
+	{
+		if (_vPoints[CCell::POINT_A].x == _p->Get_Point().x
+			&&_vPoints[CCell::POINT_A].y == _p->Get_Point().y
+			&&_vPoints[CCell::POINT_A].z == _p->Get_Point().z)
+		{
+			_p->Add_Cell(pCell, CCell::POINT_A);
+			pCell->Set_PointIndex(CCell::POINT_A, _p->Get_Index());
+		}
+		else
+		{
+			if (_vPoints[CCell::POINT_B].x == _p->Get_Point().x
+				&&_vPoints[CCell::POINT_B].y == _p->Get_Point().y
+				&&_vPoints[CCell::POINT_B].z == _p->Get_Point().z)
+			{
+				_p->Add_Cell(pCell, CCell::POINT_B);
+				pCell->Set_PointIndex(CCell::POINT_B, _p->Get_Index());
+			}
+			else
+			{
+				_p->Add_Cell(pCell, CCell::POINT_C);
+				pCell->Set_PointIndex(CCell::POINT_C, _p->Get_Index());
+			}
+		}
+	}
+
+	m_Cells.push_back(pCell);
+}
+
+void CNavigation::MakePoint(CPointInCell* _pPoint)
+{
+	_pPoint->Set_Index(m_Points.size());
+	m_Points.push_back(_pPoint);
+}
+
+void CNavigation::DeleteCell(_uint _iIndex)
+{
+	_int* _iIndiecs = m_Cells[_iIndex]->Get_PointIndex();
+
+	for (_int i = 0; i < 3; ++i)
+	{
+		for (auto& _pPoint : m_Points)
+		{
+			if (_iIndiecs[i] == _pPoint->Get_Index())
+			{
+				_pPoint->Delete_Cell(m_Cells[_iIndex]);
+			}
+		}
+	}
+	auto& iter = m_Cells.begin();
+	for (_int i = 0; i <= _iIndex; ++iter, ++i);
+	Safe_Release(*iter);
+	m_Cells.erase(iter);
+}
+
+void CNavigation::DeletePoint(CPointInCell * _pPoint)
+{
+	
+	for (list<class CPointInCell*>::iterator& iter = m_Points.begin(); iter != m_Points.end();)
+	{
+		if (*iter == _pPoint)
+		{
+			_pPoint->Delete_Point(this);
+			Safe_Release(*iter);
+			m_Points.erase(iter);
+			return;
+		}
+		else
+		{
+			++iter;
+		}
+	}
+}
+
+CPointInCell* CNavigation::PickingPoint()
+{
+	for (auto& _point : m_Points)
+	{
+		if (_point->Picking())
+		{
+			return _point; 
+		}
+	}
+	return nullptr;
 }
 
 #endif // _DEBUG
@@ -171,6 +288,18 @@ CNavigation * CNavigation::Create(ID3D11Device * pDevice, ID3D11DeviceContext * 
 	return pInstance;
 }
 
+CNavigation * CNavigation::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+{
+	CNavigation*			pInstance = new CNavigation(pDevice, pContext);
+
+	if (FAILED(pInstance->Initialize_Prototype()))
+	{
+		MSG_BOX(TEXT("Failed To Created : CNavigation"));
+		Safe_Release(pInstance);
+	}
+	return pInstance;
+}
+
 CComponent * CNavigation::Clone(void * pArg)
 {
 	CNavigation*			pInstance = new CNavigation(*this);
@@ -189,6 +318,9 @@ void CNavigation::Free()
 
 	for (auto& pCell : m_Cells)
 		Safe_Release(pCell);
-
 	m_Cells.clear();
+
+	for (auto& pPoint : m_Points)
+		Safe_Release(pPoint);
+	m_Points.clear();
 }

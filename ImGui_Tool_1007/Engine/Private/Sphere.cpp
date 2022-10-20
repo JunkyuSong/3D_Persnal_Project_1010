@@ -1,7 +1,7 @@
 #include "..\Public\Sphere.h"
 #include "AABB.h"
 #include "OBB.h"
-
+#include "Picking.h"
 CSphere::CSphere(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CCollider(pDevice, pContext)
 {
@@ -63,6 +63,18 @@ _bool CSphere::Collision(CCollider * pTargetCollider)
 	}
 
 	return m_isColl;
+}
+
+_bool CSphere::Picking()
+{
+	
+	_vector _vPos, _vDir;
+	CPicking::Get_Instance()->Compute_LocalRayInfo(_vDir, _vPos, nullptr);
+	_float _fDist;
+	_vDir = XMVector3Normalize(_vDir);
+	if (m_pSphere->Intersects(_vPos, _vDir, _fDist))
+		return true;
+	return false;
 }
 
 HRESULT CSphere::Render()

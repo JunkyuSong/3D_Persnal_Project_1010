@@ -11,7 +11,7 @@ class CImGui :
 	DECLARE_SINGLETON(CImGui)
 	
 private:
-	enum TOOL_TYPE { TOOL_UI, TOOL_OBJ, TOOL_END };
+	enum TOOL_TYPE { TOOL_UI, TOOL_OBJ, TOOL_NAVI, TOOL_END };
 
 private:
 	CImGui();

@@ -67,7 +67,9 @@ void CPicking::Tick()
 
 void CPicking::Compute_LocalRayInfo(_vector& pRayDir, _vector& pRayPos, CTransform * pTransform)
 {
-	_matrix		WorldMatrixInv = pTransform->Get_WorldMatrixInverse();
+	_matrix		WorldMatrixInv = XMMatrixIdentity();
+	if (pTransform)
+		WorldMatrixInv = pTransform->Get_WorldMatrixInverse();
 	//XMStoreFloat3(pRayPos, XMVector3TransformCoord(XMLoadFloat3(&m_vRayPos), WorldMatrixInv));
 	pRayPos = XMVector3TransformCoord(XMLoadFloat3(&m_vRayPos), WorldMatrixInv);
 	//XMStoreFloat3(pRayDir, XMVector3TransformNormal(XMLoadFloat3(&m_vRayDir), WorldMatrixInv));

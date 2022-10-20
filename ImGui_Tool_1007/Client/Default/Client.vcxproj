@@ -200,6 +200,7 @@
     <ClInclude Include="..\Public\Magician.h" />
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\Monster.h" />
+    <ClInclude Include="..\public\Navigation_Tool.h" />
     <ClInclude Include="..\Public\Obj_Anim.h" />
     <ClInclude Include="..\Public\Obj_NonAnim.h" />
     <ClInclude Include="..\Public\Obj_Plus.h" />
@@ -253,6 +254,7 @@
     <ClCompile Include="..\Private\Magician.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\private\Monster.cpp" />
+    <ClCompile Include="..\private\Navigation_Tool.cpp" />
     <ClCompile Include="..\Private\Obj_Anim.cpp" />
     <ClCompile Include="..\Private\Obj_NonAnim.cpp" />
     <ClCompile Include="..\Private\Obj_Plus.cpp" />

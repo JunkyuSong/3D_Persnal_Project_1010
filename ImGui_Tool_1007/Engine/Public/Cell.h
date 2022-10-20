@@ -4,7 +4,7 @@
 
 BEGIN(Engine)
 
-class CCell final : public CBase
+class ENGINE_DLL CCell final : public CBase
 {
 public:
 	enum POINT { POINT_A, POINT_B, POINT_C, POINT_END };
@@ -32,6 +32,7 @@ public:
 		m_iNeighborIndex[eLine] = pNeighbor->Get_Index();
 	}
 
+	void Mapping_Point();
 
 public:
 	HRESULT Initialize(const _float3* pPoints, _int iIndex);
@@ -41,6 +42,10 @@ public:
 #ifdef _DEBUG
 public:
 	HRESULT Render_Cell(_float fHeight = 0.f, _float4 vColor = _float4(0.f, 1.f, 0.f, 1.f));
+	_float3* Get_Points(POINT _ePoint) { return &(m_vPoints[_ePoint]); }
+	void	Set_Normal();
+	void	Set_PointIndex(POINT _ePoint,_int _iindex) { m_iPointIndex[_ePoint] = _iindex; }
+	_int*	Get_PointIndex()							{ return m_iPointIndex; }
 #endif // _DEBUG
 
 private:
@@ -56,6 +61,7 @@ private:
 #ifdef _DEBUG
 	class CVIBuffer_Cell*	m_pVIBuffer = nullptr;
 	class CShader*			m_pShader = nullptr;
+	_int					m_iPointIndex[POINT_END];
 #endif
 
 public:

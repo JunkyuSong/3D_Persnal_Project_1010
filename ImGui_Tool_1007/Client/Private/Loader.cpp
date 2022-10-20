@@ -391,12 +391,16 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CCapsule::Create(m_pDevice, m_pContext, CCollider::TYPE_CAPSULE))))
 		return E_FAIL;
 
-	//lstrcpy(m_szLoadingText, TEXT("네비게이션데이터를 생성하는 중입니다."));
+	lstrcpy(m_szLoadingText, TEXT("네비게이션데이터를 생성하는 중입니다."));
 
-	///* For.Prototype_Component_Navigation */
+	/* For.Prototype_Component_Navigation */
 	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"),
 	//	CNavigation::Create(m_pDevice, m_pContext, TEXT("../Bin/Data/NavigationData.dat")))))
 	//	return E_FAIL;
+
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation_Ampty"),
+		CNavigation::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 

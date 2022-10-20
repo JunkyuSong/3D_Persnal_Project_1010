@@ -163,6 +163,9 @@
     <Filter Include="03. Component\01. Status">
       <UniqueIdentifier>{d2122dc9-701a-46e4-a4a1-1659203e5323}</UniqueIdentifier>
     </Filter>
+    <Filter Include="96. ImGuiMgr\Tool\Navigation_Tool">
+      <UniqueIdentifier>{c4f66d29-773a-42f5-8eda-3a2a47a12785}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -330,6 +333,9 @@
     <ClInclude Include="..\Public\Card.h">
       <Filter>02.GameObjects\04. Weapon\01. Magician\02. Card</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Navigation_Tool.h">
+      <Filter>96. ImGuiMgr\Tool\Navigation_Tool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -478,6 +484,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Card.cpp">
       <Filter>02.GameObjects\04. Weapon\01. Magician\02. Card</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Navigation_Tool.cpp">
+      <Filter>96. ImGuiMgr\Tool\Navigation_Tool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

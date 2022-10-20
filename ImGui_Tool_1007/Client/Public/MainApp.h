@@ -39,6 +39,7 @@ private:
 
 private:
 	HRESULT Open_Level(LEVEL eLevelID);
+	HRESULT Ready_Gara();
 
 private:  /* For.Static */
 	HRESULT Ready_Prototype_Component();

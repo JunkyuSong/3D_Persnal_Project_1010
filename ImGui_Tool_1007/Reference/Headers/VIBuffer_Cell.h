@@ -18,6 +18,11 @@ public:
 	virtual HRESULT Render();
 
 public:
+	HRESULT Map(D3D11_MAPPED_SUBRESOURCE* _mappedResource);
+	void	UnMap();
+
+
+public:
 	static CVIBuffer_Cell* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _float3* pPoints);
 	virtual CComponent* Clone(void* pArg);
 	virtual void Free();

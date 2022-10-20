@@ -5,6 +5,7 @@
 #include "..\Public\ImGuiMgr.h"
 #include "GameInstance.h"
 #include "Obj_Tool.h"
+#include "Navigation_Tool.h"
 
 IMPLEMENT_SINGLETON(CImGui)
 
@@ -69,6 +70,7 @@ void CImGui::Free()
 	// Cleanup
 
 	CObj_Tool::Destroy_Instance();
+	CNavigation_Tool::Destroy_Instance();
 
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
@@ -124,6 +126,14 @@ _uint CImGui::Tick()
 			m_eCurToolType = TOOL_OBJ;
 			//Tool_UI();
 			CObj_Tool::Get_Instance()->Tool_Obj();
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Navi_Tool"))
+		{
+			m_eCurToolType = TOOL_NAVI;
+			//Tool_UI();
+			CNavigation_Tool::Get_Instance()->Tick();
 			ImGui::EndTabItem();
 		}
 

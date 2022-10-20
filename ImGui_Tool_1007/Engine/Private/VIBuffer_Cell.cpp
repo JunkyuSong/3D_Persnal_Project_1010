@@ -21,9 +21,9 @@ HRESULT CVIBuffer_Cell::Initialize_Prototype(const _float3* pPoints)
 
 	ZeroMemory(&m_BufferDesc, sizeof(D3D11_BUFFER_DESC));
 	m_BufferDesc.ByteWidth = m_iNumVertices * m_iStride;
-	m_BufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	m_BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	m_BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	m_BufferDesc.CPUAccessFlags = 0;
+	m_BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	m_BufferDesc.MiscFlags = 0;
 	m_BufferDesc.StructureByteStride = m_iStride;
 
@@ -118,6 +118,20 @@ HRESULT CVIBuffer_Cell::Render()
 	m_pContext->DrawIndexed(4, 0, 0);
 
 	return S_OK;
+}
+
+HRESULT CVIBuffer_Cell::Map(D3D11_MAPPED_SUBRESOURCE* _mappedResource)
+{
+	if (FAILED(m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_DISCARD, 0, _mappedResource)))
+	{
+		return E_FAIL;
+	}
+	return S_OK;
+}
+
+void CVIBuffer_Cell::UnMap()
+{
+	m_pContext->Unmap(m_pVB,0);
 }
 
 CVIBuffer_Cell * CVIBuffer_Cell::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const _float3* pPoints)

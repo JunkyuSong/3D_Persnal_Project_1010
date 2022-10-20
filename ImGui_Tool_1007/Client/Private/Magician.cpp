@@ -469,8 +469,7 @@ void CMagician::CheckState(_float fTimeDelta)
 		m_bCollision[COLLIDERTYPE_PARRY] = true;
 		break;
 	case Client::CMagician::Walk_F:
-		Look_Player();
-		m_bCollision[COLLIDERTYPE_PARRY] = true;
+		Look_Player();		
 		m_fAppear += 0.2f;
 		//만약 1 이상 되면 공격패턴으로 바뀜.
 		if (m_fAppear >= 1.0f)
@@ -480,11 +479,12 @@ void CMagician::CheckState(_float fTimeDelta)
 			m_eReserveState = STATE_END;
 			//랜덤매니져---- 공격패턴
 			m_bCollision[COLLIDERTYPE_BODY] = true;
+			m_bCollision[COLLIDERTYPE_PARRY] = true;
 			m_eMonsterState = ATTACK_IDLE;
 		}
 		break;
 	case Client::CMagician::Walk_Disappear_F:
-		m_bCollision[COLLIDERTYPE_PARRY] = true;
+		m_bCollision[COLLIDERTYPE_PARRY] = false;
 		m_bCollision[COLLIDERTYPE_BODY] = false;
 		m_eMonsterState = ATTACK_DISAPPEAR;
 		//여기서 0.1씩 줄여서 사라지게끔
