@@ -113,6 +113,12 @@
       <AdditionalDependencies>d3d11.lib;dinput8.lib;dxguid.lib;Effects11d.lib;DirectXTKd.lib;assimp-vc140-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../ThirdPartyLib/</AdditionalLibraryDirectories>
     </Link>
+    <FxCompile>
+      <ShaderType>Effect</ShaderType>
+    </FxCompile>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -161,6 +167,7 @@
     <ClCompile Include="..\Private\Base.cpp" />
     <ClCompile Include="..\Private\Camera.cpp" />
     <ClCompile Include="..\Private\Capsule.cpp" />
+    <ClCompile Include="..\Private\Cell.cpp" />
     <ClCompile Include="..\private\Channel.cpp" />
     <ClCompile Include="..\Private\Collider.cpp" />
     <ClCompile Include="..\Private\CollisionMgr.cpp" />
@@ -180,6 +187,7 @@
     <ClCompile Include="..\private\MeshContainer.cpp" />
     <ClCompile Include="..\private\Model.cpp" />
     <ClCompile Include="..\Private\MotionTrail.cpp" />
+    <ClCompile Include="..\Private\Navigation.cpp" />
     <ClCompile Include="..\private\NonAnimModel.cpp" />
     <ClCompile Include="..\Private\OBB.cpp" />
     <ClCompile Include="..\Private\Object_Manager.cpp" />
@@ -194,6 +202,7 @@
     <ClCompile Include="..\Private\Timer_Manager.cpp" />
     <ClCompile Include="..\private\Transform.cpp" />
     <ClCompile Include="..\private\VIBuffer.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Cell.cpp" />
     <ClCompile Include="..\private\VIBuffer_Rect.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp" />
     <ClCompile Include="..\Public\Engine_Struct.cpp" />
@@ -207,6 +216,7 @@
     <ClInclude Include="..\Public\Base.h" />
     <ClInclude Include="..\Public\Camera.h" />
     <ClInclude Include="..\Public\Capsule.h" />
+    <ClInclude Include="..\Public\Cell.h" />
     <ClInclude Include="..\public\Channel.h" />
     <ClInclude Include="..\Public\Collider.h" />
     <ClInclude Include="..\Public\CollisionMgr.h" />
@@ -233,6 +243,7 @@
     <ClInclude Include="..\public\MeshContainer.h" />
     <ClInclude Include="..\public\Model.h" />
     <ClInclude Include="..\Public\MotionTrail.h" />
+    <ClInclude Include="..\Public\Navigation.h" />
     <ClInclude Include="..\public\NonAnimModel.h" />
     <ClInclude Include="..\Public\OBB.h" />
     <ClInclude Include="..\Public\Object_Manager.h" />
@@ -247,8 +258,12 @@
     <ClInclude Include="..\Public\Timer_Manager.h" />
     <ClInclude Include="..\public\Transform.h" />
     <ClInclude Include="..\public\VIBuffer.h" />
+    <ClInclude Include="..\Public\VIBuffer_Cell.h" />
     <ClInclude Include="..\public\VIBuffer_Rect.h" />
     <ClInclude Include="..\Public\VIBuffer_Terrain.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Cell.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

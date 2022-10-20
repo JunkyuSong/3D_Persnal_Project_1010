@@ -24,6 +24,7 @@
 #include "Knife.h"
 #include "UI_PlayerHpBar.h"
 #include "Card.h"
+#include "Navigation.h"
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice(pDevice)
@@ -390,7 +391,12 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CCapsule::Create(m_pDevice, m_pContext, CCollider::TYPE_CAPSULE))))
 		return E_FAIL;
 
+	//lstrcpy(m_szLoadingText, TEXT("네비게이션데이터를 생성하는 중입니다."));
 
+	///* For.Prototype_Component_Navigation */
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"),
+	//	CNavigation::Create(m_pDevice, m_pContext, TEXT("../Bin/Data/NavigationData.dat")))))
+	//	return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 

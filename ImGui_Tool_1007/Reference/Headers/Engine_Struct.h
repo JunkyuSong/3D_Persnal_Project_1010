@@ -30,6 +30,20 @@ namespace Engine
 
 	}LIGHTDESC;
 
+	//cell
+	typedef struct tagVertexColor
+	{
+		XMFLOAT3		vPosition;
+		XMFLOAT4		vColor;
+	}VTXCOL;
+
+	typedef struct ENGINE_DLL tagVertexColor_Declaration
+	{
+		static const unsigned int iNumElements = 2;
+		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
+	}VTXCOL_DECLARATION;
+
+
 	typedef struct tagVertexAnimModel
 	{
 		XMFLOAT3		vPosition;
@@ -145,11 +159,11 @@ namespace Engine
 	}VTXCUBETEX_DECLARATION;
 
 
-	typedef struct tagVertexColor
-	{
-		XMFLOAT3		vPosition;
-		unsigned long	dwColor;
-	}VTXCOL;
+	//typedef struct tagVertexColor
+	//{
+	//	XMFLOAT3		vPosition;
+	//	unsigned long	dwColor;
+	//}VTXCOL;
 
 	typedef struct tagGraphicDesc
 	{
