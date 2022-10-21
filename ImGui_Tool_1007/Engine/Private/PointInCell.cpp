@@ -75,10 +75,12 @@ void CPointInCell::Delete_Point(CNavigation* _pNavi)
 			}
 			else
 			{
-				++_pCellinNavi;
+				
 				++_pCell;
 			}
 		}
+		if (_pCellinNavi != (*NaviCell).end())
+			++_pCellinNavi;
 	}
 }
 

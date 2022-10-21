@@ -6,6 +6,7 @@
 #include "Navigation_Tool.h"
 #include "GameInstance.h"
 #include "TerrainMgr.h"
+#include "ImGuiMgr.h"
 
 IMPLEMENT_SINGLETON(CNavigation_Tool)
 
@@ -15,14 +16,14 @@ CNavigation_Tool::CNavigation_Tool()
 		_pPoint = nullptr;
 
 	ZeroMemory(m_szName,260);
+	strcpy_s(m_szName, "NAME");
 }
 
 void CNavigation_Tool::Tick()
 {
-
 	AUTOINSTANCE(CGameInstance, _Instance);
 	//네비 추가 : 이름 적고
-	//ImGui::InputText("", m_szName, 260);
+	ImGui::InputText("Name", m_szName, 260);
 	if (ImGui::Button("Create_Navi"))
 	{
 		if (m_pNavi == nullptr)
@@ -134,11 +135,24 @@ void CNavigation_Tool::PointTick()
 	//저장, 로드
 	if (ImGui::Button("Save"))
 	{
-		
+		_tchar* _szTemp = CImGui::Get_Instance()->ConvertCtoWC(m_szName);
+		Save(_szTemp);
+		Safe_Delete_Array(_szTemp);
 	}
 	if (ImGui::Button("Load"))
 	{
-		
+		m_bLoad = true;
+	}
+	if (m_bLoad)
+	{
+		ImGui::InputText("Load", m_szName, 260);
+		if (ImGui::Button("Enter") || _Instance->KeyDown(DIK_RETURN))
+		{
+			m_bLoad = false; _tchar* _szTemp = CImGui::Get_Instance()->ConvertCtoWC(m_szName);
+			Load(_szTemp);
+			Safe_Delete_Array(_szTemp);
+			
+		}
 	}
 }
 
@@ -193,13 +207,56 @@ void CNavigation_Tool::Add_List(CPointInCell* _pPoint)
 	m_pPoint[CCell::POINT_C] = nullptr;
 }
 
-void CNavigation_Tool::Save()
+void CNavigation_Tool::Save(_tchar* _szName)
 {
+	_tchar szFullPath[MAX_PATH] = TEXT(""); //여기에 넣을 예정
+	char szFileName[MAX_PATH] = ""; //파일 이름
+	char szExt[MAX_PATH] = ""; //확장자
 
+	//strPath에 파일 경로 떼고 파일 이름이랑 확장자 뺀다
+	// ex) abc / .png
+
+	lstrcpy(szFullPath, TEXT("../Bin/Data/"));
+	//파일 경로 넣고
+	lstrcat(szFullPath, _szName);
+	//파일 이름 넣고
+	lstrcat(szFullPath, TEXT(".dat"));
+	//경로 넣고
+	HANDLE		hFile = CreateFile(szFullPath, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+	
+	if (0 == hFile)
+		return;
+	_ulong		dwByte = 0;
+	_float3		vPoints[3];
+	vector<CCell*> _CellList = *(m_pNavi->Get_CellsPtr());
+
+	for (auto& _pCell : _CellList)
+	{
+		ZeroMemory(vPoints, sizeof(_float3) * 3);
+		vPoints[CCell::POINT_A] = _pCell->Get_Point(CCell::POINT_A);
+		vPoints[CCell::POINT_B] = _pCell->Get_Point(CCell::POINT_B);
+		vPoints[CCell::POINT_C] = _pCell->Get_Point(CCell::POINT_C);
+		WriteFile(hFile, vPoints, sizeof(_float3) * 3, &dwByte, nullptr);
+	}
+	
+	CloseHandle(hFile);
+
+	return;
 }
 
-void CNavigation_Tool::Load()
+void CNavigation_Tool::Load(_tchar* _szName)
 {
+	_tchar szFullPath[MAX_PATH] = TEXT(""); //여기에 넣을 예정
+
+	lstrcpy(szFullPath, TEXT("../Bin/Data/"));
+	//파일 경로 넣고
+	lstrcat(szFullPath, _szName);
+	//파일 이름 넣고
+	lstrcat(szFullPath, TEXT(".dat"));
+	//경로 넣고
+	
+
+	return;
 }
 
 void CNavigation_Tool::Free()

@@ -17,6 +17,8 @@
 #include "CameraMgr.h"
 #include "Camera_Player.h"
 
+#include "Navigation.h"
+
 CPlayer::CPlayer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 	, m_ePass(PASS_NONPICK)
@@ -97,7 +99,7 @@ HRESULT CPlayer::Initialize(void * pArg)
 
 	m_MonsterLayer = pGameInstance->Get_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Monster"));
 	
-	
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet( 1.f, 0.f, 1.f,1.f));
 
 	return S_OK;
 }
@@ -186,6 +188,9 @@ HRESULT CPlayer::Render()
 		if (nullptr != m_pColliderCom[i])
 			m_pColliderCom[i]->Render();
 	}*/
+
+	m_pNavigationCom->Render();
+
 #endif
 
 
@@ -509,45 +514,45 @@ void CPlayer::Move(_float fTimeDelta)
 	case Client::CPlayer::DIR_F:
 		m_eCurState = STATE_RUN_F;
 		m_pTransformCom->Turn(_vLook, _vCamLook, _fRatio);
-		m_pTransformCom->Go_Straight(fTimeDelta);
+		m_pTransformCom->Go_Straight(fTimeDelta, m_pNavigationCom);
 		break;
 	case Client::CPlayer::DIR_B:
 		m_eCurState = STATE_RUN_F;
 
 		m_pTransformCom->Turn(_vLook, _vCamLook * (-1.f), _fRatio);
-		m_pTransformCom->Go_Straight(fTimeDelta);
+		m_pTransformCom->Go_Straight(fTimeDelta, m_pNavigationCom);
 		break;
 	case Client::CPlayer::DIR_R:
 		m_eCurState = STATE_RUN_F;
 
 		m_pTransformCom->Turn(_vLook, _vCamRight, _fRatio);
-		m_pTransformCom->Go_Straight(fTimeDelta);
+		m_pTransformCom->Go_Straight(fTimeDelta, m_pNavigationCom);
 		break;
 	case Client::CPlayer::DIR_L:
 		m_eCurState = STATE_RUN_F;
 
 		m_pTransformCom->Turn(_vLook, _vCamRight * (-1.f), _fRatio);
-		m_pTransformCom->Go_Straight(fTimeDelta);
+		m_pTransformCom->Go_Straight(fTimeDelta, m_pNavigationCom);
 		break;
 	case Client::CPlayer::DIR_FR:
 		m_eCurState = STATE_RUN_F;
 		m_pTransformCom->Turn(_vLook, _vCamLook * (0.5f) + _vCamRight * 0.5f, _fRatio);
-		m_pTransformCom->Go_Straight(fTimeDelta);
+		m_pTransformCom->Go_Straight(fTimeDelta, m_pNavigationCom);
 		break;
 	case Client::CPlayer::DIR_BR:
 		m_eCurState = STATE_RUN_F;
 		m_pTransformCom->Turn(_vLook, _vCamLook * (-0.5f) + _vCamRight * 0.5f, _fRatio);
-		m_pTransformCom->Go_Straight(fTimeDelta);
+		m_pTransformCom->Go_Straight(fTimeDelta, m_pNavigationCom);
 		break;
 	case Client::CPlayer::DIR_FL:
 		m_eCurState = STATE_RUN_F;
 		m_pTransformCom->Turn(_vLook, _vCamLook * (0.5f) + _vCamRight * (-0.5f), _fRatio);
-		m_pTransformCom->Go_Straight(fTimeDelta);
+		m_pTransformCom->Go_Straight(fTimeDelta, m_pNavigationCom);
 		break;
 	case Client::CPlayer::DIR_BL:
 		m_eCurState = STATE_RUN_F;
 		m_pTransformCom->Turn(_vLook, _vCamLook * (-0.5f) + _vCamRight * (-0.5f), _fRatio);
-		m_pTransformCom->Go_Straight(fTimeDelta);
+		m_pTransformCom->Go_Straight(fTimeDelta, m_pNavigationCom);
 		break;
 	case Client::CPlayer::DIR_END:
 		m_eCurState = STATE_IDLE;
@@ -620,49 +625,49 @@ void CPlayer::TargetingMove(_float fTimeDelta)
 	case Client::CPlayer::DIR_F:
 		m_eCurState = STATE_RUN_F;
 		m_pTransformCom->Turn(_vLook, _vCamLook, _fRatio);
-		m_pTransformCom->Go_Straight(fTimeDelta);
+		m_pTransformCom->Go_Straight(fTimeDelta, m_pNavigationCom);
 		break;
 	case Client::CPlayer::DIR_B:
 		m_eCurState = STATE_RUN_B;
 
 		m_pTransformCom->Turn(_vLook, _vCamLook, _fRatio);
-		m_pTransformCom->Go_Straight(-fTimeDelta);
+		m_pTransformCom->Go_Straight(-fTimeDelta, m_pNavigationCom);
 		break;
 	case Client::CPlayer::DIR_R:
 		m_eCurState = STATE_RUN_R;
 
 		m_pTransformCom->Turn(_vLook, _vCamLook, _fRatio);
-		m_pTransformCom->Go_Right(fTimeDelta);
+		m_pTransformCom->Go_Right(fTimeDelta, m_pNavigationCom);
 		break;
 	case Client::CPlayer::DIR_L:
 		m_eCurState = STATE_RUN_L;
 
 		m_pTransformCom->Turn(_vLook, _vCamLook, _fRatio);
-		m_pTransformCom->Go_Right(-fTimeDelta);
+		m_pTransformCom->Go_Right(-fTimeDelta, m_pNavigationCom);
 		break;
 	case Client::CPlayer::DIR_FR:
 		m_eCurState = STATE_RUN_FR;
 		m_pTransformCom->Turn(_vLook, _vCamLook, _fRatio);
-		m_pTransformCom->Go_Straight((fTimeDelta) / (sqrtf(2.f)));
-		m_pTransformCom->Go_Right((fTimeDelta) / (sqrtf(2.f)));
+		m_pTransformCom->Go_Straight((fTimeDelta) / (sqrtf(2.f)), m_pNavigationCom);
+		m_pTransformCom->Go_Right((fTimeDelta) / (sqrtf(2.f)), m_pNavigationCom);
 		break;
 	case Client::CPlayer::DIR_BR:
 		m_eCurState = STATE_RUN_BR;
 		m_pTransformCom->Turn(_vLook, _vCamLook, _fRatio);
-		m_pTransformCom->Go_Straight((-fTimeDelta) / (sqrtf(2.f)));
-		m_pTransformCom->Go_Right((fTimeDelta) / (sqrtf(2.f)));
+		m_pTransformCom->Go_Straight((-fTimeDelta) / (sqrtf(2.f)), m_pNavigationCom);
+		m_pTransformCom->Go_Right((fTimeDelta) / (sqrtf(2.f)), m_pNavigationCom);
 		break;
 	case Client::CPlayer::DIR_FL:
 		m_eCurState = STATE_RUN_FL;
 		m_pTransformCom->Turn(_vLook, _vCamLook, _fRatio);
-		m_pTransformCom->Go_Straight((fTimeDelta) / (sqrtf(2.f)));
-		m_pTransformCom->Go_Right((-fTimeDelta) / (sqrtf(2.f)));
+		m_pTransformCom->Go_Straight((fTimeDelta) / (sqrtf(2.f)), m_pNavigationCom);
+		m_pTransformCom->Go_Right((-fTimeDelta) / (sqrtf(2.f)), m_pNavigationCom);
 		break;
 	case Client::CPlayer::DIR_BL:
 		m_eCurState = STATE_RUN_BL;
 		m_pTransformCom->Turn(_vLook, _vCamLook, _fRatio);
-		m_pTransformCom->Go_Straight((-fTimeDelta) / (sqrtf(2.f)));
-		m_pTransformCom->Go_Right((-fTimeDelta) / (sqrtf(2.f)));
+		m_pTransformCom->Go_Straight((-fTimeDelta) / (sqrtf(2.f)), m_pNavigationCom);
+		m_pTransformCom->Go_Right((-fTimeDelta) / (sqrtf(2.f)), m_pNavigationCom);
 		break;
 	case Client::CPlayer::DIR_END:
 		m_eCurState = STATE_IDLE;
@@ -1439,7 +1444,15 @@ void CPlayer::Get_AnimMat()
 	_fmatrix _World = m_pTransformCom->Get_WorldMatrix();
 	_vector _vPos;
 	_vPos = XMVector3TransformCoord(XMLoadFloat4(&m_AnimPos), _World);
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
+
+	_bool		isMove = true;
+
+	_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+	if (nullptr != m_pNavigationCom)
+		isMove = m_pNavigationCom->isMove(_vPos, &vNormal);
+
+	if (true == isMove)
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
 }
 
 void CPlayer::Cancle()
@@ -1602,6 +1615,14 @@ HRESULT CPlayer::Ready_Components()
 	_tStatus.fAttack = 40.f;
 	_tStatus.fHp = _tStatus.fMaxHp;
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Status"), TEXT("Com_Status"), (CComponent**)&m_pStatusCom, &_tStatus)))
+		return E_FAIL;
+
+	/* For.Com_Navigation */
+	CNavigation::NAVIGATIONDESC			NaviDesc;
+	ZeroMemory(&NaviDesc, sizeof(CNavigation::NAVIGATIONDESC));
+	NaviDesc.iCurrentIndex = 0;
+
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation_GamePlay"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
 		return E_FAIL;
 
 	return S_OK;
@@ -2021,4 +2042,5 @@ void CPlayer::Free()
 	Safe_Release(m_pTransformCom);
 	Safe_Release(m_pStatusCom);
 	Safe_Release(m_pTarget);
+	Safe_Release(m_pNavigationCom);
 }

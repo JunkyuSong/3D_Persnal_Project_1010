@@ -8,6 +8,7 @@ class CShader;
 class CRenderer;
 class CAnimModel;
 class CTransform;
+class CNavigation;
 END
 
 BEGIN(Client)
@@ -37,7 +38,7 @@ protected:
 
 	ATTACK					m_eMonsterState = ATTACK_IDLE;
 
-
+	CNavigation*			m_pNavigationCom = nullptr;
 public:
 	virtual void Free() override;
 };

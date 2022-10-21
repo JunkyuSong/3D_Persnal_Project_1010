@@ -24,13 +24,14 @@ public:
 	void Add_Strip(CPointInCell* _pPoint);
 	void Add_List(CPointInCell* _pPoint);
 
-	void Save();
-	void Load();
+	void Save(_tchar* _szName);
+	void Load(_tchar* _szName);
 
 	virtual void Free();
 
 private:
 	char			m_szName[260];
+	_bool			m_bLoad = false;
 	NAVIMODE		m_eNavi = NAVI_POINT;
 	ADDMODE			m_eMode = MODE_STRIP;
 	CNavigation*	m_pNavi = nullptr;

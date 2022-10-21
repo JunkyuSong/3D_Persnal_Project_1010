@@ -50,7 +50,7 @@ void CCard::Tick(_float fTimeDelta)
 
 	m_pTransformCom->Go_Up(fTimeDelta*20.f);
 	m_pColliderCom->Update(m_pTransformCom->Get_WorldMatrix());
-	//CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_WEAPON, m_pColliderCom, this);
+	CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_PLAYER_WEAPON, m_pColliderCom, this);
 	//일정 거리 이상 가면 ㅃㅇ
 	
 	
@@ -159,7 +159,7 @@ HRESULT CCard::Ready_Components()
 	CCollider::COLLIDERDESC		ColliderDesc;
 	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
 
-	ColliderDesc.vSize = _float3(8.f, 16.f, 3.f);
+	ColliderDesc.vSize = _float3(8.f, 16.f, 5.f);
 	ColliderDesc.vCenter = _float3(0.f, 0.f, 0.f);
 	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pColliderCom, &ColliderDesc)))

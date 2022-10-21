@@ -22,7 +22,9 @@ public:
 	virtual HRESULT Initialize(void* pArg);
 
 public:
-	_bool isMove(_fvector vPosition);
+	_bool isMove(_fvector vPosition, _vector* vSlide);
+	void	Set_Index(_int _iIndex) { m_NavigationDesc.iCurrentIndex = _iIndex; }
+	_int	Get_Index() { return m_NavigationDesc.iCurrentIndex; }
 
 #ifdef _DEBUG
 public:

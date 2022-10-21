@@ -13,6 +13,7 @@ class CTransform;
 class CAnimModel;
 class CMotionTrail;
 class CHierarchyNode;
+class CNavigation;
 class CLayer;
 END
 
@@ -223,6 +224,9 @@ private:
 	void Targeting();
 	void TargetCheck();
 
+
+private:
+	CNavigation*			m_pNavigationCom = nullptr;
 };
 
 END

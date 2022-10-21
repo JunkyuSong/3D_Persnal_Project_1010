@@ -55,7 +55,7 @@ HRESULT CMagician::Initialize(void * pArg)
 	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(5.f, 0.f, 5.f, 1.f));
 	
-	m_eCurState = Magician_StunStart_Sword;
+	m_eCurState = Magician_Idle2;
 	return S_OK;
 }
 
@@ -140,6 +140,7 @@ HRESULT CMagician::Render()
 		if (nullptr != m_pColliderCom[i])
 			m_pColliderCom[i]->Render();
 	}*/
+	m_pNavigationCom->Render();
 
 	return S_OK;
 }
@@ -169,7 +170,7 @@ void CMagician::CheckEndAnim()
 		m_eCurState = Magician_Idle;
 		break;
 	case Client::CMagician::Magician_Idle2:
-		m_eCurState = Magician_Idle;
+		m_eCurState = Magician_Idle2;
 		break;
 	case Client::CMagician::Hurt_Short:
 		m_eCurState = Magician_Idle;
@@ -550,7 +551,7 @@ void CMagician::CheckState(_float fTimeDelta)
 	case Client::CMagician::Magician_StunEnd_Sword:
 		break;
 	case Client::CMagician::Magician_StunStart_Cane:
-		m_pTransformCom->Go_Backward(fTimeDelta/* * 0.8f*/);
+		m_pTransformCom->Go_Backward(fTimeDelta,m_pNavigationCom);
 		break;
 	case Client::CMagician::Magician_StunLoop_Cane:
 		break;
@@ -940,7 +941,15 @@ void CMagician::Get_AnimMat()
 	_fmatrix _World = m_pTransformCom->Get_WorldMatrix();
 	_vector _vPos;
 	_vPos = XMVector3TransformCoord(XMLoadFloat4(&m_AnimPos), _World);
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
+
+	_bool		isMove = true;
+
+	_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+	if (nullptr != m_pNavigationCom)
+		isMove = m_pNavigationCom->isMove(_vPos, &vNormal);
+
+	if (true == isMove)
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
 }
 
 void CMagician::RenderGroup()
@@ -965,8 +974,16 @@ _bool CMagician::Collision(_float fTimeDelta)
 	{
 		_vector _vDir =	XMLoadFloat3(&(static_cast<CCapsule*>(m_pColliderCom[COLLIDERTYPE_PUSH])->Get_Dir()));
 		_float	_vDis = (static_cast<CCapsule*>(m_pColliderCom[COLLIDERTYPE_PUSH])->Get_Dis());
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-		m_pTransformCom->Get_State(CTransform::STATE_POSITION) + XMVector3Normalize( _vDir) * _vDis);
+		_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION) + XMVector3Normalize(_vDir) * _vDis;
+		_bool		isMove = true;
+
+		_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+		if (nullptr != m_pNavigationCom)
+			isMove = m_pNavigationCom->isMove(_vPos, &vNormal);
+
+		if (true == isMove)
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
+
 	}
 
 	AUTOINSTANCE(CGameInstance, _instance);
@@ -1084,11 +1101,21 @@ void CMagician::Look_Move_Player(_float _fPosX, _float _fPosZ)
 	CTransform* _Trans =
 		static_cast<CTransform*>(_Intance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
 
+	CNavigation* _pNavi =
+		static_cast<CNavigation*>(_Intance->Get_Player()->Get_ComponentPtr(TEXT("Com_Navigation")));
+	m_pNavigationCom->Set_Index(_pNavi->Get_Index());
 	_vector _vTargetPos = _Trans->Get_State(CTransform::STATE_POSITION);
 	_vTargetPos.m128_f32[0] += _fPosX;
 	_vTargetPos.m128_f32[2] += _fPosZ;
+	
+	_bool		isMove = true;
+	_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+	if (nullptr != m_pNavigationCom)
+		isMove = m_pNavigationCom->isMove(_vTargetPos,&vNormal);
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vTargetPos);
+	if (true == isMove)
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vTargetPos);
+	
 	m_pTransformCom->LookAt_ForLandObject(_Trans->Get_State(CTransform::STATE_POSITION));
 }
 
@@ -1174,6 +1201,14 @@ HRESULT CMagician::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB_Parry"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_PARRY], &ColliderDesc)))
 		return E_FAIL;
 
+	/* For.Com_Navigation */
+	CNavigation::NAVIGATIONDESC			NaviDesc;
+	ZeroMemory(&NaviDesc, sizeof(CNavigation::NAVIGATIONDESC));
+	NaviDesc.iCurrentIndex = 0;
+
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation_GamePlay"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
+		return E_FAIL;
+
 	
 	return S_OK;
 }
@@ -1251,7 +1286,7 @@ void CMagician::Ready_LimitTime()
 
 	m_vecLimitTime[Magician_Shoot1].push_back(45.f);
 
-	m_vecLimitTime[Magician_Shoot2].push_back(20.f);
+	m_vecLimitTime[Magician_Shoot2].push_back(30.f);
 	
 	m_vecLimitTime[Magician_StunStart_Cane].push_back(45.f);
 

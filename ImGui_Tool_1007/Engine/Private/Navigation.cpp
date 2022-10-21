@@ -72,14 +72,14 @@ HRESULT CNavigation::Initialize(void * pArg)
 	return S_OK;
 }
 
-_bool CNavigation::isMove(_fvector vPosition)
+_bool CNavigation::isMove(_fvector vPosition, _vector* vSlide)
 {
 	_int	iNeighborIndex = -1;
 
 	/* 현재 쎌 안에서 움직였다. */
 	/* 나간방향에 이웃이 있다면. 이웃의 인ㄷ게스를 받아오고. 
 	이웃이 없다면 안채워온다. */
-	if (true == m_Cells[m_NavigationDesc.iCurrentIndex]->isIn(vPosition, &iNeighborIndex))
+	if (true == m_Cells[m_NavigationDesc.iCurrentIndex]->isIn(vPosition, &iNeighborIndex, vSlide))
 		return true;
 
 	/* 현재 셀을 나갔다. */
@@ -93,7 +93,7 @@ _bool CNavigation::isMove(_fvector vPosition)
 				if (0 > iNeighborIndex)
 					return false;				
 
-				if (true == m_Cells[iNeighborIndex]->isIn(vPosition, &iNeighborIndex))
+				if (true == m_Cells[iNeighborIndex]->isIn(vPosition, &iNeighborIndex, vSlide))
 				{
 					/* 커런트 인덱스를 이웃의 인덱스로 바꿔준다. */
 					m_NavigationDesc.iCurrentIndex = iNeighborIndex;

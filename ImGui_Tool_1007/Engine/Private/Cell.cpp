@@ -105,15 +105,15 @@ _bool CCell::Compare(const _float3 & vSourPoint, const _float3 & vDestPoint)
 	return false;
 }
 
-_bool CCell::isIn(_fvector vPosition, _int * pNeighborIndex)
+_bool CCell::isIn(_fvector vPosition, _int * pNeighborIndex, _vector* _vSlide)
 {
 	for (_uint i = 0; i < LINE_END; ++i)
 	{
 		_vector		vDir = XMVector3Normalize(vPosition - XMLoadFloat3(&m_vPoints[i]));
-
+		
 		if (0 < XMVectorGetX(XMVector3Dot(vDir, XMLoadFloat3(&m_vNormal[i]))))
 		{
-			
+			*_vSlide = XMLoadFloat3(&m_vNormal[i]) * (-1.f);
 			*pNeighborIndex = m_iNeighborIndex[i];
 
 			return false;
