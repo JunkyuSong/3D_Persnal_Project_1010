@@ -85,6 +85,8 @@ void CNavigation_Tool::PointTick()
 		m_pPoint[CCell::POINT_A] = nullptr;
 	}
 
+	ImGui::InputFloat("Point.Y",&m_PointY);
+
 	for (int i = 0; i < CCell::POINT_END - 1; ++i)
 	{
 		if (m_pPoint[i])
@@ -110,10 +112,12 @@ void CNavigation_Tool::PointTick()
 		if (_pPoint == nullptr)
 		{
 			_float3 _vPos;
+			
 			if (false == CTerrainMgr::Get_Instance()->Get_Terrain(g_eCurLevel)->Picking(_vPos))
 			{
 				return;
 			}
+			_vPos.y = m_PointY;
 			_pPoint = CPointInCell::Create(_vPos);
 			m_pNavi->MakePoint(_pPoint);
 		}
@@ -254,7 +258,10 @@ void CNavigation_Tool::Load(_tchar* _szName)
 	//파일 이름 넣고
 	lstrcat(szFullPath, TEXT(".dat"));
 	//경로 넣고
-	
+	AUTOINSTANCE(CGameInstance, _Instance);
+	//Safe_Release(m_pNavi);
+	m_pNavi = static_cast<CNavigation*>( _Instance->Clone_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation_GamePlay")));
+	CTerrainMgr::Get_Instance()->Get_Terrain(g_eCurLevel)->Set_Navi(m_pNavi);
 
 	return;
 }

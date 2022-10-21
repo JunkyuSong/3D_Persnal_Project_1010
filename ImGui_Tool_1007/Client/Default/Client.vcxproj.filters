@@ -166,6 +166,9 @@
     <Filter Include="96. ImGuiMgr\Tool\Navigation_Tool">
       <UniqueIdentifier>{c4f66d29-773a-42f5-8eda-3a2a47a12785}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Terrain\Stage_01">
+      <UniqueIdentifier>{64654a03-0acf-458b-a2b3-0cfad57402e3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -336,6 +339,9 @@
     <ClInclude Include="..\public\Navigation_Tool.h">
       <Filter>96. ImGuiMgr\Tool\Navigation_Tool</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Stage_01.h">
+      <Filter>02.GameObjects\Terrain\Stage_01</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -487,6 +493,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Navigation_Tool.cpp">
       <Filter>96. ImGuiMgr\Tool\Navigation_Tool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Stage_01.cpp">
+      <Filter>02.GameObjects\Terrain\Stage_01</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

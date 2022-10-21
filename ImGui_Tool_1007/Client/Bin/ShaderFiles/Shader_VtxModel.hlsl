@@ -24,6 +24,16 @@ sampler DefaultSampler = sampler_state {
 	mipfilter = linear;*/
 };
 
+sampler PointSampler = sampler_state {
+
+	filter = min_mag_mip_point;
+	/*minfilter = linear;
+	magfilter = linear;
+	mipfilter = linear;*/
+	AddressU = WRAP;
+	AddressV = WRAP;
+};
+
 struct VS_IN
 {
 	float3		vPosition : POSITION;
@@ -124,7 +134,7 @@ PS_OUT PS_MAIN_2(PS_IN In)
 
 	Out.vColor = (vector)1.f;
 
-	vector			vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+	vector			vMtrlDiffuse = g_DiffuseTexture.Sample(PointSampler, In.vTexUV);
 	Out.vColor = vMtrlDiffuse;
 	if (0 == Out.vColor.a)
 		discard;
@@ -259,5 +269,15 @@ technique11 DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN_2();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN4();
+	}
+
+	pass Stage
+	{
+		SetRasterizerState(RS_CullNone);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		VertexShader = compile vs_5_0 VS_MAIN_2();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_2();
 	}
 }

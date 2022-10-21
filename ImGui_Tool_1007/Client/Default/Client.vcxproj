@@ -208,6 +208,7 @@
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\public\ReleaseMgr.h" />
     <ClInclude Include="..\Public\Saber.h" />
+    <ClInclude Include="..\Public\Stage_01.h" />
     <ClInclude Include="..\Public\Status.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\Public\TerrainMgr.h" />
@@ -262,6 +263,7 @@
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\private\ReleaseMgr.cpp" />
     <ClCompile Include="..\Private\Saber.cpp" />
+    <ClCompile Include="..\Private\Stage_01.cpp" />
     <ClCompile Include="..\Private\Status.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\Private\TerrainMgr.cpp" />

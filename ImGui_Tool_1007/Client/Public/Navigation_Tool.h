@@ -37,6 +37,8 @@ private:
 	CNavigation*	m_pNavi = nullptr;
 	_float3			m_vPoint[CCell::POINT_END];
 	CPointInCell*	m_pPoint[CCell::POINT_END];
+
+	_float			m_PointY = 0.f;
 };
 
 END
