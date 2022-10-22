@@ -19,6 +19,8 @@ public:
 
 	TMODEL Get_ForSave() {return m_tModel;}
 
+	_bool Picking(class CTransform* pTransform, _vector& pOut);
+
 private:
 	HRESULT Ready_MeshContainers();
 

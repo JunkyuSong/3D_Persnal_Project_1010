@@ -169,6 +169,12 @@
     <Filter Include="02.GameObjects\Terrain\Stage_01">
       <UniqueIdentifier>{64654a03-0acf-458b-a2b3-0cfad57402e3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\BackGround\Sky">
+      <UniqueIdentifier>{e21b752e-c6c1-4ccf-9a9b-af2e7e61c49b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\03.Stage_02">
+      <UniqueIdentifier>{77ebe287-4f29-4d25-8507-ec5c56b0102a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -342,6 +348,12 @@
     <ClInclude Include="..\Public\Stage_01.h">
       <Filter>02.GameObjects\Terrain\Stage_01</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Sky.h">
+      <Filter>02.GameObjects\BackGround\Sky</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Stage_02.h">
+      <Filter>01.Levels\03.Stage_02</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -496,6 +508,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Stage_01.cpp">
       <Filter>02.GameObjects\Terrain\Stage_01</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sky.cpp">
+      <Filter>02.GameObjects\BackGround\Sky</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Stage_02.cpp">
+      <Filter>01.Levels\03.Stage_02</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

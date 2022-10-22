@@ -127,7 +127,7 @@ void CCamera_Player::Check_Dis()
 			_vCamPos + (_vDir*0.025f));
 		XMStoreFloat4(&(m_CameraDesc.vAt), _vCamPos + (_vDir*0.025f));
 	}
-	m_CameraDesc.vAt.y = 1.5f;
+	m_CameraDesc.vAt.y = _vPos.m128_f32[1] + 1.5f;
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&(m_CameraDesc.vAt)));
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, (XMVector3TransformCoord(XMLoadFloat3(&m_vDis), m_pTransformCom->Get_WorldMatrix())));

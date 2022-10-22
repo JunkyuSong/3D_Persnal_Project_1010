@@ -3,6 +3,7 @@
 #include "Client_Defines.h"
 #include "Navigation.h"
 #include "PointInCell.h"
+#include "Stage_01.h"
 BEGIN(Client)
 class CNavigation_Tool final:
 	public CBase
@@ -29,6 +30,7 @@ public:
 
 	virtual void Free();
 
+
 private:
 	char			m_szName[260];
 	_bool			m_bLoad = false;
@@ -39,6 +41,8 @@ private:
 	CPointInCell*	m_pPoint[CCell::POINT_END];
 
 	_float			m_PointY = 0.f;
+	CStage_01*	m_pPickModel = nullptr;
+	
 };
 
 END

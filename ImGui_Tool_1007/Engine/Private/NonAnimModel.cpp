@@ -76,6 +76,16 @@ HRESULT CNonAnimModel::Render(_uint _iMeshIndex)
 	return S_OK;
 }
 
+_bool CNonAnimModel::Picking(CTransform * pTransform, _vector & pOut)
+{
+	for (auto& _Mesh : m_Meshes)
+	{
+		if (_Mesh->Picking(pTransform, pOut))
+			return true;
+	}
+	return false;
+}
+
 HRESULT CNonAnimModel::Ready_MeshContainers()
 {
 	m_iNumMeshes = m_pAIScene->mNumMeshes;

@@ -1,15 +1,20 @@
 #include "..\Public\MeshContainer.h"
-
+#include "Transform.h"
+#include "Picking.h"
+#include "PipeLine.h"
 
 CMeshContainer::CMeshContainer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CVIBuffer(pDevice, pContext)
 {
 	ZeroMemory(m_szName, sizeof(char)*MAX_PATH);
+	ZeroMemory(&m_in, sizeof(TCONTAINER));
+
 }
 
 CMeshContainer::CMeshContainer(const CMeshContainer & rhs)
 	: CVIBuffer(rhs)
 	, m_iMaterialIndex(rhs.m_iMaterialIndex)
+	, m_in(rhs.m_in)
 {
 	strcpy_s(m_szName, rhs.m_szName);
 }
@@ -68,6 +73,7 @@ HRESULT CMeshContainer::Initialize_Prototype(const aiMesh * pAIMesh, TCONTAINER*
 
 HRESULT CMeshContainer::Initialize_Prototype(TCONTAINER tIn)
 {
+	m_in = tIn;
 	m_iMaterialIndex = tIn.iIndex;
 #pragma region VERTEXBUFFER
 	m_iNumVertexBuffers = 1;
@@ -145,7 +151,7 @@ HRESULT CMeshContainer::Ready_IndexBuffer(const aiMesh* pAIMesh, TCONTAINER* _pO
 		memcpy(&(_pOut->pIndices[i]), &(pIndices[i]), sizeof(FACEINDICES32));
 	}
 
-
+	m_in = *_pOut;
 	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
 	m_SubResourceData.pSysMem = pIndices;
 
@@ -198,6 +204,7 @@ HRESULT CMeshContainer::Ready_IndexBuffer(const aiMesh* pAIMesh, TANIMCONTAINER*
 }
 HRESULT CMeshContainer::Ready_IndexBuffer(TANIMCONTAINER _tIn)
 {
+	
 	m_iNumPrimitives = _tIn.NumFaces;
 	m_iIndexSizeofPrimitive = sizeof(FACEINDICES32);
 	m_iNumIndicesofPrimitive = 3;
@@ -270,6 +277,67 @@ HRESULT CMeshContainer::Ready_IndexBuffer(TCONTAINER _tIn)
 	Safe_Delete_Array(pIndices);
 	return S_OK;
 }
+_bool CMeshContainer::Picking(CTransform * pTransform, _vector & pOut)
+{
+	CPicking*		pPicking = CPicking::Get_Instance();
+	_bool _bPicking = false;
+	Safe_AddRef(pPicking);
+
+	_vector			vRayDir, vRayPos;
+
+	pPicking->Compute_LocalRayInfo(vRayDir, vRayPos, pTransform);
+	vRayDir = XMVector3Normalize(vRayDir);
+
+	_vector		_pVerticesPos_0;
+	_vector		_pVerticesPos_1;
+	_vector		_pVerticesPos_2;
+	_float		fDist;
+	_matrix		WorldMatrix = pTransform->Get_WorldMatrix();
+
+
+	_uint		iIndices[3] = { NULL };
+	_float		_fFinalDistToCam = 0.f;
+	_bool		_bOne = false;
+	for (_uint i = 0; i < m_iNumPrimitives; ++i)
+	{
+		iIndices[0] = m_in.pIndices[i]._0;
+		iIndices[1] = m_in.pIndices[i]._1;
+		iIndices[2] = m_in.pIndices[i]._2;
+		
+		_pVerticesPos_0 = XMLoadFloat3(&(m_in.pVertices[iIndices[0]].vPosition));
+		_pVerticesPos_1 = XMLoadFloat3(&(m_in.pVertices[iIndices[1]].vPosition));
+		_pVerticesPos_2 = XMLoadFloat3(&(m_in.pVertices[iIndices[2]].vPosition));
+
+		if (true == TriangleTests::Intersects(vRayPos, vRayDir, _pVerticesPos_0, _pVerticesPos_1, _pVerticesPos_2, fDist))
+		{
+			_vector	vPickPos = vRayPos + (vRayDir * fDist);
+
+			if (_bOne == false)
+			{
+				pOut = XMVector3TransformCoord(vPickPos, WorldMatrix);
+				_fFinalDistToCam = XMVectorGetX(XMVector3Length(pOut - XMLoadFloat4(&(CPipeLine::Get_Instance()->Get_CamPosition()))));
+				
+				_bOne = true;
+			}
+
+			vPickPos = XMVector3TransformCoord(vPickPos, WorldMatrix);
+			_float _fCurDistToCam = XMVectorGetX(XMVector3Length(vPickPos - XMLoadFloat4(&(CPipeLine::Get_Instance()->Get_CamPosition()))));
+
+			if (_fFinalDistToCam > _fCurDistToCam)
+			{
+				pOut = vPickPos;
+				_fFinalDistToCam = _fCurDistToCam;
+			}
+			
+			_bPicking = true;
+		}
+	}
+
+	Safe_Release(pPicking);
+
+	return _bPicking;
+}
+
 CMeshContainer * CMeshContainer::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const aiMesh * pAIMesh, TCONTAINER*	_pOut)
 {
 	CMeshContainer*			pInstance = new CMeshContainer(pDevice, pContext);

@@ -1,24 +1,24 @@
 #include "stdafx.h"
-#include "Stage_01.h"
+#include "Sky.h"
 #include "GameInstance.h"
 #include "ImGuiMgr.h"
 
-CStage_01::CStage_01(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CSky::CSky(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
 }
 
-CStage_01::CStage_01(const CStage_01 & rhs)
+CSky::CSky(const CSky & rhs)
 	: CGameObject(rhs)
 {
 }
 
-HRESULT CStage_01::Initialize_Prototype()
+HRESULT CSky::Initialize_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CStage_01::Initialize(void * pArg)
+HRESULT CSky::Initialize(void * pArg)
 {
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -30,13 +30,13 @@ HRESULT CStage_01::Initialize(void * pArg)
 	return S_OK;
 }
 
-void CStage_01::Tick( _float fTimeDelta)
+void CSky::Tick( _float fTimeDelta)
 {
 	ImGuiTick();
 
 }
 
-void CStage_01::LateTick( _float fTimeDelta)
+void CSky::LateTick( _float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
 		return;
@@ -44,7 +44,7 @@ void CStage_01::LateTick( _float fTimeDelta)
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_PRIORITY, this);
 }
 
-HRESULT CStage_01::Render()
+HRESULT CSky::Render()
 {
 	if (nullptr == m_pModelCom ||
 		nullptr == m_pShaderCom)
@@ -61,7 +61,7 @@ HRESULT CStage_01::Render()
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pShaderCom->Begin(5)))
+		if (FAILED(m_pShaderCom->Begin(6)))
 			return E_FAIL;
 
 		if (FAILED(m_pModelCom->Render(i)))
@@ -72,7 +72,7 @@ HRESULT CStage_01::Render()
 	return S_OK;
 }
 
-_bool CStage_01::Picking(_float3 & _vPos)
+_bool CSky::Picking(_float3 & _vPos)
 {
 	_bool			_bPick;
 	_vector			vPickPos;
@@ -83,12 +83,12 @@ _bool CStage_01::Picking(_float3 & _vPos)
 	return _bPick;
 }
 
-void CStage_01::ImGuiTick()
+void CSky::ImGuiTick()
 {
 
 }
 
-HRESULT CStage_01::Ready_Components()
+HRESULT CSky::Ready_Components()
 {
 	/* For.Com_Transform */
 	CTransform::TRANSFORMDESC	_Desc;
@@ -106,12 +106,12 @@ HRESULT CStage_01::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Model"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
-	__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Stage_01"), TEXT("Com_Model"), (CComponent**)&m_pModelCom);
+	__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Sky"), TEXT("Com_Model"), (CComponent**)&m_pModelCom);
 
 	return S_OK;
 }
 
-HRESULT CStage_01::SetUp_ShaderResources()
+HRESULT CSky::SetUp_ShaderResources()
 {
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 	if (FAILED(m_pShaderCom->Set_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TP(), sizeof(_float4x4))))
@@ -148,33 +148,33 @@ HRESULT CStage_01::SetUp_ShaderResources()
 	return S_OK;
 }
 
-CStage_01 * CStage_01::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CSky * CSky::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
-	CStage_01*		pInstance = new CStage_01(pDevice, pContext);
+	CSky*		pInstance = new CSky(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CStage_01"));
+		MSG_BOX(TEXT("Failed To Created : CSky"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject * CStage_01::Clone(void * pArg)
+CGameObject * CSky::Clone(void * pArg)
 {
-	CStage_01*		pInstance = new CStage_01(*this);
+	CSky*		pInstance = new CSky(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CStage_01"));
+		MSG_BOX(TEXT("Failed To Cloned : CSky"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CStage_01::Free()
+void CSky::Free()
 {
 	__super::Free();
 

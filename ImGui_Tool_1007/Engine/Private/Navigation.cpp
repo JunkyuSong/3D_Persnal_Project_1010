@@ -91,7 +91,8 @@ _bool CNavigation::isMove(_fvector vPosition, _vector* vSlide)
 			while (true)
 			{
 				if (0 > iNeighborIndex)
-					return false;				
+					return false;	
+
 
 				if (true == m_Cells[iNeighborIndex]->isIn(vPosition, &iNeighborIndex, vSlide))
 				{

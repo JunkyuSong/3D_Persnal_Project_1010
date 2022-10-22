@@ -99,8 +99,8 @@ HRESULT CPlayer::Initialize(void * pArg)
 
 	m_MonsterLayer = pGameInstance->Get_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Monster"));
 	
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet( 1.f, 0.f, 1.f,1.f));
-
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(69.083, 2.402, 42.580,1.f));
+	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(5.f, 0.f, 5.f, 1.f));
 	return S_OK;
 }
 
@@ -1449,7 +1449,7 @@ void CPlayer::Get_AnimMat()
 
 	_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 	if (nullptr != m_pNavigationCom)
-		isMove = m_pNavigationCom->isMove(_vPos, &vNormal);
+		isMove = m_pNavigationCom->isMove(_vPos, nullptr/*&vNormal*/);
 
 	if (true == isMove)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);

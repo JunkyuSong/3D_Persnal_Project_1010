@@ -13,12 +13,12 @@ END
 
 BEGIN(Client)
 
-class CStage_01 final : public CGameObject
+class CSky final : public CGameObject
 {
 private:
-	CStage_01(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CStage_01(const CStage_01& rhs);
-	virtual ~CStage_01() = default;
+	CSky(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CSky(const CSky& rhs);
+	virtual ~CSky() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -44,7 +44,7 @@ private:
 	HRESULT SetUp_ShaderResources();
 
 public:
-	static CStage_01* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CSky* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

@@ -9,7 +9,7 @@
 
 #include "TerrainMgr.h"
 #include "ReleaseMgr.h"
-
+#include "Navigation_Tool.h"
 
 IMPLEMENT_SINGLETON(CObj_Tool)
 
@@ -294,6 +294,7 @@ HRESULT CObj_Tool::Tool_Obj_Pick()
 		static_cast<CObj_Plus*>(m_pPick)->Set_Pass(CObj_Plus::PASS_NONPICK);
 		m_bTool_Obj_Pick = false;
 	}
+
 	ImGui::End();
 
 	return S_OK;

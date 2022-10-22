@@ -26,6 +26,7 @@
 #include "Card.h"
 #include "Navigation.h"
 #include "Stage_01.h"
+#include "Sky.h"
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice(pDevice)
@@ -253,6 +254,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CStage_01::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Sky"),
+		CSky::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 
 	///* For.Prototype_GameObject_Sky */
 	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Sky"),
@@ -345,8 +350,16 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		return E_FAIL;
 
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Stage_01"),
-		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Stage/Stage_01/", "BossRoom.fbx"))))
+		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Stage/Stage_01/", "BossRoom.dat"))))
 		return E_FAIL;
+
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Sky"),
+		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Sky/", "Sky.fbx"))))
+		return E_FAIL;
+
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Stage_02"),
+	//	CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Stage/Stage_02/church/", "church.fbx"))))
+	//	return E_FAIL;
 
 	///* For.Prototype_Component_VIBuffer_Cube */
 	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Cube"),

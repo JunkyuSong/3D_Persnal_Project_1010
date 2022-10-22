@@ -107,19 +107,39 @@ _bool CCell::Compare(const _float3 & vSourPoint, const _float3 & vDestPoint)
 
 _bool CCell::isIn(_fvector vPosition, _int * pNeighborIndex, _vector* _vSlide)
 {
+
+	_uint _iOut = 0;
 	for (_uint i = 0; i < LINE_END; ++i)
 	{
-		_vector		vDir = XMVector3Normalize(vPosition - XMLoadFloat3(&m_vPoints[i]));
-		
-		if (0 < XMVectorGetX(XMVector3Dot(vDir, XMLoadFloat3(&m_vNormal[i]))))
-		{
-			*_vSlide = XMLoadFloat3(&m_vNormal[i]) * (-1.f);
-			*pNeighborIndex = m_iNeighborIndex[i];
+		_vector		vDir = XMVectorSetW(vPosition - XMLoadFloat3(&m_vPoints[i]), 0.f);
+		vDir = XMVector3Normalize(vDir);
+		_vector _vTemp = XMVector3Dot(vDir, XMLoadFloat3(&m_vNormal[i]));
+		_float  _fTemp = XMVectorGetX(_vTemp);
 
-			return false;
+		if (0.f <= _fTemp)
+		{
+			if (XMVectorGetX(XMVector3Dot(vDir, XMLoadFloat3(&m_vNormal[i]))) != 0)
+			{
+				if (_vSlide != nullptr)
+					*_vSlide = XMLoadFloat3(&m_vNormal[i]) * (-1.f);
+				if (_iOut == 0)
+					*pNeighborIndex = m_iNeighborIndex[i];
+			}
+			
+			++_iOut;
 		}				
 	}
 
+	if (_iOut > 0)
+	{
+		if (_iOut > 1/* && *pNeighborIndex == -1*/)
+		{
+			*pNeighborIndex = -1;
+			if (_vSlide != nullptr)
+				*_vSlide = XMVectorSet(0.f,0.f,0.f,0.f);
+		}
+		return false;
+	}		
 	return true;
 }
 

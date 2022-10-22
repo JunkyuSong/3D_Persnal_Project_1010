@@ -196,6 +196,7 @@
     <ClInclude Include="..\Public\Level_GamePlay.h" />
     <ClInclude Include="..\Public\Level_Loading.h" />
     <ClInclude Include="..\Public\Level_Logo.h" />
+    <ClInclude Include="..\Public\Level_Stage_02.h" />
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\Magician.h" />
     <ClInclude Include="..\Public\MainApp.h" />
@@ -208,6 +209,7 @@
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\public\ReleaseMgr.h" />
     <ClInclude Include="..\Public\Saber.h" />
+    <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\Stage_01.h" />
     <ClInclude Include="..\Public\Status.h" />
     <ClInclude Include="..\Public\Terrain.h" />
@@ -251,6 +253,7 @@
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
     <ClCompile Include="..\Private\Level_Loading.cpp" />
     <ClCompile Include="..\Private\Level_Logo.cpp" />
+    <ClCompile Include="..\Private\Level_Stage_02.cpp" />
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\Magician.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
@@ -263,6 +266,7 @@
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\private\ReleaseMgr.cpp" />
     <ClCompile Include="..\Private\Saber.cpp" />
+    <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\Stage_01.cpp" />
     <ClCompile Include="..\Private\Status.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />

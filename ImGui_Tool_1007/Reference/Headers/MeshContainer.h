@@ -30,11 +30,13 @@ public:
 	HRESULT			Ready_IndexBuffer(const aiMesh* pAIMesh, TANIMCONTAINER* _pOut);
 	HRESULT			Ready_IndexBuffer(TANIMCONTAINER _tIn);
 	HRESULT			Ready_IndexBuffer(TCONTAINER _tIn);
+
+	_bool			Picking(class CTransform* pTransform, _vector& pOut);
 	
 protected:
 	_uint				m_iMaterialIndex = 0;
 	char				m_szName[MAX_PATH]; //현재 메쉬의 이름
-
+	TCONTAINER			m_in;
 
 public:
 	static CMeshContainer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const aiMesh* pAIMesh, TCONTAINER*	_pOut);

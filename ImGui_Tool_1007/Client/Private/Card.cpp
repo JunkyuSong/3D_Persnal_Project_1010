@@ -37,7 +37,7 @@ HRESULT CCard::Initialize(void * pArg)
 		+ XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_UP))
 			+ (XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT)) *(-0.1f));
 	
-	_vPos.m128_f32[1] = 1.5f;
+	_vPos.m128_f32[1] += 1.5f;
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
 	XMStoreFloat3(&m_vOriginPos, _vPos);
 	
