@@ -32,6 +32,7 @@ private:
 	class CCamera*		m_pCameras[CAMERA_END];
 	
 	// CBase을(를) 통해 상속됨
+public:
 	virtual void Free() override;
 };
 

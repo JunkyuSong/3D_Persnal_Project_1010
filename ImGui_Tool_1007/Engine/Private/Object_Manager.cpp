@@ -1,7 +1,7 @@
 #include "..\Public\Object_Manager.h"
 #include "GameObject.h"
 #include "Layer.h"
-
+#include "Level_Manager.h"
 IMPLEMENT_SINGLETON(CObject_Manager)
 
 CObject_Manager::CObject_Manager()
@@ -50,7 +50,7 @@ CGameObject * CObject_Manager::Clone_GameObject(const _tchar * pPrototypeTag, vo
 HRESULT CObject_Manager::Add_Prototype(const _tchar * pPrototypeTag, CGameObject * pPrototype)
 {
 	if (nullptr != Find_Prototype(pPrototypeTag))
-		return E_FAIL;
+		return S_OK;
 
 	m_Prototypes.emplace(pPrototypeTag, pPrototype);			
 
@@ -135,6 +135,8 @@ void CObject_Manager::Tick(const _float& fTimeDelta)
 {
 	for (_uint i = 0; i < m_iNumLevels; ++i)
 	{
+		if (!CLevel_Manager::Get_Instance()->Get_bLoading() && (i != CLevel_Manager::Get_Instance()->Get_LoadingLv()))
+			continue;
 		for (auto& Pair : m_pLayers[i])
 		{
 			if (nullptr != Pair.second)
@@ -165,6 +167,14 @@ void CObject_Manager::Clear(const _uint& iLevelIndex)
 	{
 		Safe_Release(Pair.second);
 	}
+	/*for (_uint i = 1; i < m_iNumLevels; ++i)
+	{
+		for (auto& Pair : m_pLayers[i])
+		{
+			Safe_Release(Pair.second);
+		}
+	}
+	*/
 
 	m_pLayers[iLevelIndex].clear();
 }

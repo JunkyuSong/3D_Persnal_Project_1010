@@ -128,7 +128,7 @@ void CObj_Anim::Set_Info(OBJ_DESC _tInfo)
 	if (m_pModelCom == nullptr)
 	{
 		lstrcpy(m_tInfo.szModelTag, _tInfo.szModelTag);
-		__super::Add_Component(LEVEL_GAMEPLAY, m_tInfo.szModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom);
+		__super::Add_Component(g_eCurLevel, m_tInfo.szModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom);
 
 	}
 	else if (lstrcmp(m_tInfo.szModelTag, _tInfo.szModelTag))
@@ -142,7 +142,7 @@ void CObj_Anim::Set_Info(OBJ_DESC _tInfo)
 
 		//m_tInfo.szModelTag = _tInfo.szModelTag;
 		lstrcpy(m_tInfo.szModelTag, _tInfo.szModelTag);
-		__super::Add_Component(LEVEL_GAMEPLAY, m_tInfo.szModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom);
+		__super::Add_Component(g_eCurLevel, m_tInfo.szModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom);
 	}
 
 	m_tInfo.matWorld = _tInfo.matWorld;

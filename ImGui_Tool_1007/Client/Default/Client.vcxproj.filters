@@ -34,9 +34,6 @@
     <Filter Include="02.GameObjects\BackGround">
       <UniqueIdentifier>{3cb37fbb-5a48-442b-857d-c8d7bd9d9f34}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\Terrain">
-      <UniqueIdentifier>{7cbdf00b-05f3-4112-a0c9-09e6a54c4fa7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\Camera">
       <UniqueIdentifier>{753f5023-0e15-42c5-950a-9aefad3b0ead}</UniqueIdentifier>
     </Filter>
@@ -166,14 +163,38 @@
     <Filter Include="96. ImGuiMgr\Tool\Navigation_Tool">
       <UniqueIdentifier>{c4f66d29-773a-42f5-8eda-3a2a47a12785}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\Terrain\Stage_01">
-      <UniqueIdentifier>{64654a03-0acf-458b-a2b3-0cfad57402e3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\BackGround\Sky">
       <UniqueIdentifier>{e21b752e-c6c1-4ccf-9a9b-af2e7e61c49b}</UniqueIdentifier>
     </Filter>
     <Filter Include="01.Levels\03.Stage_02">
       <UniqueIdentifier>{77ebe287-4f29-4d25-8507-ec5c56b0102a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Map">
+      <UniqueIdentifier>{03ccf96d-31bb-4016-9cd9-f57dd8bc1c71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Map\Terrain">
+      <UniqueIdentifier>{7cbdf00b-05f3-4112-a0c9-09e6a54c4fa7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Map\Last_Stage">
+      <UniqueIdentifier>{b665dcce-3c33-4604-b19f-efb1a397940f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Map\Lobby">
+      <UniqueIdentifier>{06316191-f2b3-4f63-84c8-9466fdc59e35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Map\Stage_02">
+      <UniqueIdentifier>{0b18de0b-67d1-4194-931a-bec9cc8061ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Map\Stage_01">
+      <UniqueIdentifier>{64654a03-0acf-458b-a2b3-0cfad57402e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\06. Map_Obj">
+      <UniqueIdentifier>{f12bc5bb-ed31-4e16-9204-196ddd2c8af5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\05. Stage_Lobby">
+      <UniqueIdentifier>{d32e500e-701c-4dae-8757-b0462b2af813}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\04. Stage_Last">
+      <UniqueIdentifier>{c6012804-ec5d-420f-8e5b-83f18ac28ec3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -214,7 +235,7 @@
       <Filter>02.GameObjects\BackGround</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Terrain.h">
-      <Filter>02.GameObjects\Terrain</Filter>
+      <Filter>02.GameObjects\Map\Terrain</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ImGuiMgr.h">
       <Filter>96. ImGuiMgr</Filter>
@@ -346,13 +367,28 @@
       <Filter>96. ImGuiMgr\Tool\Navigation_Tool</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Stage_01.h">
-      <Filter>02.GameObjects\Terrain\Stage_01</Filter>
+      <Filter>02.GameObjects\Map\Stage_01</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Sky.h">
       <Filter>02.GameObjects\BackGround\Sky</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Level_Stage_02.h">
       <Filter>01.Levels\03.Stage_02</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Stage_02.h">
+      <Filter>02.GameObjects\Map\Stage_02</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Stage_Last.h">
+      <Filter>02.GameObjects\Map\Last_Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Stage_Lobby.h">
+      <Filter>02.GameObjects\Map\Lobby</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Stage_Last.h">
+      <Filter>01.Levels\04. Stage_Last</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Stage_Lobby.h">
+      <Filter>01.Levels\05. Stage_Lobby</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -381,7 +417,7 @@
       <Filter>02.GameObjects\BackGround</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Terrain.cpp">
-      <Filter>02.GameObjects\Terrain</Filter>
+      <Filter>02.GameObjects\Map\Terrain</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ImGuiMgr.cpp">
       <Filter>96. ImGuiMgr</Filter>
@@ -507,13 +543,28 @@
       <Filter>96. ImGuiMgr\Tool\Navigation_Tool</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Stage_01.cpp">
-      <Filter>02.GameObjects\Terrain\Stage_01</Filter>
+      <Filter>02.GameObjects\Map\Stage_01</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Sky.cpp">
       <Filter>02.GameObjects\BackGround\Sky</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Level_Stage_02.cpp">
       <Filter>01.Levels\03.Stage_02</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Stage_02.cpp">
+      <Filter>02.GameObjects\Map\Stage_02</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Stage_Last.cpp">
+      <Filter>02.GameObjects\Map\Last_Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Stage_Lobby.cpp">
+      <Filter>02.GameObjects\Map\Lobby</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Stage_Last.cpp">
+      <Filter>01.Levels\04. Stage_Last</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Stage_Lobby.cpp">
+      <Filter>01.Levels\05. Stage_Lobby</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

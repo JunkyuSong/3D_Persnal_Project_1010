@@ -142,6 +142,9 @@
     <ClCompile Include="..\private\PointInCell.cpp">
       <Filter>03.Components\08. Navigation\Point</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\InstancingMesh.cpp">
+      <Filter>03.Components\06. Model\MeshContainer\InstancingMesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -306,6 +309,9 @@
     <ClInclude Include="..\public\PointInCell.h">
       <Filter>03.Components\08. Navigation\Point</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\InstancingMesh.h">
+      <Filter>03.Components\06. Model\MeshContainer\InstancingMesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="99.Defines">
@@ -460,6 +466,9 @@
     </Filter>
     <Filter Include="03.Components\08. Navigation\Point">
       <UniqueIdentifier>{c6e45efb-8412-46c5-9dfe-9dac02b3ca50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\06. Model\MeshContainer\InstancingMesh">
+      <UniqueIdentifier>{7fd0a0b0-3dff-4c0b-af29-7a044926bd1c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

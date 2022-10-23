@@ -12,6 +12,9 @@ class CObj_Tool :
 
 private:
 	enum ADDTYPE {TYPE_ANIM, TYPE_NONANIM, TYPE_END};
+
+
+
 public:
 	CObj_Tool();
 	virtual ~CObj_Tool();
@@ -32,8 +35,14 @@ public:
 
 	void Set_Anim_Tool(_bool _bAnim) { m_bAnim = _bAnim; }
 
+	void Save_Map();
+	void Load_Map();
+
 public:
 	HRESULT Tool_Obj();
+
+private:
+	void	ReserveLevel();
 
 private:
 	_float4x4			m_matWorld;
@@ -69,6 +78,9 @@ private:
 	char					m_szModelTag[256];
 	char					m_szLayer[256];
 
+	vector<const char*>		m_pLevels;
+	_uint					m_iSelectLevel = 1;
+		
 private:
 	map<_tchar*, CObj_Plus*>	m_mapToolProto;
 	_bool							m_bSetting = false;

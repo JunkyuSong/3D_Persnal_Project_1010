@@ -66,7 +66,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return FALSE;
 
 	_float		fTimeAcc = 0.f;
-
+	pGameInstance->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
 
     // 기본 메시지 루프입니다.
 	bool done = false;

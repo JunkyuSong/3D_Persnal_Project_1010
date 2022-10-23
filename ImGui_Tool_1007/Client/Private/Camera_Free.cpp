@@ -33,8 +33,7 @@ HRESULT CCamera_Free::Initialize(void * pArg)
 
 void CCamera_Free::Tick(_float fTimeDelta)
 {
-	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
-	Safe_AddRef(pGameInstance);
+	AUTOINSTANCE(CGameInstance, pGameInstance);
 
 	if (pGameInstance->KeyPressing(DIK_UP))
 	{
@@ -58,20 +57,17 @@ void CCamera_Free::Tick(_float fTimeDelta)
 
 	_long	MouseMove = 0;
 
-	if ((MouseMove = pGameInstance->Get_DIMMoveState(DIMM_X))&&CGameInstance::Get_Instance()->MousePressing(DIMK_RBUTTON))
+	if ((MouseMove = pGameInstance->Get_DIMMoveState(DIMM_X))&& pGameInstance->MousePressing(DIMK_RBUTTON))
 	{
 		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), MouseMove * fTimeDelta * 0.05f);		
 	}
 
-	if ((MouseMove = pGameInstance->Get_DIMMoveState(DIMM_Y))&&CGameInstance::Get_Instance()->MousePressing(DIMK_RBUTTON))
+	if ((MouseMove = pGameInstance->Get_DIMMoveState(DIMM_Y))&& pGameInstance->MousePressing(DIMK_RBUTTON))
 	{
 		m_pTransformCom->Turn(m_pTransformCom->Get_State(CTransform::STATE_RIGHT), MouseMove * fTimeDelta * 0.05f);
 	}
 
 	
-
-	Safe_Release(pGameInstance);
-
 	__super::Tick(fTimeDelta);
 
 

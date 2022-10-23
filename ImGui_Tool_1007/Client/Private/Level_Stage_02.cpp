@@ -17,9 +17,9 @@ HRESULT CLevel_Stage_02::Initialize()
 {
 	if (FAILED(__super::Initialize()))
 		return E_FAIL;
-	if (FAILED(Ready_Lights()))
-		return E_FAIL;
 
+	/*if (FAILED(Ready_Lights()))
+		return E_FAIL;*/
 
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
@@ -30,8 +30,8 @@ HRESULT CLevel_Stage_02::Initialize()
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
 
-	/*if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
-		return E_FAIL;*/
+	//if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
+	//	return E_FAIL;
 
 	if (FAILED(Ready_Layer_Effect(TEXT("Layer_Effect"))))
 		return E_FAIL;
@@ -55,14 +55,14 @@ HRESULT CLevel_Stage_02::Render()
 		return E_FAIL;
 
 
-	SetWindowText(g_hWnd, TEXT("게임플레이레벨임"));
+	SetWindowText(g_hWnd, TEXT("Stage_2"));
 
 	return S_OK;
 }
 
 HRESULT CLevel_Stage_02::Ready_Lights()
 {
-	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
+	AUTOINSTANCE(CGameInstance, pGameInstance);
 
 	LIGHTDESC			LightDesc;
 	ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
@@ -75,15 +75,13 @@ HRESULT CLevel_Stage_02::Ready_Lights()
 	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LightDesc)))
 		return E_FAIL;
 
-	RELEASE_INSTANCE(CGameInstance);
 
 	return S_OK;
 }
 
 HRESULT CLevel_Stage_02::Ready_Layer_Camera(const _tchar * pLayerTag)
 {
-	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
-	Safe_AddRef(pGameInstance);
+	AUTOINSTANCE(CGameInstance, pGameInstance);
 
 	CCamera::CAMERADESC			CameraDesc;
 
@@ -97,54 +95,49 @@ HRESULT CLevel_Stage_02::Ready_Layer_Camera(const _tchar * pLayerTag)
 	CameraDesc.TransformDesc.fSpeedPerSec = 5.f;
 	CameraDesc.TransformDesc.fRotationPerSec = XMConvertToRadians(90.0f);
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Camera_Free"), LEVEL_GAMEPLAY, pLayerTag, &CameraDesc)))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Camera_Free"), LEVEL_STAGE_02, pLayerTag, &CameraDesc)))
 		return E_FAIL;
 
-	Safe_Release(pGameInstance);
+
 
 	return S_OK;
 }
 
 HRESULT CLevel_Stage_02::Ready_Layer_Player(const _tchar * pLayerTag)
 {
-	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
-	Safe_AddRef(pGameInstance);
+	AUTOINSTANCE(CGameInstance, pGameInstance);
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Player"), LEVEL_GAMEPLAY, pLayerTag)))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Player"), LEVEL_STAGE_02, pLayerTag)))
 		return E_FAIL;
 
-	Safe_Release(pGameInstance);
 
 	return S_OK;
 }
 
 HRESULT CLevel_Stage_02::Ready_Layer_BackGround(const _tchar * pLayerTag)
 {
-	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
-	Safe_AddRef(pGameInstance);
+	AUTOINSTANCE(CGameInstance, pGameInstance);
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Sky"), LEVEL_GAMEPLAY, pLayerTag)))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Sky"), LEVEL_STAGE_02, pLayerTag)))
 		return E_FAIL;
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Terrain"), LEVEL_GAMEPLAY, pLayerTag)))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Terrain"), LEVEL_STAGE_02, pLayerTag)))
 		return E_FAIL;
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Stage_01"), LEVEL_GAMEPLAY, TEXT("Layer_Stage"))))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Stage_02"), LEVEL_STAGE_02, TEXT("Layer_Stage"))))
 		return E_FAIL;
 /*
 
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Sky"), LEVEL_GAMEPLAY, pLayerTag)))
 		return E_FAIL;
 */
-	Safe_Release(pGameInstance);
 
 	return S_OK;
 }
 
 HRESULT CLevel_Stage_02::Ready_Layer_Monster(const _tchar * pLayerTag)
 {
-	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
-	Safe_AddRef(pGameInstance);
+	AUTOINSTANCE(CGameInstance, pGameInstance);
 
 	//for (_uint i = 0; i < 3; ++i)
 	//{
@@ -153,10 +146,7 @@ HRESULT CLevel_Stage_02::Ready_Layer_Monster(const _tchar * pLayerTag)
 
 	//}
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Magician"), LEVEL_GAMEPLAY, pLayerTag)))
-		return E_FAIL;
 
-	Safe_Release(pGameInstance);
 
 
 	return S_OK;
@@ -164,9 +154,8 @@ HRESULT CLevel_Stage_02::Ready_Layer_Monster(const _tchar * pLayerTag)
 
 HRESULT CLevel_Stage_02::Ready_Layer_UI(const _tchar * pLayerTag)
 {
-	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
-	Safe_AddRef(pGameInstance);
 
+	AUTOINSTANCE(CGameInstance, pGameInstance);
 	/*for (_uint i = 0; i < 1; ++i)
 	{
 		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_UI"), LEVEL_GAMEPLAY, pLayerTag)))
@@ -175,11 +164,11 @@ HRESULT CLevel_Stage_02::Ready_Layer_UI(const _tchar * pLayerTag)
 	}
 
 */
-	CGameObject* _pGameObj = nullptr;
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_UI_PlayerHpBar"), LEVEL_GAMEPLAY, pLayerTag, nullptr, &_pGameObj)))
-		return E_FAIL;
-	CUI_Mgr::Get_Instance()->Add_UI(TEXT("PLAYER_HP_BAR"), _pGameObj);
-	Safe_Release(pGameInstance);
+	//CGameObject* _pGameObj = nullptr;
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_UI_PlayerHpBar"), LEVEL_STAGE_02, pLayerTag, nullptr, &_pGameObj)))
+	//	return E_FAIL;
+	//CUI_Mgr::Get_Instance()->Add_UI(TEXT("PLAYER_HP_BAR"), _pGameObj);
+
 
 
 
@@ -188,8 +177,7 @@ HRESULT CLevel_Stage_02::Ready_Layer_UI(const _tchar * pLayerTag)
 
 HRESULT CLevel_Stage_02::Ready_Layer_Effect(const _tchar * pLayerTag)
 {
-	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
-	Safe_AddRef(pGameInstance);
+	AUTOINSTANCE(CGameInstance, pGameInstance);
 
 	//for (_uint i = 0; i < 10; ++i)
 	//{
@@ -199,7 +187,6 @@ HRESULT CLevel_Stage_02::Ready_Layer_Effect(const _tchar * pLayerTag)
 	//}
 
 
-	Safe_Release(pGameInstance);
 
 
 	return S_OK;

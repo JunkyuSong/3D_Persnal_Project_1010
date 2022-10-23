@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "..\Public\Level_GamePlay.h"
+#include "..\Public\Level_Stage_Last.h"
 
 #include "GameInstance.h"
 #include "Camera_Free.h"
@@ -8,15 +8,18 @@
 #include "UI_Mgr.h"
 
 
-CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CLevel_Stage_Last::CLevel_Stage_Last(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel_Client(pDevice, pContext)
 {
 }
 
-HRESULT CLevel_GamePlay::Initialize()
+HRESULT CLevel_Stage_Last::Initialize()
 {
 	if (FAILED(__super::Initialize()))
 		return E_FAIL;
+
+	return S_OK;
+
 	if (FAILED(Ready_Lights()))
 		return E_FAIL;
 
@@ -27,11 +30,11 @@ HRESULT CLevel_GamePlay::Initialize()
 	if (FAILED(Ready_Layer_Player(TEXT("Layer_Player"))))
 		return E_FAIL;
 
-	/*if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
-		return E_FAIL;*/
-
-	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
+	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
+
+	/*if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
+		return E_FAIL;*/
 
 	if (FAILED(Ready_Layer_Effect(TEXT("Layer_Effect"))))
 		return E_FAIL;
@@ -44,12 +47,12 @@ HRESULT CLevel_GamePlay::Initialize()
 	return S_OK;
 }
 
-void CLevel_GamePlay::Tick(_float fTimeDelta)
+void CLevel_Stage_Last::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 }
 
-HRESULT CLevel_GamePlay::Render()
+HRESULT CLevel_Stage_Last::Render()
 {
 	if (FAILED(__super::Render()))
 		return E_FAIL;
@@ -60,7 +63,7 @@ HRESULT CLevel_GamePlay::Render()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Lights()
+HRESULT CLevel_Stage_Last::Ready_Lights()
 {
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 
@@ -80,7 +83,7 @@ HRESULT CLevel_GamePlay::Ready_Lights()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _tchar * pLayerTag)
+HRESULT CLevel_Stage_Last::Ready_Layer_Camera(const _tchar * pLayerTag)
 {
 	AUTOINSTANCE(CGameInstance, pGameInstance);
 
@@ -104,7 +107,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _tchar * pLayerTag)
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Layer_Player(const _tchar * pLayerTag)
+HRESULT CLevel_Stage_Last::Ready_Layer_Player(const _tchar * pLayerTag)
 {
 	AUTOINSTANCE(CGameInstance, pGameInstance);
 
@@ -116,7 +119,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const _tchar * pLayerTag)
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
+HRESULT CLevel_Stage_Last::Ready_Layer_BackGround(const _tchar * pLayerTag)
 {
 	AUTOINSTANCE(CGameInstance, pGameInstance);
 
@@ -138,7 +141,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
+HRESULT CLevel_Stage_Last::Ready_Layer_Monster(const _tchar * pLayerTag)
 {
 	AUTOINSTANCE(CGameInstance, pGameInstance);
 
@@ -158,9 +161,10 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Layer_UI(const _tchar * pLayerTag)
+HRESULT CLevel_Stage_Last::Ready_Layer_UI(const _tchar * pLayerTag)
 {
 	AUTOINSTANCE(CGameInstance, pGameInstance);
+
 	/*for (_uint i = 0; i < 1; ++i)
 	{
 		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_UI"), LEVEL_GAMEPLAY, pLayerTag)))
@@ -176,12 +180,14 @@ HRESULT CLevel_GamePlay::Ready_Layer_UI(const _tchar * pLayerTag)
 
 
 
+
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Layer_Effect(const _tchar * pLayerTag)
+HRESULT CLevel_Stage_Last::Ready_Layer_Effect(const _tchar * pLayerTag)
 {
 	AUTOINSTANCE(CGameInstance, pGameInstance);
+
 	//for (_uint i = 0; i < 10; ++i)
 	//{
 	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Effect"), LEVEL_GAMEPLAY, pLayerTag)))
@@ -191,24 +197,23 @@ HRESULT CLevel_GamePlay::Ready_Layer_Effect(const _tchar * pLayerTag)
 
 
 
-
 	return S_OK;
 }
 
-CLevel_GamePlay * CLevel_GamePlay::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CLevel_Stage_Last * CLevel_Stage_Last::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-	CLevel_GamePlay*		pInstance = new CLevel_GamePlay(pDevice, pContext);
+	CLevel_Stage_Last*		pInstance = new CLevel_Stage_Last(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CLevel_GamePlay"));
+		MSG_BOX(TEXT("Failed To Created : CLevel_Stage_Last"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CLevel_GamePlay::Free()
+void CLevel_Stage_Last::Free()
 {
 	__super::Free();
 

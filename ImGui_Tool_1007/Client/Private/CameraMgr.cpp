@@ -22,8 +22,7 @@ CCameraMgr::~CCameraMgr()
 
 void CCameraMgr::Initialize()
 {
-	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
-	Safe_AddRef(pGameInstance);	
+	AUTOINSTANCE(CGameInstance, pGameInstance);
 
 	CCamera::CAMERADESC			CameraDesc;
 
@@ -41,7 +40,6 @@ void CCameraMgr::Initialize()
 	m_pCameras[CAMERA_FREE] = static_cast<CCamera*>(pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Camera_Free"), &CameraDesc));
 	m_pCameras[CAMERA_PLAYER] = static_cast<CCamera*>(pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Camera_Player"), &CameraDesc));
 
-	Safe_Release(pGameInstance);
 }
 
 void CCameraMgr::Tick(_float fTimedelta)

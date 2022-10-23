@@ -1,50 +1,50 @@
 #include "stdafx.h"
-#include "..\Public\Obj_NonAnim.h"
+#include "Stage_Lobby.h"
 #include "GameInstance.h"
 #include "ImGuiMgr.h"
 
-CObj_NonAnim::CObj_NonAnim(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
-	: CObj_Plus(pDevice, pContext)
+CStage_Lobby::CStage_Lobby(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+	: CGameObject(pDevice, pContext)
 {
 }
 
-CObj_NonAnim::CObj_NonAnim(const CObj_NonAnim & rhs)
-	: CObj_Plus(rhs)
+CStage_Lobby::CStage_Lobby(const CStage_Lobby & rhs)
+	: CGameObject(rhs)
 {
 }
 
-HRESULT CObj_NonAnim::Initialize_Prototype()
+HRESULT CStage_Lobby::Initialize_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CObj_NonAnim::Initialize(void * pArg)
+HRESULT CStage_Lobby::Initialize(void * pArg)
 {
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	ZeroMemory(&m_tInfo, sizeof(OBJ_DESC));
-
 	__super::Initialize(pArg);
+	m_pTransformCom->Set_Scale(XMVectorSet(0.01f, 0.01f, 0.01f, 0.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(45.f, 0.1f, 45.f, 1.f));
 
 	return S_OK;
 }
 
-void CObj_NonAnim::Tick( _float fTimeDelta)
+void CStage_Lobby::Tick( _float fTimeDelta)
 {
 	ImGuiTick();
 
 }
 
-void CObj_NonAnim::LateTick( _float fTimeDelta)
+void CStage_Lobby::LateTick( _float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
 		return;
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_PRIORITY, this);
 }
 
-HRESULT CObj_NonAnim::Render()
+HRESULT CStage_Lobby::Render()
 {
 	if (nullptr == m_pModelCom ||
 		nullptr == m_pShaderCom)
@@ -61,7 +61,7 @@ HRESULT CObj_NonAnim::Render()
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pShaderCom->Begin(m_ePass)))
+		if (FAILED(m_pShaderCom->Begin(5)))
 			return E_FAIL;
 
 		if (FAILED(m_pModelCom->Render(i)))
@@ -72,40 +72,23 @@ HRESULT CObj_NonAnim::Render()
 	return S_OK;
 }
 
-void CObj_NonAnim::Set_Info(OBJ_DESC _tInfo)
+_bool CStage_Lobby::Picking(_float3 & _vPos)
 {
-	m_tInfo.eLevel = _tInfo.eLevel;
-
-	if (m_pModelCom == nullptr)
+	_bool			_bPick;
+	_vector			vPickPos;
+	if (_bPick = m_pModelCom->Picking(m_pTransformCom, vPickPos))
 	{
-		lstrcpy(m_tInfo.szModelTag, _tInfo.szModelTag);
-		
-		__super::Add_Component(g_eCurLevel, m_tInfo.szModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom);
-
+		XMStoreFloat3(&_vPos, vPickPos);
 	}
-	else if (lstrcmp(m_tInfo.szModelTag, _tInfo.szModelTag))
-	{
-		//Safe_Delete_Array(m_tInfo.szModelTag);
-		Safe_Release(m_pModelCom);
-
-		auto& iter = find_if(m_Components.begin(), m_Components.end(), CTag_Finder(TEXT("Com_Model")));
-		Safe_Release(iter->second);
-		m_Components.erase(iter);
-
-		lstrcpy(m_tInfo.szModelTag, _tInfo.szModelTag);
-		__super::Add_Component(g_eCurLevel, m_tInfo.szModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom);
-	}
-
-	m_tInfo.matWorld = _tInfo.matWorld;
-	m_pTransformCom->Set_WorldFloat4x4(m_tInfo.matWorld);
+	return _bPick;
 }
 
-void CObj_NonAnim::ImGuiTick()
+void CStage_Lobby::ImGuiTick()
 {
 
 }
 
-HRESULT CObj_NonAnim::Ready_Components()
+HRESULT CStage_Lobby::Ready_Components()
 {
 	/* For.Com_Transform */
 	CTransform::TRANSFORMDESC	_Desc;
@@ -123,12 +106,12 @@ HRESULT CObj_NonAnim::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Model"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
-
+	__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Stage_Church"), TEXT("Com_Model"), (CComponent**)&m_pModelCom);
 
 	return S_OK;
 }
 
-HRESULT CObj_NonAnim::SetUp_ShaderResources()
+HRESULT CStage_Lobby::SetUp_ShaderResources()
 {
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 	if (FAILED(m_pShaderCom->Set_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TP(), sizeof(_float4x4))))
@@ -165,39 +148,40 @@ HRESULT CObj_NonAnim::SetUp_ShaderResources()
 	return S_OK;
 }
 
-CObj_NonAnim * CObj_NonAnim::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CStage_Lobby * CStage_Lobby::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
-	CObj_NonAnim*		pInstance = new CObj_NonAnim(pDevice, pContext);
+	CStage_Lobby*		pInstance = new CStage_Lobby(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CObj_NonAnim"));
+		MSG_BOX(TEXT("Failed To Created : CStage_Lobby"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject * CObj_NonAnim::Clone(void * pArg)
+CGameObject * CStage_Lobby::Clone(void * pArg)
 {
-	CObj_NonAnim*		pInstance = new CObj_NonAnim(*this);
+	CStage_Lobby*		pInstance = new CStage_Lobby(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CObj_NonAnim"));
+		MSG_BOX(TEXT("Failed To Cloned : CStage_Lobby"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CObj_NonAnim::Free()
+void CStage_Lobby::Free()
 {
 	__super::Free();
 
-	if (m_tInfo.szModelTag != nullptr)
-	{
-		//Safe_Delete_Array(m_tInfo.szModelTag);
-	}
+	
 	Safe_Release(m_pModelCom);
+	Safe_Release(m_pShaderCom);
+	Safe_Release(m_pRendererCom);
+	Safe_Release(m_pTransformCom);
+
 }

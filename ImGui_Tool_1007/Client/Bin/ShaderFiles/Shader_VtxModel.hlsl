@@ -149,9 +149,9 @@ PS_OUT PS_Sky(PS_IN In)
 
 	vector			vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
 	Out.vColor = vMtrlDiffuse;
-	Out.vColor = (vector)0.f;
-	/*if (0 == Out.vColor.a)
-		discard;*/
+	//Out.vColor = (vector)0.f;
+	if (0 == Out.vColor.a)
+		discard;
 	return Out;
 }
 

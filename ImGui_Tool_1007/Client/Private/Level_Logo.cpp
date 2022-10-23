@@ -28,15 +28,14 @@ void CLevel_Logo::Tick(_float fTimeDelta)
 
 	if (GetKeyState(VK_SPACE) & 0x8000)
 	{
-		CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
-		Safe_AddRef(pGameInstance);
+		AUTOINSTANCE(CGameInstance, pGameInstance);
 				
 		if (FAILED(pGameInstance->Reserve_Level(LEVEL_GAMEPLAY)))
 			return;
 
 
 
-		Safe_Release(pGameInstance);
+
 
 	}
 }
@@ -53,13 +52,11 @@ HRESULT CLevel_Logo::Render()
 
 HRESULT CLevel_Logo::Ready_Layer_BackGround(const _tchar * pLayerTag)
 {
-	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
-	Safe_AddRef(pGameInstance);
+	AUTOINSTANCE(CGameInstance, pGameInstance);
 
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BackGround"), LEVEL_LOGO, pLayerTag)))
 		return E_FAIL;
 
-	Safe_Release(pGameInstance);
 
 	return S_OK;
 }

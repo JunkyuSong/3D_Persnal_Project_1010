@@ -30,7 +30,11 @@ CObj_Tool::CObj_Tool()
 	ZeroMemory(&m_tObj_Desc,sizeof(CObj_Plus::OBJ_DESC));
 	ZeroMemory(&m_szModelTag, 256);
 	ZeroMemory(&m_szLayer, 256);
-	//fdsf
+	
+	m_pLevels.push_back("LEVEL_STAGE_LOBBY");
+	m_pLevels.push_back("LEVEL_STAGE_01");
+	m_pLevels.push_back("LEVEL_STAGE_02");
+	m_pLevels.push_back("LEVEL_STAGE_LAST");
 }
 
 
@@ -61,9 +65,175 @@ void CObj_Tool::Free()
 	}
 }
 
+void CObj_Tool::Save_Map()
+{
+	//레벨 저장? 필요없는거같은데 어차피 해당 레벨에서 로드해올거임
+	//레이어 저장? 필요한가 여기서 찍는 맵은 전부 맵오브젝트로 들어갈건데 -> 인스턴싱 될 확률이 큰데요... 필요할지도...? 툴에서 로드할땐..? 그때도 그냥 레이어맵에
+	//결국 레이어는 저장할 필요 없고, 필요한 데이터는 행렬값이랑 모델 태그값 2개다
+
+	_tchar szFullPath[MAX_PATH] = TEXT("../Bin/Map/"); //여기에 넣을 예정
+	_tchar szFileName[MAX_PATH] = TEXT(""); //파일 이름
+
+	switch (g_eCurLevel)
+	{
+	case Client::LEVEL_STATIC:
+		break;
+	case Client::LEVEL_LOADING:
+		return;
+	case Client::LEVEL_LOGO:
+		return;
+	case Client::LEVEL_GAMEPLAY:
+		lstrcpy(szFileName, TEXT("LEVEL_GAMEPLAY"));
+		break;
+	case Client::LEVEL_STAGE_02:
+		lstrcpy(szFileName, TEXT("LEVEL_STAGE_02"));
+		break;
+	case Client::LEVEL_STAGE_LAST:
+		lstrcpy(szFileName, TEXT("LEVEL_STAGE_LAST"));
+		break;
+	case Client::LEVEL_STAGE_LOBBY:
+		lstrcpy(szFileName, TEXT("LEVEL_STAGE_LOBBY"));
+		break;
+	case Client::LEVEL_END:
+		return;
+	default:
+		return;
+	}
+	AUTOINSTANCE(CGameInstance, pGameInstance);
+	
+
+	//_splitpath_s(_tModel.Name, nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
+	//strPath에 파일 경로 떼고 파일 이름이랑 확장자 뺀다
+	// ex) abc / .png
+
+	lstrcat(szFullPath, szFileName);
+	//파일 이름 넣고
+	lstrcat(szFullPath, TEXT(".dat"));
+	//경로 넣고
+
+
+	// 2. 파일 쓰기
+	//레벨별로 리스트를 얻어온다
+
+
+	HANDLE		hFile = CreateFile(szFullPath,			// 파일 경로와 이름 명시
+		GENERIC_WRITE,				// 파일 접근 모드 (GENERIC_WRITE 쓰기 전용, GENERIC_READ 읽기 전용)
+		NULL,						// 공유방식, 파일이 열려있는 상태에서 다른 프로세스가 오픈할 때 허용할 것인가, NULL인 경우 공유하지 않는다
+		NULL,						// 보안 속성, 기본값	
+		CREATE_ALWAYS,				// 생성 방식, CREATE_ALWAYS는 파일이 없다면 생성, 있다면 덮어 쓰기, OPEN_EXISTING 파일이 있을 경우에면 열기
+		FILE_ATTRIBUTE_NORMAL,		// 파일 속성(읽기 전용, 숨기 등), FILE_ATTRIBUTE_NORMAL 아무런 속성이 없는 일반 파일 생성
+		NULL);						// 생성도리 파일의 속성을 제공할 템플릿 파일, 우리는 사용하지 않아서 NULL
+
+	DWORD		dwByte = 0;
+
+	list<CGameObject*> list = *(m_pLayer->Get_ListFromLayer());
+	CObj_Plus::OBJ_DESC	_tInfo;
+	ZeroMemory(&_tInfo, sizeof(CObj_Plus::OBJ_DESC));
+	for (auto& _Obj : list)
+	{
+		ZeroMemory(&_tInfo, sizeof(CObj_Plus::OBJ_DESC));
+		_tInfo = static_cast<CObj_Plus*>(_Obj)->Get_Info();
+		WriteFile(hFile, &_tInfo, sizeof(CObj_Plus::OBJ_DESC), &dwByte, nullptr);
+	}
+	
+	CloseHandle(hFile);
+
+}
+
+void CObj_Tool::Load_Map()
+{
+	//레벨 저장? 필요없는거같은데 어차피 해당 레벨에서 로드해올거임
+	//레이어 저장? 필요한가 여기서 찍는 맵은 전부 맵오브젝트로 들어갈건데 -> 인스턴싱 될 확률이 큰데요... 필요할지도...? 툴에서 로드할땐..? 그때도 그냥 레이어맵에
+	//결국 레이어는 저장할 필요 없고, 필요한 데이터는 행렬값이랑 모델 태그값 2개다
+
+	AUTOINSTANCE(CGameInstance, _Instance);
+
+	_tchar szFullPath[MAX_PATH] = TEXT("../Bin/Map/"); //여기에 넣을 예정
+	_tchar szFileName[MAX_PATH] = TEXT(""); //파일 이름
+
+	switch (g_eCurLevel)
+	{
+	case Client::LEVEL_STATIC:
+		break;
+	case Client::LEVEL_LOADING:
+		return;
+	case Client::LEVEL_LOGO:
+		return;
+	case Client::LEVEL_GAMEPLAY:
+		lstrcpy(szFileName, TEXT("LEVEL_GAMEPLAY"));
+		break;
+	case Client::LEVEL_STAGE_02:
+		lstrcpy(szFileName, TEXT("LEVEL_STAGE_02"));
+		break;
+	case Client::LEVEL_STAGE_LAST:
+		lstrcpy(szFileName, TEXT("LEVEL_STAGE_LAST"));
+		break;
+	case Client::LEVEL_STAGE_LOBBY:
+		lstrcpy(szFileName, TEXT("LEVEL_STAGE_LOBBY"));
+		break;
+	case Client::LEVEL_END:
+		return;
+	default:
+		return;
+	}
+
+	_tchar*		_szFileName = nullptr;
+
+
+	lstrcat(szFullPath, szFileName);
+	//파일 이름 넣고
+	lstrcat(szFullPath, TEXT(".dat"));
+	//경로 넣고
+
+
+
+	HANDLE		hFile = CreateFile(szFullPath,			
+		GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+
+	DWORD		dwByte = 0;
+
+	CObj_Plus::OBJ_DESC	_tInfo;
+	ZeroMemory(&_tInfo, sizeof(CObj_Plus::OBJ_DESC));
+	while(true)
+	{
+		ZeroMemory(&_tInfo, sizeof(CObj_Plus::OBJ_DESC));
+		ReadFile(hFile, &_tInfo, sizeof(CObj_Plus::OBJ_DESC), &dwByte, nullptr);
+		if (dwByte == 0)
+			break;
+
+		if (FAILED(_Instance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Obj_NonAnim"), g_eCurLevel, TEXT("Layer_Map"), &_tInfo)))
+		{
+			MSG_BOX(TEXT("FAILED LOAD MAP"));
+			CloseHandle(hFile);
+			return;
+		}			
+	}
+
+	CloseHandle(hFile);
+
+}
+
 
 HRESULT CObj_Tool::Tool_Obj()
 {
+	if (ImGui::BeginCombo("Level", m_pLevels[m_iSelectLevel], 1))
+	{
+		for (int i = 0; i < m_pLevels.size(); ++i)
+		{
+			const bool isSelected = (m_iSelectLevel == i);
+			if (ImGui::Selectable(m_pLevels[i], isSelected))
+			{
+				m_iSelectLevel = i;
+			}
+		}
+		ImGui::EndCombo();
+	}
+
+	if (ImGui::Button("Reseve Level"))
+	{
+		ReserveLevel();
+	}
+
 	if (ImGui::Button("Load Layers"))
 	{
 		Load_Layers();
@@ -89,6 +259,7 @@ HRESULT CObj_Tool::Tool_Obj()
 		CGameInstance::Get_Instance()->Add_Layer(g_eCurLevel, _szTemp);
 		//동적해제 골때리네
 		Load_Layers();
+		//Safe_Delete_Array(_szTemp);
 	}
 
 
@@ -180,19 +351,39 @@ HRESULT CObj_Tool::Tool_Obj()
 		Tool_Obj_Add();
 	}
 	ImGui::Separator();
-	if (ImGui::Button("Save Obj.dat"))
+	if (ImGui::Button("Save Map"))
 	{
-
+		Save_Map();
 	}
 	ImGui::SameLine();
-	if (ImGui::Button("Load Obj.dat"))
+	if (ImGui::Button("Load Map"))
 	{
-
+		Load_Map();
 	}
 
 	
 
 	return S_OK;
+}
+
+void CObj_Tool::ReserveLevel()
+{
+	AUTOINSTANCE(CGameInstance, _Instance);
+	switch (m_iSelectLevel)
+	{
+	case 0:
+		_Instance->Reserve_Level(LEVEL_STAGE_LOBBY);
+		return;
+	case 1:
+		_Instance->Reserve_Level(LEVEL_GAMEPLAY);
+		return;
+	case 2:
+		_Instance->Reserve_Level(LEVEL_STAGE_02);
+		return;
+	case 3:
+		_Instance->Reserve_Level(LEVEL_STAGE_LAST);
+		return;
+	}
 }
 
 
@@ -202,7 +393,7 @@ HRESULT CObj_Tool::Tool_Obj_Pick()
 	//ImGui::Begin("Tool_Obj_Pick", &m_bTool_Obj_Pick);
 
 	ImGui::Begin("Tool_Obj_Pick_", &m_bTool_Obj_Pick);
-
+	
 	m_vScale = m_pPick_Trans->Get_Scale();
 	XMStoreFloat3(&m_vPos, m_pPick_Trans->Get_State(CTransform::STATE_POSITION));
 	m_vAngle = m_pPick_Trans->Get_Rotation();
@@ -247,7 +438,7 @@ HRESULT CObj_Tool::Tool_Obj_Pick()
 		}
 	}
 
-	if (ImGui::Button("Set_Info"))
+	//if (ImGui::Button("Set_Info")) // 셋인포
 	{
 		_matrix		Matrix = XMMatrixIdentity();
 		Matrix = XMMatrixScaling(m_vScale.x, m_vScale.y, m_vScale.z) * 
@@ -260,7 +451,8 @@ HRESULT CObj_Tool::Tool_Obj_Pick()
 		XMStoreFloat4x4(&m_tObj_Desc.matWorld, Matrix);
 		m_tObj_Desc.eLevel = g_eCurLevel;
 		lstrcpy(m_tObj_Desc.szModelTag, CImGui::Get_Instance()->ConvertCtoWC(m_pModels[m_iSelectModel]));
-		static_cast<CObj_Plus*>(m_pPick)->Set_Info(m_tObj_Desc);
+		if (m_pPick)
+			static_cast<CObj_Plus*>(m_pPick)->Set_Info(m_tObj_Desc);
 	}
 
 	if (ImGui::Button("AnimModel_Save"))

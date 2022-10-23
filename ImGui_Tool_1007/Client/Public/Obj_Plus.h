@@ -36,7 +36,7 @@ public:
 
 public:
 	virtual void		Set_Info(OBJ_DESC _tInfo) = 0;
-	OBJ_DESC	Get_Info(OBJ_DESC _tInfo) { return m_tInfo; }
+	OBJ_DESC	Get_Info() { return m_tInfo; }
 
 	void Set_Pass(PASS _ePass) { m_ePass = _ePass; }
 

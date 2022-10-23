@@ -278,6 +278,6 @@ CComponent * CVIBuffer_Terrain::Clone(void * pArg)
 void CVIBuffer_Terrain::Free()
 {
 	__super::Free();
-	if (m_isCloned == true)
+	if (m_isCloned == false)
 		Safe_Delete_Array(m_pVerticesPos);
 }

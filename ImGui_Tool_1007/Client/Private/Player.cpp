@@ -392,6 +392,7 @@ void CPlayer::KeyInputMain( _float fTimeDelta)
 
 void CPlayer::KeyInput_Idle( _float fTimeDelta)
 {
+	AUTOINSTANCE(CGameInstance, pGameInstance);
 	if (m_pTarget)
 	{
 		TargetingMove(fTimeDelta);
@@ -402,48 +403,48 @@ void CPlayer::KeyInput_Idle( _float fTimeDelta)
 	}
 	
 	//if (CGameInstance::Get_Instance()->KeyDown(DIK_SPACE))
-	if (CGameInstance::Get_Instance()->MouseDown(DIMK_LBUTTON))
+	if (pGameInstance->MouseDown(DIMK_LBUTTON))
 	{
 		m_eCurState = STATE_ATT1;
 	}
 
-	if (CGameInstance::Get_Instance()->KeyDown(DIK_F))
+	if (pGameInstance->KeyDown(DIK_F))
 	{
 		m_eCurState = ParryL;
 	}
 
-	if (CGameInstance::Get_Instance()->KeyDown(DIK_SPACE))
+	if (pGameInstance->KeyDown(DIK_SPACE))
 	{
 		m_eCurState = STATE_AVOIDATTACK;
-		if (CGameInstance::Get_Instance()->KeyPressing(DIK_S))
+		if (pGameInstance->KeyPressing(DIK_S))
 		{
 			m_eCurState = STATE_AVOIDBACK;
 			m_eWeapon = WEAPON_BASE;
 		}
 	}
 
-	if (CGameInstance::Get_Instance()->MouseDown(DIMK_RBUTTON))
+	if (pGameInstance->MouseDown(DIMK_RBUTTON))
 	{
 		m_eCurState = Raven_ClawNear;
 	}
 
-	if (CGameInstance::Get_Instance()->KeyDown(DIK_R))
+	if (pGameInstance->KeyDown(DIK_R))
 	{
 		m_eCurState = Healing_Little;
 	}
-	if (CGameInstance::Get_Instance()->KeyDown(DIK_1))
+	if (pGameInstance->KeyDown(DIK_1))
 	{
 		m_eCurState = DualKnife;
 		m_eWeapon = WEAPON::WEAPON_SKILL;
 		m_eCurSkill = SKILL_DUAL;
 		m_bCollision[COLLIDERTYPE_BODY] = false;
 	}
-	if (CGameInstance::Get_Instance()->KeyDown(DIK_2))
+	if (pGameInstance->KeyDown(DIK_2))
 	{		
 		m_eCurState = Corvus_PW_Axe;
 		m_bCollision[COLLIDERTYPE_BODY] = false;
 	}
-	if (CGameInstance::Get_Instance()->MouseDown(DIMK_WHEEL))
+	if (pGameInstance->MouseDown(DIMK_WHEEL))
 	{
 		Targeting();
 	}
@@ -451,13 +452,14 @@ void CPlayer::KeyInput_Idle( _float fTimeDelta)
 
 void CPlayer::Move(_float fTimeDelta)
 {
-	if (CGameInstance::Get_Instance()->KeyPressing(DIK_A))
+	AUTOINSTANCE(CGameInstance, pGameInstance);
+	if (pGameInstance->KeyPressing(DIK_A))
 	{
-		if (CGameInstance::Get_Instance()->KeyPressing(DIK_W))
+		if (pGameInstance->KeyPressing(DIK_W))
 		{
 			m_eDir = DIR_FL;
 		}
-		else if (CGameInstance::Get_Instance()->KeyPressing(DIK_S))
+		else if (pGameInstance->KeyPressing(DIK_S))
 		{
 			m_eDir = DIR_BL;
 		}
@@ -466,13 +468,13 @@ void CPlayer::Move(_float fTimeDelta)
 			m_eDir = DIR_L;
 		}
 	}
-	else if (CGameInstance::Get_Instance()->KeyPressing(DIK_D))
+	else if (pGameInstance->KeyPressing(DIK_D))
 	{
-		if (CGameInstance::Get_Instance()->KeyPressing(DIK_W))
+		if (pGameInstance->KeyPressing(DIK_W))
 		{
 			m_eDir = DIR_FR;
 		}
-		else if (CGameInstance::Get_Instance()->KeyPressing(DIK_S))
+		else if (pGameInstance->KeyPressing(DIK_S))
 		{
 			m_eDir = DIR_BR;
 		}
@@ -483,11 +485,11 @@ void CPlayer::Move(_float fTimeDelta)
 	}
 	else
 	{
-		if (CGameInstance::Get_Instance()->KeyPressing(DIK_W))
+		if (pGameInstance->KeyPressing(DIK_W))
 		{
 			m_eDir = DIR_F;
 		}
-		else if (CGameInstance::Get_Instance()->KeyPressing(DIK_S))
+		else if (pGameInstance->KeyPressing(DIK_S))
 		{
 			m_eDir = DIR_B;
 		}
@@ -498,7 +500,7 @@ void CPlayer::Move(_float fTimeDelta)
 	}
 
 	_float4x4 _CamMatix;
-	XMStoreFloat4x4(&_CamMatix, XMMatrixInverse(nullptr, CGameInstance::Get_Instance()->Get_TransformMatrix(CPipeLine::D3DTS_VIEW)));
+	XMStoreFloat4x4(&_CamMatix, XMMatrixInverse(nullptr, pGameInstance->Get_TransformMatrix(CPipeLine::D3DTS_VIEW)));
 
 	_vector	_vCamLook, _vCamRight, _vLook, _vRight;
 	_float _fRatio = 0.8f;
@@ -562,13 +564,14 @@ void CPlayer::Move(_float fTimeDelta)
 
 void CPlayer::TargetingMove(_float fTimeDelta)
 {
-	if (CGameInstance::Get_Instance()->KeyPressing(DIK_A))
+	AUTOINSTANCE(CGameInstance, pGameInstance);
+	if (pGameInstance->KeyPressing(DIK_A))
 	{
-		if (CGameInstance::Get_Instance()->KeyPressing(DIK_W))
+		if (pGameInstance->KeyPressing(DIK_W))
 		{
 			m_eDir = DIR_FL;
 		}
-		else if (CGameInstance::Get_Instance()->KeyPressing(DIK_S))
+		else if (pGameInstance->KeyPressing(DIK_S))
 		{
 			m_eDir = DIR_BL;
 		}
@@ -577,13 +580,13 @@ void CPlayer::TargetingMove(_float fTimeDelta)
 			m_eDir = DIR_L;
 		}
 	}
-	else if (CGameInstance::Get_Instance()->KeyPressing(DIK_D))
+	else if (pGameInstance->KeyPressing(DIK_D))
 	{
-		if (CGameInstance::Get_Instance()->KeyPressing(DIK_W))
+		if (pGameInstance->KeyPressing(DIK_W))
 		{
 			m_eDir = DIR_FR;
 		}
-		else if (CGameInstance::Get_Instance()->KeyPressing(DIK_S))
+		else if (pGameInstance->KeyPressing(DIK_S))
 		{
 			m_eDir = DIR_BR;
 		}
@@ -594,11 +597,11 @@ void CPlayer::TargetingMove(_float fTimeDelta)
 	}
 	else
 	{
-		if (CGameInstance::Get_Instance()->KeyPressing(DIK_W))
+		if (pGameInstance->KeyPressing(DIK_W))
 		{
 			m_eDir = DIR_F;
 		}
-		else if (CGameInstance::Get_Instance()->KeyPressing(DIK_S))
+		else if (pGameInstance->KeyPressing(DIK_S))
 		{
 			m_eDir = DIR_B;
 		}
@@ -609,7 +612,7 @@ void CPlayer::TargetingMove(_float fTimeDelta)
 	}
 
 	_float4x4 _CamMatix;
-	XMStoreFloat4x4(&_CamMatix, XMMatrixInverse(nullptr, CGameInstance::Get_Instance()->Get_TransformMatrix(CPipeLine::D3DTS_VIEW)));
+	XMStoreFloat4x4(&_CamMatix, XMMatrixInverse(nullptr, pGameInstance->Get_TransformMatrix(CPipeLine::D3DTS_VIEW)));
 
 	_vector	_vCamLook, _vCamRight, _vLook, _vRight;
 	_float _fRatio = 0.8f;
@@ -680,20 +683,21 @@ void CPlayer::KP_ATT(_float fTimeDelta)
 	//1. 리미트 시간 전에 눌렀을때 반응하는 상태 : 다음 공격키(예약)
 	//2. 리미트 시간 후에 눌렀을때 반응하는 상태 : 패리(즉각)
 	//3. 아무때나 눌렀을때 반응하는 상태 : 클로(예약), 회피(즉각)
+	AUTOINSTANCE(CGameInstance, pGameInstance);
 	switch (m_eCurState)
 	{
 	case Client::CPlayer::STATE_ATT1:
 		if (m_fPlayTime <= m_vecLimitTime[STATE_ATT1][ATTACKLIMIT_CHANGE])
 		{
 			//if (CGameInstance::Get_Instance()->KeyDown(DIK_SPACE))
-			if (CGameInstance::Get_Instance()->MouseDown(DIMK_LBUTTON))
+			if (pGameInstance->MouseDown(DIMK_LBUTTON))
 			{
 				m_eReserveState = STATE_ATT2;
 			}
 		}
 		if (m_fPlayTime > m_vecLimitTime[STATE_ATT1][ATTACKLIMIT_CHANGE])
 		{
-			if (CGameInstance::Get_Instance()->KeyDown(DIK_F))
+			if (pGameInstance->KeyDown(DIK_F))
 			{
 				m_eCurState = ParryL;
 			}
@@ -703,7 +707,7 @@ void CPlayer::KP_ATT(_float fTimeDelta)
 		if (m_fPlayTime <= m_vecLimitTime[STATE_ATT2][ATTACKLIMIT_CHANGE])
 		{
 			//if (CGameInstance::Get_Instance()->KeyDown(DIK_SPACE))
-			if (CGameInstance::Get_Instance()->MouseDown(DIMK_LBUTTON))
+			if (pGameInstance->MouseDown(DIMK_LBUTTON))
 			{
 				m_eReserveState = STATE_ATT3;
 			}
@@ -711,7 +715,7 @@ void CPlayer::KP_ATT(_float fTimeDelta)
 		}
 		if (m_fPlayTime > m_vecLimitTime[STATE_ATT2][ATTACKLIMIT_CHANGE])
 		{
-			if (CGameInstance::Get_Instance()->KeyDown(DIK_F))
+			if (pGameInstance->KeyDown(DIK_F))
 			{
 				m_eReserveState = ParryL;
 			}
@@ -722,14 +726,14 @@ void CPlayer::KP_ATT(_float fTimeDelta)
 		if (m_fPlayTime <= m_vecLimitTime[STATE_ATT3][ATTACKLIMIT_CHANGE])
 		{
 			//if (CGameInstance::Get_Instance()->KeyDown(DIK_SPACE))
-			if (CGameInstance::Get_Instance()->MouseDown(DIMK_LBUTTON))
+			if (pGameInstance->MouseDown(DIMK_LBUTTON))
 			{
 				m_eReserveState = STATE_ATT4;
 			}
 		}
 		if (m_fPlayTime > m_vecLimitTime[STATE_ATT3][ATTACKLIMIT_CHANGE])
 		{
-			if (CGameInstance::Get_Instance()->KeyDown(DIK_F))
+			if (pGameInstance->KeyDown(DIK_F))
 			{
 				m_eReserveState = ParryL;
 			}
@@ -740,14 +744,14 @@ void CPlayer::KP_ATT(_float fTimeDelta)
 		if (m_fPlayTime <= m_vecLimitTime[STATE_ATT4][ATTACKLIMIT_CHANGE])
 		{
 			//if (CGameInstance::Get_Instance()->KeyDown(DIK_SPACE))
-			if (CGameInstance::Get_Instance()->MouseDown(DIMK_LBUTTON))
+			if (pGameInstance->MouseDown(DIMK_LBUTTON))
 			{
 				m_eReserveState = STATE_ATT5;
 			}
 		}
 		if (m_fPlayTime > m_vecLimitTime[STATE_ATT4][ATTACKLIMIT_CHANGE])
 		{
-			if (CGameInstance::Get_Instance()->KeyDown(DIK_F))
+			if (pGameInstance->KeyDown(DIK_F))
 			{
 				m_eReserveState = ParryL;
 			}
@@ -756,22 +760,22 @@ void CPlayer::KP_ATT(_float fTimeDelta)
 	case Client::CPlayer::STATE_ATT5:
 		if (m_fPlayTime > m_vecLimitTime[STATE_ATT5][ATTACKLIMIT_CHANGE])
 		{
-			if (CGameInstance::Get_Instance()->KeyDown(DIK_F))
+			if (pGameInstance->KeyDown(DIK_F))
 			{
 				m_eReserveState = ParryL;
 			}
 		}
 		break;
 	}
-	if (CGameInstance::Get_Instance()->MouseDown(DIMK_RBUTTON))
+	if (pGameInstance->MouseDown(DIMK_RBUTTON))
 	{
 		m_eReserveState = Raven_ClawNear;
 		
 	}
-	if (CGameInstance::Get_Instance()->KeyDown(DIK_SPACE))
+	if (pGameInstance->KeyDown(DIK_SPACE))
 	{
 		m_eCurState = STATE_AVOIDATTACK;
-		if (CGameInstance::Get_Instance()->KeyPressing(DIK_S))
+		if (pGameInstance->KeyPressing(DIK_S))
 		{
 			m_eCurState = STATE_AVOIDBACK;
 		}
@@ -785,12 +789,13 @@ void CPlayer::KP_Parry(_float fTimeDelta)
 
 void CPlayer::KP_AVOIDATTACK(_float fTimeDelta)
 {
+	AUTOINSTANCE(CGameInstance, pGameInstance);
 	if (5.f < m_fPlayTime)
 	{
-		if (CGameInstance::Get_Instance()->KeyDown(DIK_SPACE))
+		if (pGameInstance->KeyDown(DIK_SPACE))
 		{
 			m_eCurState = STATE_AVOIDATTACK;
-			if (CGameInstance::Get_Instance()->KeyPressing(DIK_S))
+			if (pGameInstance->KeyPressing(DIK_S))
 			{
 				m_eCurState = STATE_AVOIDBACK;
 				m_eWeapon = WEAPON_BASE;
@@ -801,7 +806,8 @@ void CPlayer::KP_AVOIDATTACK(_float fTimeDelta)
 
 void CPlayer::KP_ClawNear(_float fTimeDelta)
 {
-	if (CGameInstance::Get_Instance()->KeyDown(DIK_SPACE))
+	AUTOINSTANCE(CGameInstance, pGameInstance);
+	if (pGameInstance->KeyDown(DIK_SPACE))
 	{
 		m_eCurState = STATE_AVOIDATTACK;
 	}
@@ -1066,7 +1072,7 @@ void CPlayer::CheckLimit()
 			m_eWeapon = WEAPON_BASE;
 			m_eCurSkill = SKILL_END;
 			AUTOINSTANCE(CGameInstance, pGame);
-			pGame->Set_TimeSpeed(TEXT("Timer_Main"), 1.f);
+			pGame->Set_TimeSpeed(TEXT("Timer_Main"), 1.2f);
 		}
 		else if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][3])//다시 무기 스왑 및 타이머 정상화
 		{

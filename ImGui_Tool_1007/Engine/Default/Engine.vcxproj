@@ -179,6 +179,7 @@
     <ClCompile Include="..\Private\Graphic_Device.cpp" />
     <ClCompile Include="..\private\HierarchyNode.cpp" />
     <ClCompile Include="..\Private\Input_Device.cpp" />
+    <ClCompile Include="..\Private\InstancingMesh.cpp" />
     <ClCompile Include="..\Private\Layer.cpp" />
     <ClCompile Include="..\Private\Level.cpp" />
     <ClCompile Include="..\Private\Level_Manager.cpp" />
@@ -236,6 +237,7 @@
     <ClInclude Include="..\Public\Graphic_Device.h" />
     <ClInclude Include="..\public\HierarchyNode.h" />
     <ClInclude Include="..\Public\Input_Device.h" />
+    <ClInclude Include="..\Public\InstancingMesh.h" />
     <ClInclude Include="..\Public\Layer.h" />
     <ClInclude Include="..\Public\Level.h" />
     <ClInclude Include="..\Public\Level_Manager.h" />

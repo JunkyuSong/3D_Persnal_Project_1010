@@ -96,7 +96,7 @@ HRESULT CMainApp::Render()
 		m_fTimeAcc = 0.f;
 	}
 
-	SetWindowText(g_hWnd, m_szFPS);
+	//SetWindowText(g_hWnd, m_szFPS);
 #endif // _DEBUG
 
 	
@@ -223,12 +223,6 @@ void CMainApp::Free()
 	Safe_Release(m_pContext);
 	Safe_Release(m_pRenderer);
 	Safe_Release(m_pGameInstance);
-	/*m_pGameInstance = CGameInstance::Get_Instance();
-	Safe_Release(m_pGameInstance);*/
-	/*CReleaseMgr* ReleaseMgr = CReleaseMgr::Get_Instance();
-	CTerrainMgr* _pTerrain = CTerrainMgr::Get_Instance();
-	Safe_Release(ReleaseMgr);
-	Safe_Release(_pTerrain);*/
 	CReleaseMgr::Destroy_Instance();
 	CTerrainMgr::Destroy_Instance();
 	CCameraMgr::Destroy_Instance();

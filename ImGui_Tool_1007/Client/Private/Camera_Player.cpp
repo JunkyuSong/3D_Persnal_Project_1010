@@ -34,7 +34,7 @@ HRESULT CCamera_Player::Initialize(void * pArg)
 		return E_FAIL;*/
 	memcpy(&m_CameraDesc, pArg, sizeof(CAMERADESC));
 
-	CAutoInstance<CGameInstance> pGameInstance(CGameInstance::Get_Instance());
+	AUTOINSTANCE(CGameInstance, pGameInstance);
 	if (m_pPlayer == nullptr)
 	{
 		m_pPlayer = pGameInstance->Get_Player();
@@ -47,8 +47,7 @@ HRESULT CCamera_Player::Initialize(void * pArg)
 
 void CCamera_Player::Tick(_float fTimeDelta)
 {
-	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
-	Safe_AddRef(pGameInstance);
+	AUTOINSTANCE(CGameInstance, pGameInstance);
 
 	if (m_pTarget)
 	{
@@ -83,7 +82,7 @@ void CCamera_Player::Tick(_float fTimeDelta)
 	
 	
 
-	Safe_Release(pGameInstance);
+	
 	__super::Tick(fTimeDelta);
 }
 

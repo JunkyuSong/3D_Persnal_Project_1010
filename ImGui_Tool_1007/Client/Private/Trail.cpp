@@ -119,7 +119,7 @@ HRESULT CTrail::Initialize(void * pArg)
 	m_HighAndLow = _tInfo._HighAndLow;
 	m_Color = _tInfo._Color;
 
-	CGameInstance* pGameInstance = CGameInstance::Get_Instance();
+	AUTOINSTANCE(CGameInstance, pGameInstance);
 	m_pShaderCom = static_cast<CShader*>(pGameInstance->Clone_Component(LEVEL_GAMEPLAY,TEXT("Prototype_Component_Shader_Trail")));
 	
 	if (m_pShaderCom == nullptr)
@@ -137,8 +137,7 @@ HRESULT CTrail::Render()
 	{
 		return S_OK;
 	}
-	CGameInstance* pGameInstance = CGameInstance::Get_Instance();
-	Safe_AddRef(pGameInstance);
+	AUTOINSTANCE(CGameInstance, pGameInstance);
 	if (FAILED(m_pShaderCom->Set_RawValue("g_ViewMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
@@ -157,7 +156,7 @@ HRESULT CTrail::Render()
 	{
 		MSG_BOX(TEXT("Trail Render"));
 	}
-	Safe_Release(pGameInstance);
+
 
 	return S_OK;
 }
