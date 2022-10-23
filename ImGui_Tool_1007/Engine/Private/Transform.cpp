@@ -53,21 +53,32 @@ void CTransform::Go_Straight(_float fTimeDelta, CNavigation* pNavigation)
 
 	_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 	if (nullptr != pNavigation)
+	{
 		isMove = pNavigation->isMove(vPosition, &vNormal);
 
-	if (true == isMove)
-		Set_State(CTransform::STATE_POSITION, vPosition);
+		if (true == isMove)
+		{
+			vPosition.m128_f32[1] = pNavigation->Get_PosY(vPosition);
+			Set_State(CTransform::STATE_POSITION, vPosition);
+		}
+		else
+		{
+
+			if (XMVectorGetX(XMVector3Length(vNormal)) == 0)
+				return;
+			_vector		vPosition = Get_State(CTransform::STATE_POSITION);
+			_vector vSlide = XMVectorGetX(XMVector3Dot(XMVector3Normalize(vLook) * (-1.f), vNormal)) * vNormal;
+			vSlide += XMVector3Normalize(vLook);
+			vPosition += vSlide * m_TransformDesc.fSpeedPerSec * fTimeDelta;
+			vPosition.m128_f32[1] = pNavigation->Get_PosY(vPosition);
+			Set_State(CTransform::STATE_POSITION, vPosition);
+		}
+	}
 	else
 	{
-		
-		if (XMVectorGetX(XMVector3Length(vNormal)) == 0)
-			return;
-		_vector		vPosition = Get_State(CTransform::STATE_POSITION);
-		_vector vSlide = XMVectorGetX( XMVector3Dot( XMVector3Normalize(vLook) * (-1.f), vNormal)) * vNormal;
-		vSlide += XMVector3Normalize(vLook);
-		vPosition += vSlide * m_TransformDesc.fSpeedPerSec * fTimeDelta;
 		Set_State(CTransform::STATE_POSITION, vPosition);
 	}
+		
 }
 
 void CTransform::Go_Backward(_float fTimeDelta, CNavigation* pNavigation)
@@ -81,18 +92,28 @@ void CTransform::Go_Backward(_float fTimeDelta, CNavigation* pNavigation)
 
 	_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 	if (nullptr != pNavigation)
+	{
 		isMove = pNavigation->isMove(vPosition, &vNormal);
 
-	if (true == isMove)
-		Set_State(CTransform::STATE_POSITION, vPosition);
+		if (true == isMove)
+		{
+			vPosition.m128_f32[1] = pNavigation->Get_PosY(vPosition);
+			Set_State(CTransform::STATE_POSITION, vPosition);
+		}
+		else
+		{
+			if (XMVectorGetX(XMVector3Length(vNormal)) == 0)
+				return;
+			_vector		vPosition = Get_State(CTransform::STATE_POSITION);
+			_vector vSlide = XMVectorGetX(XMVector3Dot(XMVector3Normalize(vLook) * (-1.f), vNormal)) * vNormal;
+			vSlide += vLook;
+			vPosition -= XMVector3Normalize(vSlide) * m_TransformDesc.fSpeedPerSec * fTimeDelta;
+			vPosition.m128_f32[1] = pNavigation->Get_PosY(vPosition);
+			Set_State(CTransform::STATE_POSITION, vPosition);
+		}
+	}
 	else
 	{
-		if (XMVectorGetX(XMVector3Length(vNormal)) == 0)
-			return;
-		_vector		vPosition = Get_State(CTransform::STATE_POSITION);
-		_vector vSlide = XMVectorGetX(XMVector3Dot(XMVector3Normalize(vLook) * (-1.f), vNormal)) * vNormal;
-		vSlide += vLook;
-		vPosition -= XMVector3Normalize(vSlide) * m_TransformDesc.fSpeedPerSec * fTimeDelta;
 		Set_State(CTransform::STATE_POSITION, vPosition);
 	}
 }
@@ -108,18 +129,29 @@ void CTransform::Go_Left(_float fTimeDelta, CNavigation* pNavigation)
 
 	_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 	if (nullptr != pNavigation)
+	{
 		isMove = pNavigation->isMove(vPosition, &vNormal);
 
-	if (true == isMove)
-		Set_State(CTransform::STATE_POSITION, vPosition);
+		if (true == isMove)
+		{
+			vPosition.m128_f32[1] = pNavigation->Get_PosY(vPosition);
+			Set_State(CTransform::STATE_POSITION, vPosition);
+		}
+
+		else
+		{
+			if (XMVectorGetX(XMVector3Length(vNormal)) == 0)
+				return;
+			_vector		vPosition = Get_State(CTransform::STATE_POSITION);
+			_vector vSlide = XMVectorGetX(XMVector3Dot(XMVector3Normalize(vRight) * (-1.f), vNormal)) * vNormal;
+			vSlide += vRight;
+			vPosition -= XMVector3Normalize(vSlide) * m_TransformDesc.fSpeedPerSec * fTimeDelta;
+			vPosition.m128_f32[1] = pNavigation->Get_PosY(vPosition);
+			Set_State(CTransform::STATE_POSITION, vPosition);
+		}
+	}
 	else
 	{
-		if (XMVectorGetX(XMVector3Length(vNormal)) == 0)
-			return;
-		_vector		vPosition = Get_State(CTransform::STATE_POSITION);
-		_vector vSlide = XMVectorGetX(XMVector3Dot(XMVector3Normalize(vRight) * (-1.f), vNormal)) * vNormal;
-		vSlide += vRight;
-		vPosition -= XMVector3Normalize(vSlide) * m_TransformDesc.fSpeedPerSec * fTimeDelta;
 		Set_State(CTransform::STATE_POSITION, vPosition);
 	}
 }
@@ -135,18 +167,29 @@ void CTransform::Go_Right(_float fTimeDelta, CNavigation* pNavigation)
 
 	_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 	if (nullptr != pNavigation)
+	{
 		isMove = pNavigation->isMove(vPosition, &vNormal);
 
-	if (true == isMove)
-		Set_State(CTransform::STATE_POSITION, vPosition);
+		if (true == isMove)
+		{
+			vPosition.m128_f32[1] = pNavigation->Get_PosY(vPosition);
+			Set_State(CTransform::STATE_POSITION, vPosition);
+		}
+
+		else
+		{
+			if (XMVectorGetX(XMVector3Length(vNormal)) == 0)
+				return;
+			_vector		vPosition = Get_State(CTransform::STATE_POSITION);
+			_vector vSlide = XMVectorGetX(XMVector3Dot(XMVector3Normalize(vRight) * (-1.f), vNormal)) * vNormal;
+			vSlide += vRight;
+			vPosition += XMVector3Normalize(vSlide) * m_TransformDesc.fSpeedPerSec * fTimeDelta;
+			vPosition.m128_f32[1] = pNavigation->Get_PosY(vPosition);
+			Set_State(CTransform::STATE_POSITION, vPosition);
+		}
+	}
 	else
 	{
-		if (XMVectorGetX(XMVector3Length(vNormal)) == 0)
-			return;
-		_vector		vPosition = Get_State(CTransform::STATE_POSITION);
-		_vector vSlide = XMVectorGetX(XMVector3Dot(XMVector3Normalize(vRight) * (-1.f), vNormal)) * vNormal;
-		vSlide += vRight;
-		vPosition += XMVector3Normalize(vSlide) * m_TransformDesc.fSpeedPerSec * fTimeDelta;
 		Set_State(CTransform::STATE_POSITION, vPosition);
 	}
 }
@@ -162,18 +205,24 @@ void CTransform::Go_Up(_float fTimeDelta, CNavigation* pNavigation)
 
 	_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 	if (nullptr != pNavigation)
+	{
 		isMove = pNavigation->isMove(vPosition, &vNormal);
 
-	if (true == isMove)
-		Set_State(CTransform::STATE_POSITION, vPosition);
+		if (true == isMove)
+			Set_State(CTransform::STATE_POSITION, vPosition);
+		else
+		{
+			if (XMVectorGetX(XMVector3Length(vNormal)) == 0)
+				return;
+			_vector		vPosition = Get_State(CTransform::STATE_POSITION);
+			_vector vSlide = XMVectorGetX(XMVector3Dot(XMVector3Normalize(vUp) * (-1.f), vNormal)) * vNormal;
+			vSlide += vUp;
+			vPosition += XMVector3Normalize(vSlide) * m_TransformDesc.fSpeedPerSec * fTimeDelta;
+			Set_State(CTransform::STATE_POSITION, vPosition);
+		}
+	}
 	else
 	{
-		if (XMVectorGetX(XMVector3Length(vNormal)) == 0)
-			return;
-		_vector		vPosition = Get_State(CTransform::STATE_POSITION);
-		_vector vSlide = XMVectorGetX(XMVector3Dot(XMVector3Normalize(vUp) * (-1.f), vNormal)) * vNormal;
-		vSlide += vUp;
-		vPosition += XMVector3Normalize(vSlide) * m_TransformDesc.fSpeedPerSec * fTimeDelta;
 		Set_State(CTransform::STATE_POSITION, vPosition);
 	}
 

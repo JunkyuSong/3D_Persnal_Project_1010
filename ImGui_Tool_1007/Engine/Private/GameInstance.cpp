@@ -233,6 +233,14 @@ HRESULT CGameInstance::Set_TimeSpeed(const _tchar * pTimerTag, const _float & _f
 	return m_pTimer_Manager->Set_TimeSpeed(pTimerTag, _fTimeSpeed);
 }
 
+_float CGameInstance::Get_TimeSpeed(const _tchar * pTimerTag)
+{
+	if (nullptr == m_pTimer_Manager)
+		return E_FAIL;
+
+	return m_pTimer_Manager->Get_TimeSpeed(pTimerTag);
+}
+
 _char CGameInstance::Get_DIKState(_uchar eKeyID)
 {
 	if (nullptr == m_pInput_Device)

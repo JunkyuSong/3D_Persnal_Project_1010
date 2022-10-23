@@ -23,6 +23,7 @@ public:
 
 public:
 	_bool isMove(_fvector vPosition, _vector* vSlide);
+	_float	Get_PosY(_vector vPos);
 	void	Set_Index(_int _iIndex) { m_NavigationDesc.iCurrentIndex = _iIndex; }
 	_int	Get_Index() { return m_NavigationDesc.iCurrentIndex; }
 

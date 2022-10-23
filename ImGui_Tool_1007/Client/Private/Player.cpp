@@ -98,8 +98,20 @@ HRESULT CPlayer::Initialize(void * pArg)
 
 
 	m_MonsterLayer = pGameInstance->Get_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Monster"));
+	switch (g_eCurLevel)
+	{
+	case Client::LEVEL_GAMEPLAY:
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(69.083f, 2.402f, 42.580f, 1.f));
+		break;
+	case Client::LEVEL_STAGE_02:
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(44.083f, 0.f, 17.580f, 1.f));
+		break;
+	case Client::LEVEL_STAGE_LAST:
+		break;
+	case Client::LEVEL_STAGE_LOBBY:
+		break;
+	}
 	
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(69.083, 2.402, 42.580,1.f));
 	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(5.f, 0.f, 5.f, 1.f));
 	return S_OK;
 }
@@ -1458,7 +1470,11 @@ void CPlayer::Get_AnimMat()
 		isMove = m_pNavigationCom->isMove(_vPos, nullptr/*&vNormal*/);
 
 	if (true == isMove)
+	{
+		_vPos.m128_f32[1] = m_pNavigationCom->Get_PosY(_vPos);
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
+	}
+		
 }
 
 void CPlayer::Cancle()
@@ -1627,9 +1643,21 @@ HRESULT CPlayer::Ready_Components()
 	CNavigation::NAVIGATIONDESC			NaviDesc;
 	ZeroMemory(&NaviDesc, sizeof(CNavigation::NAVIGATIONDESC));
 	NaviDesc.iCurrentIndex = 0;
-
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation_GamePlay"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
-		return E_FAIL;
+	switch (g_eCurLevel)
+	{
+	case Client::LEVEL_GAMEPLAY:
+		if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation_GamePlay"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
+			return E_FAIL;
+		break;
+	case Client::LEVEL_STAGE_02:
+		if (FAILED(__super::Add_Component(LEVEL_STAGE_02, TEXT("Prototype_Component_Navigation_Stage_02"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
+			return E_FAIL;
+		break;
+	case Client::LEVEL_STAGE_LAST:
+		break;
+	case Client::LEVEL_STAGE_LOBBY:
+		break;
+	}
 
 	return S_OK;
 }

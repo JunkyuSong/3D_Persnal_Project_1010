@@ -123,12 +123,32 @@ HRESULT CTerrain::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Texture */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-		return E_FAIL;
+
+
+	
 
 	/* For.Com_Navigation */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation_GamePlay"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom)))
-		return E_FAIL;
+
+	switch (g_eCurLevel)
+	{
+	case Client::LEVEL_GAMEPLAY:
+		if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation_GamePlay"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom)))
+			return E_FAIL;
+		break;
+	case Client::LEVEL_STAGE_02:
+		if (FAILED(__super::Add_Component(LEVEL_STAGE_02, TEXT("Prototype_Component_Texture_Terrain_02"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		if (FAILED(__super::Add_Component(LEVEL_STAGE_02, TEXT("Prototype_Component_Navigation_Stage_02"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom)))
+			return E_FAIL;
+		break;
+	case Client::LEVEL_STAGE_LAST:
+		break;
+	case Client::LEVEL_STAGE_LOBBY:
+		break;
+	}
+
 
 	return S_OK;
 }

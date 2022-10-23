@@ -269,6 +269,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		return E_FAIL;
 
 
+	
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
 	/* 모델를 로드한다. */
 
@@ -441,6 +442,9 @@ HRESULT CLoader::Loading_ForLevel_Stage02()
 
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
 	/* 텍스쳐를 로드한다. */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_02, TEXT("Prototype_Component_Texture_Terrain_02"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Stage02.dds")))))//Grass_%d.dds
+		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
 	/* 모델를 로드한다. */
@@ -486,14 +490,9 @@ HRESULT CLoader::Loading_ForLevel_Stage02()
 
 	lstrcpy(m_szLoadingText, TEXT("네비게이션데이터를 생성하는 중입니다."));
 
-	/* For.Prototype_Component_Navigation */
-	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"),
-	//	CNavigation::Create(m_pDevice, m_pContext, TEXT("../Bin/Data/NavigationData.dat")))))
-	//	return E_FAIL;
-
-	/*if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation_GamePlay"),
-		CNavigation::Create(m_pDevice, m_pContext, TEXT("../Bin/Data/Navi_GamePlay.dat")))))
-		return E_FAIL;*/
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_02, TEXT("Prototype_Component_Navigation_Stage_02"),
+		CNavigation::Create(m_pDevice, m_pContext, TEXT("../Bin/Data/Stage_02.dat")))))
+		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 

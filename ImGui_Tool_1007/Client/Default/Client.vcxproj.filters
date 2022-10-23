@@ -196,6 +196,9 @@
     <Filter Include="01.Levels\04. Stage_Last">
       <UniqueIdentifier>{c6012804-ec5d-420f-8e5b-83f18ac28ec3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\05. Monster\Bat">
+      <UniqueIdentifier>{28ca989f-433c-4241-ab7b-08493644137c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

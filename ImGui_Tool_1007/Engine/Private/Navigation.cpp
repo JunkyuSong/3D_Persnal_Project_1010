@@ -116,6 +116,27 @@ _bool CNavigation::isMove(_fvector vPosition, _vector* vSlide)
 	return true;
 }
 
+_float CNavigation::Get_PosY(_vector vPos)
+{
+	_vector PointA = XMVectorSetW(XMLoadFloat3(&m_Cells[m_NavigationDesc.iCurrentIndex]->Get_Point(CCell::POINT_A)), 1);
+	_vector PointB = XMVectorSetW(XMLoadFloat3(&m_Cells[m_NavigationDesc.iCurrentIndex]->Get_Point(CCell::POINT_B)), 1);
+	_vector PointC = XMVectorSetW(XMLoadFloat3(&m_Cells[m_NavigationDesc.iCurrentIndex]->Get_Point(CCell::POINT_C)), 1);
+
+	_vector Plane = XMPlaneFromPoints(PointA, PointB, PointC);
+
+	_float x = XMVectorGetX(vPos);
+	_float z = XMVectorGetZ(vPos);
+
+	_float a = XMVectorGetX(Plane);
+	_float b = XMVectorGetY(Plane);
+	_float c = XMVectorGetZ(Plane);
+	_float d = XMVectorGetW(Plane);
+
+	/* y = (-ax - cz - d) / b */
+
+	return (-a * x - c * z - d) / b;
+}
+
 #ifdef _DEBUG
 
 HRESULT CNavigation::Render()

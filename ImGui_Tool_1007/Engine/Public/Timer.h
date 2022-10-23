@@ -15,6 +15,8 @@ public:
 
 	 void	Set_TimeSpeed(_float _fTimeSpeed) { m_fTimeSpeed = _fTimeSpeed; }
 
+	 _float	Get_TimeSpeed() { return m_fTimeSpeed; }
+
 public:
 	HRESULT Initialize();
 	void Update(void);

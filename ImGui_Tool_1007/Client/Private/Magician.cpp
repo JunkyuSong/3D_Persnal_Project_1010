@@ -956,7 +956,10 @@ void CMagician::Get_AnimMat()
 		isMove = m_pNavigationCom->isMove(_vPos, &vNormal);
 
 	if (true == isMove)
+	{
+		_vPos.m128_f32[1] = m_pNavigationCom->Get_PosY(_vPos);
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
+	}
 }
 
 void CMagician::RenderGroup()

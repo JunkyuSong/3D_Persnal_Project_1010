@@ -117,8 +117,8 @@ void CNavigation_Tool::PointTick()
 		{
 			_float3 _vPos;
 			
-			//if (false == CTerrainMgr::Get_Instance()->Get_Terrain(g_eCurLevel)->Picking(_vPos))
-			if(false == m_pPickModel->Picking(_vPos))
+			if (false == CTerrainMgr::Get_Instance()->Get_Terrain(g_eCurLevel)->Picking(_vPos))
+			//if(false == m_pPickModel->Picking(_vPos))
 			{
 				return;
 			}

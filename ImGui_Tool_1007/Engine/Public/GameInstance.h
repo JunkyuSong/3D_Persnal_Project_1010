@@ -63,6 +63,7 @@ public: /* for.Timer_Manager */
 	HRESULT Add_Timer(const _tchar* pTimerTag);
 	HRESULT Update_Timer(const _tchar* pTimerTag);
 	HRESULT Set_TimeSpeed(const _tchar* pTimerTag, const _float& _fTimeSpeed);
+	_float Get_TimeSpeed(const _tchar* pTimerTag);
 
 public: /* For.Input_Device */
 	_char Get_DIKState(_uchar eKeyID);

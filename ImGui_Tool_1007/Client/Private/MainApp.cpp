@@ -63,7 +63,7 @@ void CMainApp::Tick(const _float& fTimeDelta)
 		return ;
 
 #ifdef _DEBUG
-	m_fTimeAcc += fTimeDelta;
+	m_fTimeAcc += fTimeDelta / m_pGameInstance->Get_TimeSpeed(TEXT("Timer_Main"));
 #endif // _DEBUG
 	CImGui::Get_Instance()->Tick();
 	m_pGameInstance->Tick_Engine(fTimeDelta);
@@ -96,7 +96,7 @@ HRESULT CMainApp::Render()
 		m_fTimeAcc = 0.f;
 	}
 
-	//SetWindowText(g_hWnd, m_szFPS);
+	SetWindowText(g_hWnd, m_szFPS);
 #endif // _DEBUG
 
 	
