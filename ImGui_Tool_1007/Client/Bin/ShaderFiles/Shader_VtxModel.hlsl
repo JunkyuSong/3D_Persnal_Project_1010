@@ -22,6 +22,8 @@ sampler DefaultSampler = sampler_state {
 	/*minfilter = linear;
 	magfilter = linear;
 	mipfilter = linear;*/
+	AddressU = WRAP;
+	AddressV = WRAP;
 };
 
 sampler PointSampler = sampler_state {
@@ -161,7 +163,7 @@ PS_OUT PS_Stage(PS_IN In)
 
 	Out.vColor = (vector)1.f;
 
-	vector			vMtrlDiffuse = g_DiffuseTexture.Sample(PointSampler, In.vTexUV);
+	vector			vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
 	Out.vColor = vMtrlDiffuse;
 	if (0 == Out.vColor.a)
 		discard;

@@ -199,6 +199,12 @@
     <Filter Include="02.GameObjects\05. Monster\Bat">
       <UniqueIdentifier>{28ca989f-433c-4241-ab7b-08493644137c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\05. Monster\Extra">
+      <UniqueIdentifier>{947c455f-a3c1-45de-aa7c-98ad6bbede26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\03.Stage_02\Stage_02_01">
+      <UniqueIdentifier>{511dec31-f2bb-414c-a097-d93a9cb2dfe2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
