@@ -25,7 +25,7 @@ void CNavigation_Tool::Tick()
 	//네비 추가 : 이름 적고
 	if (ImGui::Button("Get_Model"))
 	{
-		m_pPickModel = static_cast<CStage_01*>(_Instance->Get_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Stage"))->Get_ObjFromLayer(0));
+		m_pPickModel = static_cast<CStage_01*>(_Instance->Get_Layer(g_eCurLevel, TEXT("Layer_Stage"))->Get_ObjFromLayer(0));
 	}
 	ImGui::InputText("Name", m_szName, 260);
 	if (ImGui::Button("Create_Navi"))
@@ -117,8 +117,8 @@ void CNavigation_Tool::PointTick()
 		{
 			_float3 _vPos;
 			
-			if (false == CTerrainMgr::Get_Instance()->Get_Terrain(g_eCurLevel)->Picking(_vPos))
-			//if(false == m_pPickModel->Picking(_vPos))
+			//if (false == CTerrainMgr::Get_Instance()->Get_Terrain(g_eCurLevel)->Picking(_vPos))
+			if(false == m_pPickModel->Picking(_vPos))
 			{
 				return;
 			}

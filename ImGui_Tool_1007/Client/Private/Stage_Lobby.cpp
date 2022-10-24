@@ -41,7 +41,7 @@ void CStage_Lobby::LateTick( _float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_PRIORITY, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, this);
 }
 
 HRESULT CStage_Lobby::Render()
@@ -106,7 +106,8 @@ HRESULT CStage_Lobby::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Model"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
-	__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Stage_Church"), TEXT("Com_Model"), (CComponent**)&m_pModelCom);
+	if (FAILED(__super::Add_Component(LEVEL_STAGE_LOBBY, TEXT("Prototype_Component_Model_Stage_Lobby"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+		return E_FAIL;
 
 	return S_OK;
 }
