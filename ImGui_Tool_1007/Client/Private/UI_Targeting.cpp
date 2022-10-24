@@ -43,7 +43,7 @@ void CUI_Targeting::Targeting(_vector _vPlayerPos, _vector _vMonsterPos)
 	_vPlayerPos.m128_f32[1] += 1.5f;
 	_vMonsterPos.m128_f32[1] += 1.5f;
 	_vector _vMiddlePos = (_vPlayerPos + _vMonsterPos) * 0.5f ;
-	_vMiddlePos.m128_f32[1] += 2.f;
+	_vMiddlePos.m128_f32[1] += 1.5f;
 
 	_float	_fRatio = 0.f;
 	_vector _vLook =  XMVector3Normalize(_vMonsterPos - _vPlayerPos);
@@ -54,7 +54,7 @@ void CUI_Targeting::Targeting(_vector _vPlayerPos, _vector _vMonsterPos)
 	XMStoreFloat3(&m_vUp, _vUp);
 
 
-	for (_uint i = 0; i < 11; _fRatio += 0.1f, ++i)
+	for (_uint i = 0; i < 21; _fRatio += 0.05f, ++i)
 	{
 		XMStoreFloat3(&(m_vPos[i]), (1 - _fRatio)*(1 - _fRatio)*_vMonsterPos + 2 * (1 - _fRatio)*_fRatio*_vMiddlePos + _fRatio*_fRatio*_vPlayerPos);
 	}
@@ -100,7 +100,7 @@ HRESULT CUI_Targeting::Render()
 
 
 
-	for (_uint i = 0; i < 9; ++i)
+	for (_uint i = 0; i < 19; ++i)
 	{
 		_float3 vPos[2];
 		vPos[0] = m_vPos[i];
@@ -119,8 +119,8 @@ HRESULT CUI_Targeting::Render()
 	}
 
 	_float3 vPos[2];
-	vPos[0] = m_vPos[9];
-	vPos[1] = m_vPos[10];
+	vPos[0] = m_vPos[19];
+	vPos[1] = m_vPos[20];
 
 	/*vPos[0] = { m_vPos[9].x ,m_vPos[9].y ,m_vPos[9].z ,1.f };
 	vPos[1] = { m_vPos[9 + 1].x,m_vPos[9 + 1].y,m_vPos[9 + 1].z,1.f };

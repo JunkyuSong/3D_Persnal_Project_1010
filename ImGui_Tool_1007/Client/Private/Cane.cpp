@@ -141,7 +141,7 @@ HRESULT CCane::Ready_Components()
 
 	/* For.Com_Trail */
 	CTrail::TRAILINFO _tInfo;
-	_tInfo._Color = _float4(0.3f, 1.f, 0.3f, 1.f);
+	_tInfo._Color = _float4(0.f, 1.f, 0.f, 1.f);
 	_tInfo._HighAndLow.vHigh = _float3(-90.0f, 0.f, 0.f);
 	_tInfo._HighAndLow.vLow = _float3(20.f, 0.f, 0.f);
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Trail"), TEXT("Com_Trail"), (CComponent**)&m_pTrailCom, &_tInfo)))
