@@ -23,6 +23,7 @@
 #include "Axe.h"
 #include "Knife.h"
 #include "UI_PlayerHpBar.h"
+#include "UI_Targeting.h"
 #include "Card.h"
 #include "Navigation.h"
 #include "Stage_01.h"
@@ -239,6 +240,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CUI_PlayerHpBar::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_Targeting"),
+		CUI_Targeting::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Weapon_Card"),
 		CCard::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
@@ -378,6 +383,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	/* For.Prototype_Component_Shader_Trail */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Trail"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Trail.hlsl"), VTXTRAIL_DECLARATION::Elements, VTXTRAIL_DECLARATION::iNumElements))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Shader_Point */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Point"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Point.hlsl"), VTXPOINT_DECLARATION::Elements, VTXPOINT_DECLARATION::iNumElements))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_Shader_Cube */

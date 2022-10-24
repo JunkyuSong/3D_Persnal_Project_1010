@@ -145,6 +145,9 @@
     <ClCompile Include="..\Private\InstancingMesh.cpp">
       <Filter>03.Components\06. Model\MeshContainer\InstancingMesh</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Point.cpp">
+      <Filter>03.Components\02.VIBuffer\Point</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -312,6 +315,9 @@
     <ClInclude Include="..\Public\InstancingMesh.h">
       <Filter>03.Components\06. Model\MeshContainer\InstancingMesh</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Point.h">
+      <Filter>03.Components\02.VIBuffer\Point</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="99.Defines">
@@ -469,6 +475,9 @@
     </Filter>
     <Filter Include="03.Components\06. Model\MeshContainer\InstancingMesh">
       <UniqueIdentifier>{7fd0a0b0-3dff-4c0b-af29-7a044926bd1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\02.VIBuffer\Point">
+      <UniqueIdentifier>{52f27e9b-3ab6-419c-9fc3-b207694c60cc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

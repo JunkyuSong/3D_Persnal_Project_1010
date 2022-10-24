@@ -227,6 +227,7 @@ private:
 
 private:
 	CNavigation*			m_pNavigationCom = nullptr;
+	class CUI_Targeting*	m_pUI_Targeting = nullptr;
 };
 
 END

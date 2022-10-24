@@ -37,12 +37,23 @@ namespace Engine
 		XMFLOAT4		vColor;
 	}VTXCOL;
 
+
 	typedef struct ENGINE_DLL tagVertexColor_Declaration
 	{
 		static const unsigned int iNumElements = 2;
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
 	}VTXCOL_DECLARATION;
 
+	typedef struct tagVertexPoint
+	{
+		XMFLOAT3		vPosition;
+	}VTXPOINT;
+
+	typedef struct ENGINE_DLL tagVertexPoint_Declaration
+	{
+		static const unsigned int iNumElements = 1;
+		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
+	}VTXPOINT_DECLARATION;
 
 	typedef struct tagVertexAnimModel
 	{

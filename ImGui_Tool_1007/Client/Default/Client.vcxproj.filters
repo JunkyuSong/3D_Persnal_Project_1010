@@ -205,6 +205,9 @@
     <Filter Include="01.Levels\03.Stage_02\Stage_02_01">
       <UniqueIdentifier>{511dec31-f2bb-414c-a097-d93a9cb2dfe2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\03. UI\Targeting">
+      <UniqueIdentifier>{2bd1aa10-47b0-41c6-982d-03f0d6aaca5c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -399,6 +402,9 @@
     <ClInclude Include="..\Public\Level_Stage_Lobby.h">
       <Filter>01.Levels\05. Stage_Lobby</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UI_Targeting.h">
+      <Filter>02.GameObjects\03. UI\Targeting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -575,6 +581,9 @@
     <ClCompile Include="..\Private\Level_Stage_Lobby.cpp">
       <Filter>01.Levels\05. Stage_Lobby</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\UI_Targeting.cpp">
+      <Filter>02.GameObjects\03. UI\Targeting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -603,6 +612,9 @@
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxModel.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Point.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

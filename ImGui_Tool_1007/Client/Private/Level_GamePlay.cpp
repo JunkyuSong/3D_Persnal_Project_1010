@@ -174,7 +174,11 @@ HRESULT CLevel_GamePlay::Ready_Layer_UI(const _tchar * pLayerTag)
 		return E_FAIL;
 	CUI_Mgr::Get_Instance()->Add_UI(TEXT("PLAYER_HP_BAR"), _pGameObj);
 
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_UI_Targeting"), LEVEL_GAMEPLAY, pLayerTag, nullptr, &_pGameObj)))
+		return E_FAIL;
+	CUI_Mgr::Get_Instance()->Add_UI(TEXT("Targeting"), _pGameObj);
 
+	
 
 	return S_OK;
 }

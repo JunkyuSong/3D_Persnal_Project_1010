@@ -19,6 +19,9 @@
 
 #include "Navigation.h"
 
+#include "UI_Targeting.h"
+#include "UI_Mgr.h"
+
 CPlayer::CPlayer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 	, m_ePass(PASS_NONPICK)
@@ -168,7 +171,17 @@ void CPlayer::LateTick( _float fTimeDelta)
 		PlayAnimation(fTimeDelta);
 	}
 	
-	
+	if (m_pTarget)
+	{
+		CUI_Targeting* _pUI_Targeting = static_cast<CUI_Targeting*>(CUI_Mgr::Get_Instance()->Get_UI(TEXT("Targeting")));
+		if (_pUI_Targeting)
+		{
+			_pUI_Targeting->Targeting(
+				m_pTransformCom->Get_State(CTransform::STATE_POSITION),
+				static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION)
+			);
+		}
+	}
 
 	Add_Render();
 }

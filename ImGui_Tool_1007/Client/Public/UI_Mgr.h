@@ -15,6 +15,8 @@ public:
 	
 	void Add_UI(_tchar* _pTag, CGameObject* _pUI) { m_UIs.emplace(_pTag, _pUI); Safe_AddRef(_pUI); }
 
+	CGameObject*	Get_UI(_tchar* _pTag);
+
 private:
 	map<_tchar*, CGameObject*>	m_UIs;
 

@@ -224,6 +224,7 @@
     <ClInclude Include="..\public\UI_Mgr.h" />
     <ClInclude Include="..\public\UI_PlayerHpBar.h" />
     <ClInclude Include="..\public\UI_Plus.h" />
+    <ClInclude Include="..\public\UI_Targeting.h" />
     <ClInclude Include="..\public\UI_Tool.h" />
     <ClInclude Include="..\Public\Weapon.h" />
     <ClInclude Include="Client.h" />
@@ -286,6 +287,7 @@
     <ClCompile Include="..\private\UI_Mgr.cpp" />
     <ClCompile Include="..\private\UI_PlayerHpBar.cpp" />
     <ClCompile Include="..\private\UI_Plus.cpp" />
+    <ClCompile Include="..\private\UI_Targeting.cpp" />
     <ClCompile Include="..\private\UI_Tool.cpp" />
     <ClCompile Include="..\Private\Weapon.cpp" />
     <ClCompile Include="Client.cpp" />
@@ -305,6 +307,7 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Trail.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Point.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxAnimModel.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxModel.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl" />
