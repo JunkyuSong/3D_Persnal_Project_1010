@@ -173,6 +173,7 @@ private:
 
 	CGameObject*			m_pTarget = nullptr;
 	CLayer*					m_MonsterLayer = nullptr;
+	_bool					m_bAgain = false;
 
 	
 	void (CPlayer::*KeyInput[STATE_END])(_float);

@@ -405,6 +405,7 @@
     <ClInclude Include="..\public\UI_Targeting.h">
       <Filter>02.GameObjects\03. UI\Targeting</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Boss_Bat.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -584,6 +585,7 @@
     <ClCompile Include="..\private\UI_Targeting.cpp">
       <Filter>02.GameObjects\03. UI\Targeting</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Boss_Bat.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
