@@ -100,7 +100,7 @@ HRESULT CPlayer::Initialize(void * pArg)
 	KeySetting();
 
 
-	m_MonsterLayer = pGameInstance->Get_Layer(LEVEL_GAMEPLAY, TEXT("Layer_Monster"));
+	m_MonsterLayer = pGameInstance->Get_Layer(g_eCurLevel, TEXT("Layer_Monster"));
 	switch (g_eCurLevel)
 	{
 	case Client::LEVEL_GAMEPLAY:

@@ -60,7 +60,7 @@ void CBoss_Bat::Tick(_float fTimeDelta)
 	AUTOINSTANCE(CGameInstance, _Instance);
 	if (_Instance->KeyDown(DIK_NUMPAD1))
 	{
-		m_eCurState = BossBat_Idle;
+		m_eCurState = BossBat_AttackL_01_1;
 	}
 	else if (_Instance->KeyDown(DIK_NUMPAD2))
 	{
@@ -152,7 +152,75 @@ void CBoss_Bat::CheckEndAnim()
 {
 	m_fPlaySpeed = 1.f;
 
-
+	switch (m_eCurState)
+	{
+	case Client::CBoss_Bat::BossBat_AttackL_01_1:
+		m_eCurState = BossBat_Idle;
+		break;
+	case Client::CBoss_Bat::BossBat_AttackL_01_2b:
+		m_eCurState = BossBat_Idle;
+		break;
+	case Client::CBoss_Bat::BossBat_AttackL_01_3a:
+		m_eCurState = BossBat_Idle;
+		break;
+	case Client::CBoss_Bat::BossBat_AttackR_01_1:
+		m_eCurState = BossBat_Idle;
+		break;
+	case Client::CBoss_Bat::BossBat_AttackR_01_2b:
+		m_eCurState = BossBat_Idle;
+		break;
+	case Client::CBoss_Bat::BossBat_Bite_2:
+		m_eCurState = BossBat_Idle;
+		break;
+	case Client::CBoss_Bat::BossBat_Dash:
+		m_eCurState = BossBat_Idle;
+		break;
+	case Client::CBoss_Bat::BossBat_FTurn_L:
+		m_eCurState = BossBat_Idle;
+		break;
+	case Client::CBoss_Bat::BossBat_FTurn_R:
+		m_eCurState = BossBat_Idle;
+		break;
+	case Client::CBoss_Bat::BossBat_HurtXL_R:
+		m_eCurState = BossBat_Idle;
+		break;
+	case Client::CBoss_Bat::BossBat_HurtXL_L:
+		m_eCurState = BossBat_Idle;
+		break;
+	case Client::CBoss_Bat::BossBat_Idle:
+		m_eCurState = BossBat_Idle;
+		break;
+	case Client::CBoss_Bat::BossBat_JumpSmash_Chest:
+		m_eCurState = BossBat_Idle;
+		break;
+	case Client::CBoss_Bat::BossBat_JumpSmashForwardL:
+		m_eCurState = BossBat_Idle;
+		break;
+	case Client::CBoss_Bat::BossBat_JumpSmashL:
+		m_eCurState = BossBat_Idle;
+		break;
+	case Client::CBoss_Bat::BossBat_FightStart:
+		m_eCurState = BossBat_Idle;
+		break;
+	case Client::CBoss_Bat::BossBat_Stun:
+		m_eCurState = BossBat_Idle;
+		break;
+	case Client::CBoss_Bat::BossBat_TakeExecution_End:
+		m_eCurState = BossBat_Idle;
+		break;
+	case Client::CBoss_Bat::BossBat_TakeExecution_DeadStart01:
+		m_eCurState = BossBat_Idle;
+		break;
+	case Client::CBoss_Bat::BossBat_TurnL90:
+		m_eCurState = BossBat_Idle;
+		break;
+	case Client::CBoss_Bat::BossBat_TurnR90:
+		m_eCurState = BossBat_Idle;
+		break;
+	case Client::CBoss_Bat::BossBat_WalkF:
+		m_eCurState = BossBat_Idle;
+		break;
+	}
 
 	XMStoreFloat4(&m_AnimPos, XMVectorSet(0.f, 0.f, 0.f, 1.f));
 	m_PreAnimPos = m_AnimPos;
@@ -206,17 +274,59 @@ void CBoss_Bat::CheckState(_float fTimeDelta)
 		break;
 	case Client::CBoss_Bat::BossBat_WalkF:
 		break;
-	case Client::CBoss_Bat::STATE_END:
-		break;
-	default:
-		break;
 	}
 	Get_AnimMat();
 }
 
 void CBoss_Bat::CheckLimit()
 {
-
+	switch (m_eCurState)
+	{
+	case Client::CBoss_Bat::BossBat_AttackL_01_1:
+		break;
+	case Client::CBoss_Bat::BossBat_AttackL_01_2b:
+		break;
+	case Client::CBoss_Bat::BossBat_AttackL_01_3a:
+		break;
+	case Client::CBoss_Bat::BossBat_AttackR_01_1:
+		break;
+	case Client::CBoss_Bat::BossBat_AttackR_01_2b:
+		break;
+	case Client::CBoss_Bat::BossBat_Bite_2:
+		break;
+	case Client::CBoss_Bat::BossBat_Dash:
+		break;
+	case Client::CBoss_Bat::BossBat_FTurn_L:
+		break;
+	case Client::CBoss_Bat::BossBat_FTurn_R:
+		break;
+	case Client::CBoss_Bat::BossBat_HurtXL_R:
+		break;
+	case Client::CBoss_Bat::BossBat_HurtXL_L:
+		break;
+	case Client::CBoss_Bat::BossBat_Idle:
+		break;
+	case Client::CBoss_Bat::BossBat_JumpSmash_Chest:
+		break;
+	case Client::CBoss_Bat::BossBat_JumpSmashForwardL:
+		break;
+	case Client::CBoss_Bat::BossBat_JumpSmashL:
+		break;
+	case Client::CBoss_Bat::BossBat_FightStart:
+		break;
+	case Client::CBoss_Bat::BossBat_Stun:
+		break;
+	case Client::CBoss_Bat::BossBat_TakeExecution_End:
+		break;
+	case Client::CBoss_Bat::BossBat_TakeExecution_DeadStart01:
+		break;
+	case Client::CBoss_Bat::BossBat_TurnL90:
+		break;
+	case Client::CBoss_Bat::BossBat_TurnR90:
+		break;
+	case Client::CBoss_Bat::BossBat_WalkF:
+		break;
+	}
 }
 
 void CBoss_Bat::Set_Anim(STATE _eState)
@@ -238,6 +348,8 @@ void CBoss_Bat::CheckAnim()
 			//아이들 상태로 바꿔주는 작업...? 아니지 들어온 애니메이션의 첫 상태로 싹 세팅해주는 작업이 필요함.
 
 			// 싹 돌되
+
+			//조금 빡센데...
 		}
 		Set_Anim(m_eCurState);
 		m_ePreState = m_eCurState;
@@ -552,6 +664,34 @@ HRESULT CBoss_Bat::SetUp_ShaderResources()
 
 void CBoss_Bat::Ready_LimitTime()
 {
+	//BossBat_AttackL_01_1
+	m_vecLimitTime[BossBat_AttackL_01_1].push_back(120.f); // 왼손 on
+	m_vecLimitTime[BossBat_AttackL_01_1].push_back(240.f); // 왼손 off
+
+	//BossBat_AttackL_01_2b
+	m_vecLimitTime[BossBat_AttackL_01_2b].push_back(60.f); // 왼손 on
+	m_vecLimitTime[BossBat_AttackL_01_2b].push_back(230.f); // 왼손 off
+
+	//BossBat_AttackL_01_2b
+	m_vecLimitTime[BossBat_AttackL_01_3a].push_back(70.f); // 오른손 on
+	m_vecLimitTime[BossBat_AttackL_01_3a].push_back(130.f); // 오른손 off
+
+	//BossBat_AttackL_01_3a
+	m_vecLimitTime[BossBat_AttackL_01_3a].push_back(70.f); // 오른손 on
+	m_vecLimitTime[BossBat_AttackL_01_3a].push_back(130.f); // 오른손 off
+
+	//BossBat_AttackR_01_1
+	m_vecLimitTime[BossBat_AttackR_01_1].push_back(40.f); // 오른손 on
+	m_vecLimitTime[BossBat_AttackR_01_1].push_back(120.f); // 오른손 off
+
+	//BossBat_AttackR_01_2b
+	m_vecLimitTime[BossBat_AttackR_01_2b].push_back(50.f); // 오른손 on
+	m_vecLimitTime[BossBat_AttackR_01_2b].push_back(230.f); // 오른손 off
+
+	//BossBat_Bite_2
+	m_vecLimitTime[BossBat_Bite_2].push_back(50.f); // 오른손 on
+	m_vecLimitTime[BossBat_Bite_2].push_back(230.f); // 오른손 off
+
 
 }
 

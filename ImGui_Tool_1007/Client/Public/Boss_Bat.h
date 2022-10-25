@@ -41,6 +41,7 @@ public:
 		BossBat_JumpSmash_Chest,
 		BossBat_JumpSmashForwardL,
 		BossBat_JumpSmashL,
+		BossBat_SonicBoom,
 		BossBat_FightStart,
 		BossBat_Stun,
 		BossBat_TakeExecution_End,
