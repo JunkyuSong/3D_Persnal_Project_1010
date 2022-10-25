@@ -52,7 +52,6 @@ public:
 		SD_StrongHurt_Start, SD_StrongHurt_End,
 		SD_Dead,
 		STATE_RUN_BL, STATE_RUN_BR, STATE_RUN_FL, STATE_RUN_FR,
-		STATE_AVOIDATTACK_2,
 		STATE_END
 	};
 
@@ -172,8 +171,6 @@ private:
 	_float					m_MaxMotionTrail = 0.07f;
 	_float					m_CurMotionTrail = 0.f;
 
-	_bool					m_bAgainAnim = false;
-
 	CGameObject*			m_pTarget = nullptr;
 	CLayer*					m_MonsterLayer = nullptr;
 
@@ -183,8 +180,6 @@ private:
 	CCollider*				m_pColliderCom[COLLILDERTYPE_END] = { nullptr };
 	_bool					m_bCollision[COLLILDERTYPE_END] = { false };
 	_bool					m_bTrail = false;
-
-	_uint					m_iHitCount = 0;
 
 private:
 	HRESULT	Check_MotionTrail(_float fTimeDelta);

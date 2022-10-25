@@ -7,8 +7,6 @@
 #include "CameraMgr.h"
 #include "UI_Mgr.h"
 
-#include "Bat.h"
-
 
 CLevel_Stage_02::CLevel_Stage_02(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel_Client(pDevice, pContext)
@@ -32,8 +30,8 @@ HRESULT CLevel_Stage_02::Initialize()
 	//if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 	//	return E_FAIL;
 
-	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
-		return E_FAIL;
+	//if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
+	//	return E_FAIL;
 
 	if (FAILED(Ready_Layer_Effect(TEXT("Layer_Effect"))))
 		return E_FAIL;
@@ -141,12 +139,12 @@ HRESULT CLevel_Stage_02::Ready_Layer_Monster(const _tchar * pLayerTag)
 {
 	AUTOINSTANCE(CGameInstance, pGameInstance);
 
-	for (_uint i = 0; i < 3; ++i)
-	{
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Bat"), LEVEL_STAGE_02, pLayerTag)))
-			return E_FAIL;
+	//for (_uint i = 0; i < 3; ++i)
+	//{
+	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster"), LEVEL_GAMEPLAY, pLayerTag)))
+	//		return E_FAIL;
 
-	}
+	//}
 
 
 

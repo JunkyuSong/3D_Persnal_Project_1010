@@ -116,8 +116,6 @@ private:
 
 	_float	m_fAppear = 1.f;
 
-	_bool	m_bAgainAnim = false;
-
 private:
 	STATE					m_eReserveState = STATE_END;
 	STATE					m_eCurState = Magician_Idle;

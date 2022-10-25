@@ -65,8 +65,6 @@ private:
 	_float4					m_AnimPos;
 	_float4					m_PreAnimPos;
 
-	_bool					m_bAgainAnim = false;
-
 	_bool					m_bAnimStop = false;
 	_float					m_fPlayTime = 0.f;
 	vector<_float>			m_vecLimitTime[STATE_END];

@@ -138,7 +138,7 @@ void CPlayer::Tick( _float fTimeDelta)
 			CheckAnim();
 			_float4 _vAnim;
 			XMStoreFloat4(&_vAnim, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-			if (m_pModelCom->Play_Animation(fTimeDelta, &_vAnim, &m_fPlayTime, m_bAgainAnim))
+			if (m_pModelCom->Play_Animation(fTimeDelta, &_vAnim, &m_fPlayTime))
 			{
 				//CheckEndAnim(fTimeDelta);
 			}
@@ -228,7 +228,7 @@ void CPlayer::PlayAnimation( _float fTimeDelta)
 		return;
 	_float4 _vAnim;
 	XMStoreFloat4(&_vAnim, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-	if (m_pModelCom->Play_Animation(fTimeDelta, &_vAnim, &m_fPlayTime, m_bAgainAnim))
+	if (m_pModelCom->Play_Animation(fTimeDelta, &_vAnim, &m_fPlayTime))
 	{
 		CheckEndAnim();
 	}
@@ -825,11 +825,6 @@ void CPlayer::KP_AVOIDATTACK(_float fTimeDelta)
 				m_eCurState = STATE_AVOIDBACK;
 				m_eWeapon = WEAPON_BASE;
 			}
-			if (m_bAgainAnim == false)
-			{
-				m_bAgainAnim = true;
-				Set_Anim(m_eCurState);
-			}
 		}
 	}	
 }
@@ -933,7 +928,6 @@ void CPlayer::CheckEndAnim()
 		break;
 	case Client::CPlayer::STATE_AVOIDATTACK:
 		m_bCollision[COLLIDERTYPE_BODY] = true;
-		m_iHitCount = 0;
 		m_eCurState = STATE_IDLE;
 		break;
 	case Client::CPlayer::STATE_JUMPAVOID:
@@ -941,7 +935,6 @@ void CPlayer::CheckEndAnim()
 		break;
 	case Client::CPlayer::STATE_AVOIDBACK:
 		m_bCollision[COLLIDERTYPE_BODY] = true;
-		m_iHitCount = 0;
 		m_eCurState = STATE_IDLE;
 		break;
 	case Client::CPlayer::Corvus_PW_Axe:
@@ -1097,10 +1090,6 @@ void CPlayer::CheckLimit()
 	case Client::CPlayer::STATE_WALK:
 		break;
 	case Client::CPlayer::STATE_AVOIDATTACK:
-		if (m_fPlayTime > m_vecLimitTime[STATE_AVOIDATTACK][0])
-		{
-
-		}
 		break;
 	case Client::CPlayer::Corvus_PW_Axe:
 		if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][4])//다시 무기 스왑 및 타이머 정상화
@@ -1246,7 +1235,7 @@ void CPlayer::CheckLimit()
 	case Client::CPlayer::SD_StrongHurt_Start:
 		if (m_fPlayTime > 5.f)
 		{
-			//m_bCollision[COLLIDERTYPE_BODY] = true;
+			m_bCollision[COLLIDERTYPE_BODY] = true;
 			//m_eWeapon = WEAPON_BASE;
 		}
 		else if (m_fPlayTime > 0.f)
@@ -1548,7 +1537,6 @@ _bool CPlayer::Collision(_float fTimeDelta)
 	{
 		//MSG_BOX(TEXT("Parry"));
 		static_cast<CMonster*>(_pTarget)->Set_MonsterState(CMonster::ATTACK_STUN);
-		m_iHitCount = 0;
 	}
 	else
 	{
@@ -1556,23 +1544,14 @@ _bool CPlayer::Collision(_float fTimeDelta)
 		if (_pTarget)
 		{
 			//패링 안되고 몸 충돌되었을때
-			if (m_iHitCount > 2)
+			
+			if (m_eCurState == SD_HurtIdle)
 			{
 				m_eCurState = SD_StrongHurt_Start;
-			}
-			else if (m_eCurState == SD_HurtIdle)
-			{
-				if (m_bAgainAnim == false)
-				{
-					m_bAgainAnim = true;
-					Set_Anim(m_eCurState);
-				}
-				++m_iHitCount;
 			}
 			else
 			{
 				m_eCurState = SD_HurtIdle;
-				++m_iHitCount;
 			}
 
 			for (auto& _Part : m_pBaseParts)
@@ -1785,8 +1764,6 @@ HRESULT CPlayer::Ready_AnimLimit()
 	m_vecLimitTime[ParryL].push_back(0.f);
 	m_vecLimitTime[ParryL].push_back(90.f);
 	
-	//회피
-	m_vecLimitTime[STATE_AVOIDATTACK].push_back(30.f);
 
 	return S_OK;
 }

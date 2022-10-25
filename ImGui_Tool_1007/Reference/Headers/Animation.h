@@ -44,11 +44,9 @@ public:
 	CAnimation* Clone(class CAnimModel* pModel);
 	virtual void Free() override;
 
-public:
+private:
 	//_bool Update_Channel(_uint _iChannelIndex, _uint _iFrameIndex);
 	//_bool Update_Channel(_uint _iChannelIndex, _uint _iFrameIndex, CAnimation* pNextAnim);
-
-	KEYFRAME						Get_OldKeyFrame(_uint _iIndex) { return  m_ChannelOldKeyFrames[_iIndex]; }
 
 private:
 	_bool							m_isClone;
