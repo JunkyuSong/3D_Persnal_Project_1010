@@ -55,7 +55,7 @@ void CObj_Anim::Tick( _float fTimeDelta)
 			CheckAnim();
 			_float4 _vAnim;
 			XMStoreFloat4(&_vAnim, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-			if (m_pModelCom->Play_Animation(fTimeDelta, &_vAnim, &m_fPlayTime))
+			if (m_pModelCom->Play_Animation(fTimeDelta, &_vAnim, &m_fPlayTime, m_bAgainAnim))
 			{
 				//CheckEndAnim(fTimeDelta);
 			}
@@ -113,7 +113,7 @@ void CObj_Anim::PlayAnimation( _float fTimeDelta)
 		return;
 	_float4 _vAnim;
 	XMStoreFloat4(&_vAnim, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-	if (m_pModelCom->Play_Animation(fTimeDelta, &_vAnim, &m_fPlayTime))
+	if (m_pModelCom->Play_Animation(fTimeDelta, &_vAnim, &m_fPlayTime, m_bAgainAnim))
 	{
 		CheckEndAnim();
 	}

@@ -27,7 +27,9 @@ public:
 	class CChannel*		Get_Channel_Index(_uint _iIndex);
 	_uint				Get_Id() { return m_iAnimIndex; }
 	vector<_uint>		Get_AllChannel() { return m_ChannelIndex; }
-	vector<class CChannel*>		Get_vecChannel() { return m_vecChannels; }
+	vector<class CChannel*>		Get_vecChannel() {
+		return m_vecChannels;
+	}
 
 	const _float&		Get_Limit() {
 		return m_fLimitTime;
@@ -44,9 +46,11 @@ public:
 	CAnimation* Clone(class CAnimModel* pModel);
 	virtual void Free() override;
 
-private:
+public:
 	//_bool Update_Channel(_uint _iChannelIndex, _uint _iFrameIndex);
 	//_bool Update_Channel(_uint _iChannelIndex, _uint _iFrameIndex, CAnimation* pNextAnim);
+
+	KEYFRAME						Get_OldKeyFrame(_uint _iIndex) { return  m_ChannelOldKeyFrames[_iIndex]; }
 
 private:
 	_bool							m_isClone;

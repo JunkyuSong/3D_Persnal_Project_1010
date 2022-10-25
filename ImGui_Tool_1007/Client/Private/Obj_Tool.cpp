@@ -438,7 +438,7 @@ HRESULT CObj_Tool::Tool_Obj_Pick()
 		}
 	}
 
-	//if (ImGui::Button("Set_Info")) // 셋인포
+	if (ImGui::Button("Set_Info")) // 셋인포(?)
 	{
 		_matrix		Matrix = XMMatrixIdentity();
 		Matrix = XMMatrixScaling(m_vScale.x, m_vScale.y, m_vScale.z) * 

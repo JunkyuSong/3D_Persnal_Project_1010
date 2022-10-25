@@ -405,6 +405,9 @@
     <ClInclude Include="..\public\UI_Targeting.h">
       <Filter>02.GameObjects\03. UI\Targeting</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Bat.h">
+      <Filter>02.GameObjects\05. Monster\Bat</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -583,6 +586,9 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_Targeting.cpp">
       <Filter>02.GameObjects\03. UI\Targeting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Bat.cpp">
+      <Filter>02.GameObjects\05. Monster\Bat</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -4,6 +4,7 @@
 #include "AnimMeshContainer.h"
 #include "Animation.h"
 #include "Shader.h"
+#include "Channel.h"
 
 CAnimModel::CAnimModel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CModel(pDevice,pContext)
@@ -345,6 +346,7 @@ HRESULT CAnimModel::Load_Default(const char * pModelFilePath, const char * pMode
 	return E_NOTIMPL;
 }
 
+
 HRESULT CAnimModel::Set_AnimationIndex(_uint _AnimationIndex)
 {
 	
@@ -371,9 +373,26 @@ HRESULT CAnimModel::Set_AnimationIndex(_uint _AnimationIndex)
 	return S_OK;
 }
 
-_bool CAnimModel::Play_Animation(_float _fTimeDelta, _float4* _vAnim, _float* pOut)
+_bool CAnimModel::Play_Animation(_float _fTimeDelta, _float4* _vAnim, _float* pOut, _bool& _bAgain)
 {
 	_bool _bResult = false;
+
+	if (_bAgain == true)
+	{
+		//이미 진행하는 애니메이션과 보간한다.
+ 		if (m_Animations[m_iCurrentAnimIndex]->Play_Animation(_fTimeDelta, m_Animations[m_iCurrentAnimIndex], m_TotalChannel))
+		{
+			m_iPreAnimIndex = m_iCurrentAnimIndex;
+			_bAgain = false;
+			return _bResult;
+		}
+		for (auto& pHierarchyNode : m_HierarchyNodes)
+		{
+			pHierarchyNode->Set_CombinedTransformation(_vAnim, true);
+		}
+		return _bResult;
+	}
+
 	if (m_iPreAnimIndex == m_iCurrentAnimIndex)
 	{
 		if (m_Animations[m_iCurrentAnimIndex]->Play_Animation(_fTimeDelta, pOut))
@@ -399,20 +418,6 @@ _bool CAnimModel::Play_Animation(_float _fTimeDelta, _float4* _vAnim, _float* pO
 		}
 	}
 
-	//1. 현재 재생하고자하는 애니메이션이 제어해야할 뼈들의 지역행렬을 갱신해낸다.
-	// 만약 끝났으면 다음 애니메이션을 재생시켜야한다.
-	/*if (m_Animations[m_iPreAnimIndex]->Play_Animation(_fTimeDelta, m_Animations[m_iCurrentAnimIndex]))
-	{
-		m_iPreAnimIndex = m_iCurrentAnimIndex;
-	}*/
-	//2. 지역행렬을 순차적으로(부모에서 자식으로) 누적하여 m_CombinedTransformation를 만든다.
-	/*for (auto& pHierarchyNode : m_HierarchyNodes)
-	{
-		if(m_iCurrentAnimIndex == m_iPreAnimIndex)
-			pHierarchyNode->Set_CombinedTransformation(_AnimMatrix);
-		else
-			pHierarchyNode->Set_CombinedTransformation(_AnimMatrix, true);
-	}*/
 	return _bResult;
 }
 
@@ -452,19 +457,6 @@ HRESULT CAnimModel::Render(CShader * pShader, _uint _iPass, _uint _iMeshIndex)
 _uint CAnimModel::Get_MaterialIndex(_uint _iMeshIndex) const
 {
 	return m_Meshes[_iMeshIndex]->Get_MaterialIndex();
-}
-
-TANIMMODEL CAnimModel::Get_ForSave()
-{
-	m_tModel.NumAnim = m_Animations.size();
-	Safe_Delete_Array(m_tModel.tAnim);
-	m_tModel.tAnim = new TANIM[m_tModel.NumAnim];
-	for (int i = 0; i < m_tModel.NumAnim; ++i)
-	{
-		m_tModel.tAnim[i] = m_Animations[i]->Get_ForSave();
-	}
-
-	return m_tModel;
 }
 
 HRESULT CAnimModel::Ready_MeshContainers(_fmatrix PivotMatrix)

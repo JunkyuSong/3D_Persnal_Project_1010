@@ -30,6 +30,7 @@
 #include "Stage_02.h"
 #include "Stage_Lobby.h"
 #include "Sky.h"
+#include "Bat.h"
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice(pDevice)
@@ -448,6 +449,10 @@ HRESULT CLoader::Loading_ForLevel_Stage02()
 	/* 객체원형 로드한다. */	
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Stage_02"),
 		CStage_02::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_Bat"),
+		CBat::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 

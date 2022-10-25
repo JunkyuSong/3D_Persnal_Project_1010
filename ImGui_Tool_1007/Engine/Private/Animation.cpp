@@ -289,43 +289,6 @@ _bool CAnimation::Play_Animation(_float fTimeDelta, CAnimation * pNextAnim, set<
 
 		Update_Transformation(Sour, Dest, i);
 	}
-
-	/*
-	_uint		iChannelIndex = 0;
-
-	for (auto& pChannelIndex : _TotalChannel)
-	{
-		KEYFRAME Sour, Dest;
-		_uint i = 0;
-		for (i = 0; i < m_vecChannels.size(); ++i)
-		{
-			if (pChannelIndex == m_vecChannels[i]->Get_Index())
-			{
-				//Sour = m_vecChannels[i]->Get_KeyFrame(m_ChannelOldKeyFrames[i]);
-				Sour = m_vecChannels[i]->Get_KeyFrameCurrent();
-				break;
-			}
-		}
-		if (i == m_vecChannels.size())
-		{
-			Sour = (*m_HierarchyNodes)[pChannelIndex]->Get_DefaultKeyFrame();
-		}
-
-		for (i = 0; i < m_vecChannels.size(); ++i)
-		{
-			if (pChannelIndex == m_vecChannels[i]->Get_Index())
-			{
-				Dest = pNextAnim->Get_Channel_Index(i)->Get_KeyFrame(0);
-				break;
-			}
-		}
-		if (i == m_vecChannels.size())
-		{
-			Dest = (*m_HierarchyNodes)[pChannelIndex]->Get_DefaultKeyFrame();
-		}
-		Update_Transformation(Sour, Dest, pChannelIndex);
-	}
-	*/
 	return false;
 }
 
@@ -374,6 +337,7 @@ CChannel * CAnimation::Get_Channel(const char * szChannel)
 	}
 	return _Instance;
 }
+
 
 CChannel * CAnimation::Get_Channel_Index(_uint _iIndex)
 {
