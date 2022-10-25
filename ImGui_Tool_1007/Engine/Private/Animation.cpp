@@ -34,28 +34,28 @@ CAnimation::CAnimation(const CAnimation & rhs)
 HRESULT CAnimation::Initialize_Prototype(aiAnimation * pAIAnimation, CAnimModel * pModel, _uint _iAnimIndex)
 {
 	m_isClone = false;
-	ZeroMemory(&m_tAnim,sizeof(TANIM));
+	ZeroMemory(&m_tAnim, sizeof(TANIM));
 	strcpy_s(m_Name, pAIAnimation->mName.data);
 	/*int str = 0;
 	for (int i = 0; i < 260; ++i)
 	{
-		if (m_Name[i] == '|')
-		{
-			str = i;
-			break;
-		}
+	if (m_Name[i] == '|')
+	{
+	str = i;
+	break;
+	}
 	}*/
 
 	char* s1 = "";  // 크기가 30인 char형 배열을 선언하고 문자열 할당
 
 	char* ptr = strtok_s(m_Name, "|", &s1);      // " " 공백 문자를 기준으로 문자열을 자름, 포인터 반환
-	//ptr = strtok_s(m_Name, "|", &s1);
-	while (strcmp(s1,""))               // 자른 문자열이 나오지 않을 때까지 반복
+												 //ptr = strtok_s(m_Name, "|", &s1);
+	while (strcmp(s1, ""))               // 자른 문자열이 나오지 않을 때까지 반복
 	{
 		ptr = strtok_s(s1, "|", &s1);      // 다음 문자열을 잘라서 포인터를 반환
-		/*if (ptr == NULL)
-			break;
-		strcpy_s(m_Name, ptr);*/
+										   /*if (ptr == NULL)
+										   break;
+										   strcpy_s(m_Name, ptr);*/
 	}
 	strcpy_s(m_Name, ptr);
 
@@ -97,7 +97,7 @@ HRESULT CAnimation::Initialize_Prototype(aiAnimation * pAIAnimation, CAnimModel 
 				m_ChannelIndex.push_back(_Bone->Get_Index());
 				m_tAnim.Bones[Bone] = _Bone->Get_Index();
 				m_vecChannels.push_back(pChannel);
-				bIs = true;				
+				bIs = true;
 				++Bone;
 			}
 		}
@@ -112,14 +112,14 @@ HRESULT CAnimation::Initialize_Prototype(aiAnimation * pAIAnimation, CAnimModel 
 
 	/*for (_uint i = 0; i < m_iNumChannels; ++i)
 	{
-		CChannel*		pChannel = CChannel::Create(pAIAnimation->mChannels[i], pModel, &(m_tAnim.Channels[i]));
-		if (pChannel == nullptr)
-		{
-			MSG_BOX(TEXT("FAILED Create Animation"));
-			return E_FAIL;
-		}
-		m_vecChannels.push_back(pChannel);
-		
+	CChannel*		pChannel = CChannel::Create(pAIAnimation->mChannels[i], pModel, &(m_tAnim.Channels[i]));
+	if (pChannel == nullptr)
+	{
+	MSG_BOX(TEXT("FAILED Create Animation"));
+	return E_FAIL;
+	}
+	m_vecChannels.push_back(pChannel);
+
 	}*/
 
 
@@ -145,11 +145,11 @@ HRESULT CAnimation::Initialize_Prototype(class CAnimModel * pModel, TANIM _tIn, 
 	//이 애니메이션이 영향을 끼치는 뼈의 개수
 	m_iNumChannels = _tIn.NumChannel;
 	m_tAnim.NumChannel = m_iNumChannels;
-	
+
 	m_tAnim.Channels = _tIn.Channels;
 	m_tAnim.Bones = _tIn.Bones;
-	
-	
+
+
 
 	vector<CHierarchyNode*> vecBones = *pModel->Get_HierarchyNodeVector();
 	int NumBone = vecBones.size();
@@ -207,19 +207,19 @@ _bool CAnimation::Play_Animation(_float fTimeDelta, _float* _pOut)//같을때
 
 	m_fPlayTime += m_fTickPerSecond * fTimeDelta;
 	//더할 타임델타에 재생 속도를 적용해준다
-	
-	
+
+
 	if (m_fPlayTime >= m_fDuration)// 같은 애니메이션으로 보간 시작
-	//if(m_bAnimEnd)
-	//if (m_fPlayTime >= m_fLimitTime)
+								   //if(m_bAnimEnd)
+								   //if (m_fPlayTime >= m_fLimitTime)
 	{
 		m_bAnimEnd = false;
 		m_fPlayTime = 0.f;
 		//m_fTermTime = m_fPlayTime;
 		//for (auto& pChannel : m_vecChannels)
 
-			for (auto& iCurrentKeyFrame : m_ChannelKeyFrames)
-				iCurrentKeyFrame = 0;
+		for (auto& iCurrentKeyFrame : m_ChannelKeyFrames)
+			iCurrentKeyFrame = 0;
 
 		*_pOut = m_fPlayTime;
 		return true;
@@ -243,7 +243,7 @@ _bool CAnimation::Play_Animation(_float fTimeDelta, _float* _pOut)//같을때
 	for (auto& iIndex : m_ChannelIndex)
 	{
 		//키프레임에도 
-		m_ChannelKeyFrames[iIndex] = m_vecChannels[iIndex]->Update_Transformation(m_fPlayTime, m_ChannelKeyFrames[iIndex], (*m_HierarchyNodes)[iIndex], &(m_ChannelOldKeyFrames[iIndex]),&m_bAnimEnd);
+		m_ChannelKeyFrames[iIndex] = m_vecChannels[iIndex]->Update_Transformation(m_fPlayTime, m_ChannelKeyFrames[iIndex], (*m_HierarchyNodes)[iIndex], &(m_ChannelOldKeyFrames[iIndex]), &m_bAnimEnd);
 	}
 	//for (auto& pChannel : m_vecChannels)
 	//{
@@ -258,7 +258,7 @@ _bool CAnimation::Play_Animation(_float fTimeDelta, _float* _pOut)//같을때
 _bool CAnimation::Play_Animation(_float fTimeDelta, CAnimation * pNextAnim, set<_uint>& _TotalChannel)//다를때
 {
 
-	
+
 	m_fTermTime += m_fTickPerSecond * fTimeDelta;
 	//m_fPlayTime += m_fTickPerSecond * fTimeDelta;
 	if (m_fTermTime >= m_fMaxTermTime*m_fTickPerSecond)
@@ -289,43 +289,6 @@ _bool CAnimation::Play_Animation(_float fTimeDelta, CAnimation * pNextAnim, set<
 
 		Update_Transformation(Sour, Dest, i);
 	}
-
-	/*
-	_uint		iChannelIndex = 0;
-
-	for (auto& pChannelIndex : _TotalChannel)
-	{
-		KEYFRAME Sour, Dest;
-		_uint i = 0;
-		for (i = 0; i < m_vecChannels.size(); ++i)
-		{
-			if (pChannelIndex == m_vecChannels[i]->Get_Index())
-			{
-				//Sour = m_vecChannels[i]->Get_KeyFrame(m_ChannelOldKeyFrames[i]);
-				Sour = m_vecChannels[i]->Get_KeyFrameCurrent();
-				break;
-			}
-		}
-		if (i == m_vecChannels.size())
-		{
-			Sour = (*m_HierarchyNodes)[pChannelIndex]->Get_DefaultKeyFrame();
-		}
-
-		for (i = 0; i < m_vecChannels.size(); ++i)
-		{
-			if (pChannelIndex == m_vecChannels[i]->Get_Index())
-			{
-				Dest = pNextAnim->Get_Channel_Index(i)->Get_KeyFrame(0);
-				break;
-			}
-		}
-		if (i == m_vecChannels.size())
-		{
-			Dest = (*m_HierarchyNodes)[pChannelIndex]->Get_DefaultKeyFrame();
-		}
-		Update_Transformation(Sour, Dest, pChannelIndex);
-	}
-	*/
 	return false;
 }
 
@@ -340,7 +303,7 @@ void CAnimation::Update_Transformation(KEYFRAME& Sour, KEYFRAME& Dest, const _ui
 	_float3		vSourPosition, vDestPosition;
 
 	_float		fRatio = m_fTermTime / (m_fMaxTermTime*m_fTickPerSecond);
-	
+
 	vSourScale = Sour.vScale;
 	vSourRotation = Sour.vRotation;
 	vSourPosition = Sour.vPosition;
@@ -366,14 +329,15 @@ CChannel * CAnimation::Get_Channel(const char * szChannel)
 	CChannel* _Instance = nullptr;
 	for (CChannel*& pChannel : m_vecChannels)
 	{
-		if(!strcmp(szChannel, pChannel->Get_Name()))
+		if (!strcmp(szChannel, pChannel->Get_Name()))
 		{
 			_Instance = pChannel;
 			break;
-		}		
+		}
 	}
 	return _Instance;
 }
+
 
 CChannel * CAnimation::Get_Channel_Index(_uint _iIndex)
 {
@@ -423,7 +387,7 @@ CAnimation * CAnimation::Create(aiAnimation * pAIAnimation, CAnimModel * pModel,
 		MSG_BOX(TEXT("Failed To Created : CAnimation"));
 		Safe_Release(_instance);
 	}
-	
+
 	return _instance;
 }
 
@@ -466,6 +430,6 @@ void CAnimation::Free()
 		}
 		Safe_Delete_Array(m_tAnim.Channels);
 		Safe_Delete_Array(m_tAnim.Bones);
-		
+
 	}
 }

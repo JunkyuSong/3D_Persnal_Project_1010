@@ -4,7 +4,7 @@
 
 BEGIN(Engine)
 class ENGINE_DLL CAnimModel final :
-	public CModel
+public CModel
 {
 public:
 	CAnimModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -17,12 +17,10 @@ public:
 
 public:
 	HRESULT Set_AnimationIndex(_uint _AnimationIndex);
-	_bool	Play_Animation(_float _fTimeDelta, _float4* _vAnim, _float* pOut);
+	_bool	Play_Animation(_float _fTimeDelta, _float4* _vAnim, _float* pOut, _bool& _bAgain);
 	_bool	Repeat_Animation(_float _fTimeDelta, _float4* _vAnim, _float* pOut);
 	HRESULT Render(class CShader* pShader, _uint _iPass, _uint _iMeshIndex);
 	_uint   Get_MaterialIndex(_uint _iMeshIndex) const;
-
-
 
 	const _float4x4&		Get_PivotMatrix() { return m_PivotMatrix; }
 
@@ -34,7 +32,7 @@ private:
 	HRESULT Ready_Animations();
 	HRESULT Ready_Animations(int _Num);
 
-	
+
 
 public:
 	static  CAnimModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix = XMMatrixIdentity());
@@ -81,7 +79,6 @@ public:
 	vector<CAnimation*>* Get_AllAnimation() {
 		return &m_Animations;
 	}
-	TANIMMODEL Get_ForSave();
 	TANIMMODEL Get_ModelInfo() { return m_tModel; }
 };
 

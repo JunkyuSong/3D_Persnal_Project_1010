@@ -56,7 +56,7 @@ VS_OUT VS_MAIN(VS_IN In)
 
 	Out.vPosition = mul(vPosition, matWVP);
 	Out.vTexUV = In.vTexUV;
-	
+
 	return Out;
 }
 
@@ -79,10 +79,10 @@ PS_OUT PS_MAIN(PS_IN In)
 
 	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
 	//Out.vColor = vector(1.f, 1.f, 1.f, 1.f);
-	if (0 == Out.vColor.a)
+	if (0.f >= Out.vColor.a)
 		discard;
 
-	return Out;	
+	return Out;
 }
 
 PS_OUT PS_MAIN2(PS_IN In)
@@ -92,15 +92,27 @@ PS_OUT PS_MAIN2(PS_IN In)
 	Out.vColor = (vector)1.f;
 
 	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
-	
+
 	Out.vColor.a *= (g_fAlpha);
 
-	if (0 >= Out.vColor.a)
+	if (0.f >= Out.vColor.a)
 		discard;
 
 	return Out;
 }
+PS_OUT PS_MAIN3(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
 
+	Out.vColor = (vector)1.f;
+
+	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+
+	if (0.f >= Out.vColor.a)
+		discard;
+
+	return Out;
+}
 PS_OUT PS_MAIN_TRAIL(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
@@ -148,5 +160,15 @@ technique11 DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_TRAIL();
+	}
+
+	pass DefaultPass3
+	{
+		SetRasterizerState(RS_CullNone);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN3();
 	}
 }

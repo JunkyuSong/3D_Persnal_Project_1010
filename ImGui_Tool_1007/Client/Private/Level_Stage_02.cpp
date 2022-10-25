@@ -7,6 +7,8 @@
 #include "CameraMgr.h"
 #include "UI_Mgr.h"
 
+#include "Boss_Bat.h"
+
 
 CLevel_Stage_02::CLevel_Stage_02(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel_Client(pDevice, pContext)
@@ -19,7 +21,7 @@ HRESULT CLevel_Stage_02::Initialize()
 		return E_FAIL;
 
 	/*if (FAILED(Ready_Lights()))
-		return E_FAIL;*/
+	return E_FAIL;*/
 
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
@@ -30,8 +32,8 @@ HRESULT CLevel_Stage_02::Initialize()
 	//if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 	//	return E_FAIL;
 
-	//if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
-	//	return E_FAIL;
+	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
+		return E_FAIL;
 
 	if (FAILED(Ready_Layer_Effect(TEXT("Layer_Effect"))))
 		return E_FAIL;
@@ -126,11 +128,11 @@ HRESULT CLevel_Stage_02::Ready_Layer_BackGround(const _tchar * pLayerTag)
 
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Stage_02"), LEVEL_STAGE_02, TEXT("Layer_Stage"))))
 		return E_FAIL;
-/*
+	/*
 
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Sky"), LEVEL_GAMEPLAY, pLayerTag)))
-		return E_FAIL;
-*/
+	return E_FAIL;
+	*/
 
 	return S_OK;
 }
@@ -139,12 +141,12 @@ HRESULT CLevel_Stage_02::Ready_Layer_Monster(const _tchar * pLayerTag)
 {
 	AUTOINSTANCE(CGameInstance, pGameInstance);
 
-	//for (_uint i = 0; i < 3; ++i)
-	//{
-	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster"), LEVEL_GAMEPLAY, pLayerTag)))
-	//		return E_FAIL;
+	for (_uint i = 0; i < 3; ++i)
+	{
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Bat"), LEVEL_STAGE_02, pLayerTag)))
+			return E_FAIL;
 
-	//}
+	}
 
 
 
@@ -158,12 +160,12 @@ HRESULT CLevel_Stage_02::Ready_Layer_UI(const _tchar * pLayerTag)
 	AUTOINSTANCE(CGameInstance, pGameInstance);
 	/*for (_uint i = 0; i < 1; ++i)
 	{
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_UI"), LEVEL_GAMEPLAY, pLayerTag)))
-			return E_FAIL;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_UI"), LEVEL_GAMEPLAY, pLayerTag)))
+	return E_FAIL;
 
 	}
 
-*/
+	*/
 	//CGameObject* _pGameObj = nullptr;
 	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_UI_PlayerHpBar"), LEVEL_STAGE_02, pLayerTag, nullptr, &_pGameObj)))
 	//	return E_FAIL;

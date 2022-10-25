@@ -158,7 +158,7 @@ void CMagician::PlayAnimation( _float fTimeDelta)
 		return;
 	_float4 _vAnim;
 	XMStoreFloat4(&_vAnim, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-	if (m_pModelCom->Play_Animation(fTimeDelta * m_fPlaySpeed, &_vAnim, &m_fPlayTime))
+	if (m_pModelCom->Play_Animation(fTimeDelta * m_fPlaySpeed, &_vAnim, &m_fPlayTime, m_bAgainAnim))
 	{
 		CheckEndAnim();
 	}

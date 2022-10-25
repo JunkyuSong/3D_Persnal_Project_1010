@@ -30,6 +30,7 @@
 #include "Stage_02.h"
 #include "Stage_Lobby.h"
 #include "Sky.h"
+#include "Boss_Bat.h"
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice(pDevice)
@@ -91,11 +92,11 @@ HRESULT CLoader::Loading_ForLogoLevel()
 
 	AUTOINSTANCE(CGameInstance, pGameInstance);
 
-	/* 개ㅑㄱ체원형 로드한다. */	
+	/* 개ㅑㄱ체원형 로드한다. */
 
-	/* For.Prototype_GameObject_BackGround */ 
+	/* For.Prototype_GameObject_BackGround */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_BackGround"), CBackGround::Create(m_pDevice, m_pContext))))
-		return E_FAIL;	
+		return E_FAIL;
 
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_Plus"), CUI_Plus::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
@@ -143,7 +144,7 @@ HRESULT CLoader::Loading_ForLogoLevel()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SquareFrame"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/GameUI/TexUI_SquareFrame_Hover.png")))))
 		return E_FAIL;
-	
+
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MainUI_Slot_Gray"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/GameUI/PlagueWeapon/TexUI_PW_DefaultSlotFrame_02.png")))))
 		return E_FAIL;
@@ -166,7 +167,7 @@ HRESULT CLoader::Loading_ForLogoLevel()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/GameUI/PlayerHPBar/TexUI_HPBar_3MainBar.png")))))
 		return E_FAIL;
 
-	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));	
+	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
 	/* 모델를 로드한다. */
 
 
@@ -187,7 +188,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 	/* 객체원형 로드한다. */
 	/* For.Prototype_GameObject_Terrain*/
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Terrain"), 
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Terrain"),
 		CTerrain::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
@@ -210,7 +211,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CMagician::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	
+
 
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Weapon_Saber"),
 		CSaber::Create(m_pDevice, m_pContext))))
@@ -275,7 +276,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		return E_FAIL;
 
 
-	
+
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
 	/* 모델를 로드한다. */
 
@@ -298,14 +299,14 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 	/*PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Test"),
-		CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Test/", "RL_Lower.fbx", PivotMatrix))))
-		return E_FAIL;*/
+	CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Test/", "RL_Lower.fbx", PivotMatrix))))
+	return E_FAIL;*/
 
 	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Player"),
 		CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Player/", "player_test.dat", PivotMatrix))))
 		return E_FAIL;
-	
+
 	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Magician2"),
 		CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Monster/", "magician2.dat", PivotMatrix))))
@@ -316,11 +317,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Magician"),
 		CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Monster/", "magician1_All.dat", PivotMatrix))))
 		return E_FAIL;
-	
+
 	/*PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Player"),
-		CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Player/", "Anim_Etc.fbx", PivotMatrix))))
-		return E_FAIL;*/
+	CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Player/", "Anim_Etc.fbx", PivotMatrix))))
+	return E_FAIL;*/
 
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Weapon_Saber"),
 		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Item/Weapon/Saber/", "Saber.dat"))))
@@ -445,9 +446,13 @@ HRESULT CLoader::Loading_ForLevel_Stage02()
 
 	lstrcpy(m_szLoadingText, TEXT("객체원형을 로딩중입니다."));
 
-	/* 객체원형 로드한다. */	
+	/* 객체원형 로드한다. */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Stage_02"),
 		CStage_02::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_Bat"),
+		CBoss_Bat::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 
@@ -491,7 +496,7 @@ HRESULT CLoader::Loading_ForLevel_Stage02()
 		CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Monster_List/Bat/", "Bat.dat", PivotMatrix))))
 		return E_FAIL;
 
-	
+
 	/* For.Prototype_Component_Shader_Cube */
 	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Sky"),
 	//	CShader::Create(m_pGraphic_Device, TEXT("../Bin/ShaderFiles/Shader_Sky.hlsl")))))

@@ -16,7 +16,7 @@ public:
 	HRESULT Initialize_Prototype(aiAnimation* pAIAnimation, class CAnimModel * pModel, _uint _iAnimIndex);
 	HRESULT Initialize_Prototype(class CAnimModel * pModel, TANIM	_tIn, _uint _iAnimIndex);
 	HRESULT Initialize(class CAnimModel* pModel);
-	
+
 	_bool	Play_Animation(_float fTimeDelta, _float* _pOut);
 	_bool	Play_Animation(_float fTimeDelta, CAnimation* pNextAnim, set<_uint>& _TotalChannel);
 
@@ -27,7 +27,9 @@ public:
 	class CChannel*		Get_Channel_Index(_uint _iIndex);
 	_uint				Get_Id() { return m_iAnimIndex; }
 	vector<_uint>		Get_AllChannel() { return m_ChannelIndex; }
-	vector<class CChannel*>		Get_vecChannel() { return m_vecChannels; }
+	vector<class CChannel*>		Get_vecChannel() {
+		return m_vecChannels;
+	}
 
 	const _float&		Get_Limit() {
 		return m_fLimitTime;
@@ -35,7 +37,7 @@ public:
 
 	void Reset_KeyFrame();
 
-	
+
 
 
 public:
@@ -44,9 +46,11 @@ public:
 	CAnimation* Clone(class CAnimModel* pModel);
 	virtual void Free() override;
 
-private:
+public:
 	//_bool Update_Channel(_uint _iChannelIndex, _uint _iFrameIndex);
 	//_bool Update_Channel(_uint _iChannelIndex, _uint _iFrameIndex, CAnimation* pNextAnim);
+
+	KEYFRAME						Get_OldKeyFrame(_uint _iIndex) { return  m_ChannelOldKeyFrames[_iIndex]; }
 
 private:
 	_bool							m_isClone;
@@ -76,11 +80,11 @@ private:
 public://Åø¿ë
 	TANIM	Get_ForSave();
 	void	KeyFrameSave();
-	
+
 	char*							Get_Name() { return m_Name; }
-	void							Set_Name(char* _Name) {	strcpy_s(m_Name, _Name); }
-	vector<_uint>*					Get_KeyFrames() { 
-		return &m_ChannelKeyFrames; 
+	void							Set_Name(char* _Name) { strcpy_s(m_Name, _Name); }
+	vector<_uint>*					Get_KeyFrames() {
+		return &m_ChannelKeyFrames;
 	}
 
 	_float*							Get_Duration() { return &m_fDuration; }

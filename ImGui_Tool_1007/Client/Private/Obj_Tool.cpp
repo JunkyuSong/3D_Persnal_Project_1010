@@ -23,14 +23,14 @@ CObj_Tool::CObj_Tool()
 	, m_iSelectModel(0)
 	, m_vPos(0.f, 0.f, 0.f)
 	, m_vScale(1.f, 1.f, 1.f)
-	, m_vAngle(0.f,0.f,0.f)
+	, m_vAngle(0.f, 0.f, 0.f)
 	, m_iSelectLayer(0)
 	, m_bAddType(TYPE_ANIM)
 {
-	ZeroMemory(&m_tObj_Desc,sizeof(CObj_Plus::OBJ_DESC));
+	ZeroMemory(&m_tObj_Desc, sizeof(CObj_Plus::OBJ_DESC));
 	ZeroMemory(&m_szModelTag, 256);
 	ZeroMemory(&m_szLayer, 256);
-	
+
 	m_pLevels.push_back("LEVEL_STAGE_LOBBY");
 	m_pLevels.push_back("LEVEL_STAGE_01");
 	m_pLevels.push_back("LEVEL_STAGE_02");
@@ -42,7 +42,7 @@ CObj_Tool::~CObj_Tool()
 {
 	/*if (m_tObj_Desc.szModelTag)
 	{
-		Safe_Delete_Array(m_tObj_Desc.szModelTag);
+	Safe_Delete_Array(m_tObj_Desc.szModelTag);
 	}*/
 	for (auto& iter : m_pLayers)
 	{
@@ -100,7 +100,7 @@ void CObj_Tool::Save_Map()
 		return;
 	}
 	AUTOINSTANCE(CGameInstance, pGameInstance);
-	
+
 
 	//_splitpath_s(_tModel.Name, nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
 	//strPath에 파일 경로 떼고 파일 이름이랑 확장자 뺀다
@@ -135,7 +135,7 @@ void CObj_Tool::Save_Map()
 		_tInfo = static_cast<CObj_Plus*>(_Obj)->Get_Info();
 		WriteFile(hFile, &_tInfo, sizeof(CObj_Plus::OBJ_DESC), &dwByte, nullptr);
 	}
-	
+
 	CloseHandle(hFile);
 
 }
@@ -187,14 +187,14 @@ void CObj_Tool::Load_Map()
 
 
 
-	HANDLE		hFile = CreateFile(szFullPath,			
+	HANDLE		hFile = CreateFile(szFullPath,
 		GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
 	DWORD		dwByte = 0;
 
 	CObj_Plus::OBJ_DESC	_tInfo;
 	ZeroMemory(&_tInfo, sizeof(CObj_Plus::OBJ_DESC));
-	while(true)
+	while (true)
 	{
 		ZeroMemory(&_tInfo, sizeof(CObj_Plus::OBJ_DESC));
 		ReadFile(hFile, &_tInfo, sizeof(CObj_Plus::OBJ_DESC), &dwByte, nullptr);
@@ -206,7 +206,7 @@ void CObj_Tool::Load_Map()
 			MSG_BOX(TEXT("FAILED LOAD MAP"));
 			CloseHandle(hFile);
 			return;
-		}			
+		}
 	}
 
 	CloseHandle(hFile);
@@ -245,7 +245,7 @@ HRESULT CObj_Tool::Tool_Obj()
 	}
 
 	ImGui::Separator();
-	
+
 	//ImGui::SameLine();
 
 	ImGui::InputText("Layer_Name", m_szLayer, 256, ImGuiInputTextFlags_CharsNoBlank);
@@ -287,7 +287,7 @@ HRESULT CObj_Tool::Tool_Obj()
 		m_pLayer = CGameInstance::Get_Instance()->Get_Layer(g_eCurLevel, _pLayerTag);
 		Safe_Delete_Array(_pLayerTag);
 	}
-	
+
 	ImGui::Separator();
 
 	if (m_pLayer != nullptr)
@@ -297,7 +297,7 @@ HRESULT CObj_Tool::Tool_Obj()
 			if (m_pPick != nullptr)
 			{
 				static_cast<CObj_Plus*>(m_pPick)->Set_Pass(CObj_Plus::PASS_NONPICK);
-				
+
 			}
 			XMStoreFloat3(&m_vScale, XMVectorSet(1.f, 1.f, 1.f, 0.f));
 			XMStoreFloat3(&m_vPos, XMVectorSet(1.f, 1.f, 1.f, 1.f));
@@ -361,7 +361,7 @@ HRESULT CObj_Tool::Tool_Obj()
 		Load_Map();
 	}
 
-	
+
 
 	return S_OK;
 }
@@ -393,12 +393,12 @@ HRESULT CObj_Tool::Tool_Obj_Pick()
 	//ImGui::Begin("Tool_Obj_Pick", &m_bTool_Obj_Pick);
 
 	ImGui::Begin("Tool_Obj_Pick_", &m_bTool_Obj_Pick);
-	
+
 	m_vScale = m_pPick_Trans->Get_Scale();
 	XMStoreFloat3(&m_vPos, m_pPick_Trans->Get_State(CTransform::STATE_POSITION));
 	m_vAngle = m_pPick_Trans->Get_Rotation();
 	Key_Input();
-	
+
 	ImGui::InputFloat("Pos.x", &m_vPos.x);
 	ImGui::InputFloat("Pos.y", &m_vPos.y);
 	ImGui::InputFloat("Pos.z", &m_vPos.z);
@@ -413,14 +413,14 @@ HRESULT CObj_Tool::Tool_Obj_Pick()
 	ImGui::InputFloat("Angle.x", &m_vAngle.x);
 	ImGui::InputFloat("Angle.y", &m_vAngle.y);
 	ImGui::InputFloat("Angle.z", &m_vAngle.z);
-	
+
 	m_pPick_Trans->Set_Scale(XMVectorSet(m_vScale.x, m_vScale.y, m_vScale.z, 0.f));
-	
+
 	m_pPick_Trans->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), XMConvertToRadians(m_vAngle.z));
 	m_pPick_Trans->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), XMConvertToRadians(m_vAngle.x));
 	m_pPick_Trans->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(m_vAngle.y));
 	m_pPick_Trans->Set_Rotation(XMLoadFloat3(&m_vAngle));
-	m_pPick_Trans->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_vPos.x, m_vPos.y, m_vPos.z, 1.f));	
+	m_pPick_Trans->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_vPos.x, m_vPos.y, m_vPos.z, 1.f));
 
 	if (m_bModels)
 	{
@@ -438,14 +438,14 @@ HRESULT CObj_Tool::Tool_Obj_Pick()
 		}
 	}
 
-	//if (ImGui::Button("Set_Info")) // 셋인포
+	if (ImGui::Button("Set_Info")) // 셋인포(?)
 	{
 		_matrix		Matrix = XMMatrixIdentity();
-		Matrix = XMMatrixScaling(m_vScale.x, m_vScale.y, m_vScale.z) * 
+		Matrix = XMMatrixScaling(m_vScale.x, m_vScale.y, m_vScale.z) *
 			XMMatrixRotationZ(XMConvertToRadians(m_vAngle.z)) *
-			XMMatrixRotationX(XMConvertToRadians(m_vAngle.x)) * 
+			XMMatrixRotationX(XMConvertToRadians(m_vAngle.x)) *
 			XMMatrixRotationY(XMConvertToRadians(m_vAngle.y)) *
-			
+
 			XMMatrixTranslation(m_vPos.x, m_vPos.y, m_vPos.z);
 
 		XMStoreFloat4x4(&m_tObj_Desc.matWorld, Matrix);
@@ -470,7 +470,7 @@ HRESULT CObj_Tool::Tool_Obj_Pick()
 	if (ImGui::RadioButton("NonPlayer", CAnim_Tool::Get_Instance()->Anim_Type() == CAnim_Tool::TYPE_NONPLAYER)) { CAnim_Tool::Get_Instance()->Anim_Type(CAnim_Tool::TYPE_NONPLAYER); }
 	if (ImGui::Button("Anim_Tool"))
 	{
-		
+
 		CAnim_Tool::Get_Instance()->Get_AnimList(m_pPick);
 		m_bAnim = true;
 	}
@@ -495,7 +495,7 @@ HRESULT CObj_Tool::Tool_Obj_Pick()
 HRESULT CObj_Tool::Tool_Obj_Add()
 {
 	ImGui::Begin("Tool_Obj_Add", &m_bTool_Obj_Add);
-	
+
 
 	if (!m_bSetting)
 	{
@@ -546,8 +546,8 @@ HRESULT CObj_Tool::Tool_Obj_Add()
 
 		m_vPos.y = XMVectorGetY(_Pos);
 		Key_Input();
-		
-		
+
+
 		ImGui::InputFloat("Pos.x", &m_vPos.x);
 		ImGui::InputFloat("Pos.y", &m_vPos.y);
 		ImGui::InputFloat("Pos.z", &m_vPos.z);
@@ -585,7 +585,7 @@ HRESULT CObj_Tool::Tool_Obj_Add()
 	}
 
 	if (ImGui::Button("Setting"))
-	{		
+	{
 		_tchar* _szTemp = CImGui::Get_Instance()->ConvertCtoWC(m_pModels[m_iSelectModel]);
 		//CReleaseMgr::Get_Instance()->Add_Tchar(_szTemp);
 		auto& iter = find_if(m_mapToolProto.begin(), m_mapToolProto.end(), CTag_Finder(_szTemp));
@@ -621,7 +621,7 @@ HRESULT CObj_Tool::Tool_Obj_Add()
 
 		m_pPick = _pTemp;
 		static_cast<CObj_Plus*>(m_pPick)->Set_Pass(CObj_Plus::PASS_ADD);
-		
+
 		m_pPick_Trans = static_cast<CTransform*>(m_pPick->Get_ComponentPtr(TEXT("Com_Transform")));
 		m_bSetting = true;
 		Safe_Delete_Array(_szTemp);
@@ -632,19 +632,19 @@ HRESULT CObj_Tool::Tool_Obj_Add()
 		_matrix		Matrix = XMMatrixIdentity();
 
 		Matrix = XMMatrixScaling(m_vScale.x, m_vScale.y, m_vScale.z) *
-				XMMatrixRotationX((m_vAngle.x)) *
-				XMMatrixRotationY((m_vAngle.y)) *
-				XMMatrixRotationZ((m_vAngle.z)) *
-				XMMatrixTranslation(m_vPos.x, m_vPos.y, m_vPos.z);
+			XMMatrixRotationX((m_vAngle.x)) *
+			XMMatrixRotationY((m_vAngle.y)) *
+			XMMatrixRotationZ((m_vAngle.z)) *
+			XMMatrixTranslation(m_vPos.x, m_vPos.y, m_vPos.z);
 
-		XMStoreFloat4x4(&m_tObj_Desc.matWorld, Matrix) ;
+		XMStoreFloat4x4(&m_tObj_Desc.matWorld, Matrix);
 
 		m_tObj_Desc.eLevel = g_eCurLevel;
-		
+
 		_tchar* szTemp = nullptr; // 딜리트해야하는 곳 : 오비제이, 여기
 		szTemp = CImGui::Get_Instance()->ConvertCtoWC(m_pModels[m_iSelectModel]);
 		lstrcpy(m_tObj_Desc.szModelTag, szTemp);
-		
+
 		_tchar* szLayer = nullptr;
 		szLayer = CImGui::Get_Instance()->ConvertCtoWC(m_pLayers[m_iSelectLayer]);
 
@@ -663,7 +663,7 @@ HRESULT CObj_Tool::Tool_Obj_Add()
 		/*m_pPick = nullptr;
 		m_pPick_Trans = nullptr;
 		m_bSetting = false;*/
-		Safe_Delete_Array(szLayer);	
+		Safe_Delete_Array(szLayer);
 		Safe_Delete_Array(szTemp);
 	}
 
@@ -808,7 +808,7 @@ HRESULT CObj_Tool::Load_Model()
 
 void CObj_Tool::AnimModel_Save()
 {
-	TANIMMODEL _tModel = static_cast<CAnimModel*>(m_pPick->Get_ComponentPtr(TEXT("Com_Model")))->Get_ForSave();
+	TANIMMODEL _tModel = static_cast<CAnimModel*>(m_pPick->Get_ComponentPtr(TEXT("Com_Model")))->Get_ModelInfo();
 
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 
@@ -849,9 +849,9 @@ void CObj_Tool::AnimModel_Save()
 		FILE_ATTRIBUTE_NORMAL,		// 파일 속성(읽기 전용, 숨기 등), FILE_ATTRIBUTE_NORMAL 아무런 속성이 없는 일반 파일 생성
 		NULL);						// 생성도리 파일의 속성을 제공할 템플릿 파일, 우리는 사용하지 않아서 NULL
 
-	DWORD		dwByte = 0;	
+	DWORD		dwByte = 0;
 	WriteFile(hFile, &(_tModel.bAnim), sizeof(_bool), &dwByte, nullptr);
-	WriteFile(hFile, &(_tModel.Path), sizeof(char)*260, &dwByte, nullptr);
+	WriteFile(hFile, &(_tModel.Path), sizeof(char) * 260, &dwByte, nullptr);
 	WriteFile(hFile, &(_tModel.Name), sizeof(char) * 260, &dwByte, nullptr);
 	WriteFile(hFile, &(_tModel.Pivot), sizeof(_float4x4), &dwByte, nullptr);
 
@@ -859,7 +859,7 @@ void CObj_Tool::AnimModel_Save()
 
 	for (int i = 0; i < _tModel.NumMeshes; ++i)
 	{
-		WriteFile(hFile, &(_tModel.tMeshes[i].szName), sizeof(char)*260, &dwByte, nullptr);
+		WriteFile(hFile, &(_tModel.tMeshes[i].szName), sizeof(char) * 260, &dwByte, nullptr);
 		WriteFile(hFile, &(_tModel.tMeshes[i].iIndex), sizeof(int), &dwByte, nullptr);
 		WriteFile(hFile, &(_tModel.tMeshes[i].NumVertices), sizeof(int), &dwByte, nullptr);
 		for (int j = 0; j < _tModel.tMeshes[i].NumVertices; ++j)
@@ -891,7 +891,7 @@ void CObj_Tool::AnimModel_Save()
 	WriteFile(hFile, &(_tModel.NumAnim), sizeof(int), &dwByte, nullptr);
 	for (int i = 0; i < _tModel.NumAnim; ++i)
 	{
-		WriteFile(hFile, &(_tModel.tAnim[i].szName), sizeof(char)*260, &dwByte, nullptr);
+		WriteFile(hFile, &(_tModel.tAnim[i].szName), sizeof(char) * 260, &dwByte, nullptr);
 		WriteFile(hFile, &(_tModel.tAnim[i].fDuration), sizeof(float), &dwByte, nullptr);
 		WriteFile(hFile, &(_tModel.tAnim[i].fTickPerSecond), sizeof(float), &dwByte, nullptr);
 		WriteFile(hFile, &(_tModel.tAnim[i].fLimitTime), sizeof(float), &dwByte, nullptr);
@@ -901,7 +901,7 @@ void CObj_Tool::AnimModel_Save()
 		{
 			WriteFile(hFile, &(_tModel.tAnim[i].Bones[j]), sizeof(int), &dwByte, nullptr);
 			WriteFile(hFile, &(_tModel.tAnim[i].Channels[j].NumKeyFrame), sizeof(int), &dwByte, nullptr);
-			WriteFile(hFile, &(_tModel.tAnim[i].Channels[j].szName), sizeof(char)*260, &dwByte, nullptr);
+			WriteFile(hFile, &(_tModel.tAnim[i].Channels[j].szName), sizeof(char) * 260, &dwByte, nullptr);
 			for (int k = 0; k < _tModel.tAnim[i].Channels[j].NumKeyFrame; ++k)
 			{
 				WriteFile(hFile, &(_tModel.tAnim[i].Channels[j].KeyFrames[k]), sizeof(KEYFRAME), &dwByte, nullptr);

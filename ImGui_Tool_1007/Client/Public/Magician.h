@@ -101,7 +101,7 @@ private:
 	void CheckState(_float fTimeDelta);
 
 	void ChangeCanesword(CANESWORD _eCanesword);
-	
+
 	void CheckLimit();
 
 	void Get_AnimMat();
@@ -115,6 +115,8 @@ private:
 	void Look_Player();
 
 	_float	m_fAppear = 1.f;
+
+	_bool	m_bAgainAnim = false;
 
 private:
 	STATE					m_eReserveState = STATE_END;

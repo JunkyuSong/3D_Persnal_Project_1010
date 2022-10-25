@@ -17,7 +17,7 @@ CObj_Anim::CObj_Anim(const CObj_Anim & rhs)
 
 HRESULT CObj_Anim::Initialize_Prototype()
 {
-	XMStoreFloat4(&m_AnimPos, XMVectorSet(0.f, 0.f, 0.f,1.f));
+	XMStoreFloat4(&m_AnimPos, XMVectorSet(0.f, 0.f, 0.f, 1.f));
 	m_PreAnimPos = m_AnimPos;
 	//m_pModelCom->Set_AnimationIndex(STATE_END);
 	m_bAnimStop = true;
@@ -31,19 +31,19 @@ HRESULT CObj_Anim::Initialize(void * pArg)
 
 	__super::Initialize(pArg);
 	/*if (m_pModelCom != nullptr)
-		m_pModelCom->Set_AnimationIndex(STATE_END);*/
+	m_pModelCom->Set_AnimationIndex(STATE_END);*/
 	m_fAnimSpeed = 1.f;
 	return S_OK;
 }
 
-void CObj_Anim::Tick( _float fTimeDelta)
+void CObj_Anim::Tick(_float fTimeDelta)
 {
 	//ImGuiTick();
 	if (m_pModelCom != nullptr)
 	{
 		if (!m_bAnimStop)
 		{
-		
+
 			CheckAnim();
 			//CheckState();
 
@@ -55,7 +55,7 @@ void CObj_Anim::Tick( _float fTimeDelta)
 			CheckAnim();
 			_float4 _vAnim;
 			XMStoreFloat4(&_vAnim, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-			if (m_pModelCom->Play_Animation(fTimeDelta, &_vAnim, &m_fPlayTime))
+			if (m_pModelCom->Play_Animation(fTimeDelta, &_vAnim, &m_fPlayTime, m_bAgainAnim))
 			{
 				//CheckEndAnim(fTimeDelta);
 			}
@@ -67,13 +67,13 @@ void CObj_Anim::Tick( _float fTimeDelta)
 	}
 }
 
-void CObj_Anim::LateTick( _float fTimeDelta)
+void CObj_Anim::LateTick(_float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
 		return;
 	if (m_pModelCom != nullptr)
 	{
-		
+
 	}
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
@@ -99,7 +99,7 @@ HRESULT CObj_Anim::Render()
 		//if (FAILED(m_pShaderCom->Begin(m_ePass)))
 		//	return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, 0,i)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, 0, i)))
 			return E_FAIL;
 	}
 
@@ -107,13 +107,13 @@ HRESULT CObj_Anim::Render()
 	return S_OK;
 }
 
-void CObj_Anim::PlayAnimation( _float fTimeDelta)
+void CObj_Anim::PlayAnimation(_float fTimeDelta)
 {
 	if (m_bAnimStop)
 		return;
 	_float4 _vAnim;
 	XMStoreFloat4(&_vAnim, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-	if (m_pModelCom->Play_Animation(fTimeDelta, &_vAnim, &m_fPlayTime))
+	if (m_pModelCom->Play_Animation(fTimeDelta, &_vAnim, &m_fPlayTime, m_bAgainAnim))
 	{
 		CheckEndAnim();
 	}
@@ -158,13 +158,13 @@ void CObj_Anim::CheckEndAnim()
 {
 	/*if (m_bLimit)
 	{
-		m_eCurState = m_eReserveState;
-		m_eReserveState = STATE_END;
-		Set_Anim(m_eCurState);
-		XMStoreFloat4(&m_AnimPos, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-		m_PreAnimPos = m_AnimPos;
-		m_bLimit = false;
-		return;
+	m_eCurState = m_eReserveState;
+	m_eReserveState = STATE_END;
+	Set_Anim(m_eCurState);
+	XMStoreFloat4(&m_AnimPos, XMVectorSet(0.f, 0.f, 0.f, 1.f));
+	m_PreAnimPos = m_AnimPos;
+	m_bLimit = false;
+	return;
 	}*/
 	switch (m_eCurState)
 	{
@@ -328,7 +328,7 @@ HRESULT CObj_Anim::Ready_Components()
 	CTransform::TRANSFORMDESC	_Desc;
 	_Desc.fRotationPerSec = XMConvertToRadians(90.f);
 	//_Desc.fSpeedPerSec = 1.5f;
-	_Desc.fSpeedPerSec =2.5f;
+	_Desc.fSpeedPerSec = 2.5f;
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom, &_Desc)))
 		return E_FAIL;
 

@@ -21,11 +21,11 @@ BEGIN(Client)
 
 class CPlayer final : public CGameObject
 {
-public:	
+public:
 	enum STATE {
 		STATE_ATT1, STATE_ATT2, STATE_ATT3, STATE_ATT4, STATE_ATT5,
 		STATE_RUN_B, STATE_RUN_F, STATE_RUN_L, STATE_RUN_R,
-		STATE_APPROACH, STATE_IDLE, STATE_WALK, 
+		STATE_APPROACH, STATE_IDLE, STATE_WALK,
 		STATE_AVOIDATTACK, STATE_JUMPAVOID, STATE_AVOIDBACK,
 		Corvus_PW_Axe,
 		Tackle_F,
@@ -35,7 +35,7 @@ public:
 		GreatSword,
 		PW_Halberds,
 		PW_Hammer_A,
-		PW_TwinSwords_1, PW_TwinSwords_2, 
+		PW_TwinSwords_1, PW_TwinSwords_2,
 		PW_VargSword_A,
 		PW_Bow_Start, PW_Bow_End,
 		PW_Bow_B,
@@ -52,6 +52,7 @@ public:
 		SD_StrongHurt_Start, SD_StrongHurt_End,
 		SD_Dead,
 		STATE_RUN_BL, STATE_RUN_BR, STATE_RUN_FL, STATE_RUN_FR,
+		STATE_AVOIDATTACK_2,
 		STATE_END
 	};
 
@@ -76,10 +77,10 @@ private:
 public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg);
-	virtual void Tick( _float fTimeDelta);
-	virtual void LateTick( _float fTimeDelta);
+	virtual void Tick(_float fTimeDelta);
+	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
-	void PlayAnimation( _float fTimeDelta);
+	void PlayAnimation(_float fTimeDelta);
 
 public:
 	void		Set_Info(OBJ_DESC _tInfo);
@@ -88,12 +89,12 @@ public:
 	void		Set_Pass(PASS _ePass) { m_ePass = _ePass; }
 
 	void		ImGuiTick();
-	void		Set_AnimState(STATE	_eState)			{ m_eCurState = _eState; }
-	void		Set_AnimReserveState(STATE	_eState)	{ m_eReserveState = _eState; }
-	STATE*		Get_AnimState()							{ return &m_eCurState; }
-	STATE*		Get_AnimReserveState()					{ return &m_eReserveState; }
-	_int		Get_MaxState()							{ return (int)STATE_END - 1; }
-	void		Set_Stop(_bool _bStop)					{ m_bAnimStop = _bStop; }
+	void		Set_AnimState(STATE	_eState) { m_eCurState = _eState; }
+	void		Set_AnimReserveState(STATE	_eState) { m_eReserveState = _eState; }
+	STATE*		Get_AnimState() { return &m_eCurState; }
+	STATE*		Get_AnimReserveState() { return &m_eReserveState; }
+	_int		Get_MaxState() { return (int)STATE_END - 1; }
+	void		Set_Stop(_bool _bStop) { m_bAnimStop = _bStop; }
 
 private:
 	void Add_Render();
@@ -121,17 +122,17 @@ private:
 private:
 	enum WEAPON { WEAPON_NONE, WEAPON_BASE, WEAPON_SKILL };
 	enum BASE { BASE_SABER, BASE_DAGGER, BASE_END };
-	enum SKILL {SKILL_AXE, SKILL_DUAL, SKILL_END};
-	enum HAND	{HAND_RIGHT, HAND_LEFT, HAND_END};
+	enum SKILL { SKILL_AXE, SKILL_DUAL, SKILL_END };
+	enum HAND { HAND_RIGHT, HAND_LEFT, HAND_END };
 
 	typedef vector<class CWeapon*>		PARTS;
 	class CHierarchyNode*				m_pHands[HAND_END];
 	_float4x4							m_matHands[HAND_END];
-	
+
 	PARTS								m_pBaseParts;
 	vector<_uint>						m_pBaseHands;
 
-	PARTS								m_pSkillParts[SKILL_END];	
+	PARTS								m_pSkillParts[SKILL_END];
 	vector<_uint>						m_pSkillHands[SKILL_END];
 
 	WEAPON								m_eWeapon = WEAPON_BASE;
@@ -171,22 +172,25 @@ private:
 	_float					m_MaxMotionTrail = 0.07f;
 	_float					m_CurMotionTrail = 0.f;
 
+	_bool					m_bAgainAnim = false;
+
 	CGameObject*			m_pTarget = nullptr;
 	CLayer*					m_MonsterLayer = nullptr;
-	_bool					m_bAgain = false;
 
-	
+
 	void (CPlayer::*KeyInput[STATE_END])(_float);
 
 	CCollider*				m_pColliderCom[COLLILDERTYPE_END] = { nullptr };
 	_bool					m_bCollision[COLLILDERTYPE_END] = { false };
 	_bool					m_bTrail = false;
 
+	_uint					m_iHitCount = 0;
+
 private:
 	HRESULT	Check_MotionTrail(_float fTimeDelta);
 
 	HRESULT Ready_Components();
-	
+
 	HRESULT Ready_Collider();
 	HRESULT SetUp_ShaderResources();
 

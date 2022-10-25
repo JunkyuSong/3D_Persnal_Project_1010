@@ -4,9 +4,10 @@
 #include "AnimMeshContainer.h"
 #include "Animation.h"
 #include "Shader.h"
+#include "Channel.h"
 
 CAnimModel::CAnimModel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
-	: CModel(pDevice,pContext)
+	: CModel(pDevice, pContext)
 {
 }
 
@@ -75,7 +76,7 @@ HRESULT CAnimModel::Initialize_Prototype(const char * pModelFilePath, const char
 
 	sort(m_HierarchyNodes.begin(), m_HierarchyNodes.end(), [](CHierarchyNode* pSour, CHierarchyNode* pDest)
 	{
-		return pSour->Get_Depth() < pDest->Get_Depth();
+	return pSour->Get_Depth() < pDest->Get_Depth();
 	});*/
 
 	/* 모델을 구성하는 메시들을 만든다. */
@@ -92,7 +93,7 @@ HRESULT CAnimModel::Initialize_Prototype(const char * pModelFilePath, const char
 	{
 		m_HierarchyNodes[i]->Set_Index(i);
 		strcpy_s(m_tModel.tHierarcky[i].szName, m_HierarchyNodes[i]->Get_Name());
-		XMStoreFloat4x4(&(m_tModel.tHierarcky[i].Offset) ,m_HierarchyNodes[i]->Get_OffSetMatrix());
+		XMStoreFloat4x4(&(m_tModel.tHierarcky[i].Offset), m_HierarchyNodes[i]->Get_OffSetMatrix());
 		m_tModel.tHierarcky[i].Transformation = m_HierarchyNodes[i]->Get_Trans();
 		m_tModel.tHierarcky[i].iDepth = m_HierarchyNodes[i]->Get_Depth();
 		CHierarchyNode* pParent = m_HierarchyNodes[i]->Get_Parent();
@@ -100,7 +101,7 @@ HRESULT CAnimModel::Initialize_Prototype(const char * pModelFilePath, const char
 		{
 			m_HierarchyNodes[i]->Set_ParentIndex(pParent->Get_Index());
 			m_tModel.tHierarcky[i].ParentIndex = pParent->Get_Index();
-		}		
+		}
 	}
 
 
@@ -139,7 +140,7 @@ HRESULT CAnimModel::Initialize(void * pArg)
 			return E_FAIL;
 		Safe_Release(m_HierarchyNodes[i]);
 		m_HierarchyNodes[i] = pHierarchyNode;
-		if(i != 0)
+		if (i != 0)
 			pHierarchyNode->Set_Parent(m_HierarchyNodes[pHierarchyNode->Get_ParentIndex()]);
 	}
 
@@ -151,7 +152,7 @@ HRESULT CAnimModel::Initialize(void * pArg)
 		Safe_Release(m_Meshes[i]);
 		m_Meshes[i] = pMeshContainer;
 	}
-	
+
 	if (m_datLoad == true)
 	{
 		_uint iNumMeshes = m_Meshes.size();
@@ -174,9 +175,9 @@ HRESULT CAnimModel::Initialize(void * pArg)
 	{
 		XMStoreFloat4x4(&(m_tModel.tHierarcky[i].Offset), m_HierarchyNodes[i]->Get_OffSetMatrix());
 	}
-	
 
-	for(_uint i = 0; i< m_Animations.size(); ++i)
+
+	for (_uint i = 0; i< m_Animations.size(); ++i)
 	{
 		CAnimation*		pAnimation = m_Animations[i]->Clone(this);
 		if (nullptr == pAnimation)
@@ -215,10 +216,10 @@ HRESULT CAnimModel::Load_Dat(const char * pModelFilePath, const char * pModelFil
 		FILE_ATTRIBUTE_NORMAL,
 		NULL);
 
-	
+
 
 	DWORD		dwByte = 0;
-	
+
 	ReadFile(hFile, &(m_tModel.bAnim), sizeof(_bool), &dwByte, nullptr);
 	ReadFile(hFile, &(m_tModel.Path), sizeof(char) * 260, &dwByte, nullptr);
 	ReadFile(hFile, &(m_tModel.Name), sizeof(char) * 260, &dwByte, nullptr);
@@ -239,7 +240,7 @@ HRESULT CAnimModel::Load_Dat(const char * pModelFilePath, const char * pModelFil
 			if (dwByte == 0)
 				int i = 9;
 		}
-		
+
 		ReadFile(hFile, &(m_tModel.tMeshes[i].NumFaces), sizeof(int), &dwByte, nullptr);
 		m_tModel.tMeshes[i].pIndices = new FACEINDICES32[m_tModel.tMeshes[i].NumFaces];
 		for (int j = 0; j < m_tModel.tMeshes[i].NumFaces; ++j)
@@ -254,7 +255,7 @@ HRESULT CAnimModel::Load_Dat(const char * pModelFilePath, const char * pModelFil
 		{
 			ReadFile(hFile, &(m_tModel.tMeshes[i].BoneIndecis[j]), sizeof(int), &dwByte, nullptr);
 		}
-		
+
 	}
 	ReadFile(hFile, &(m_tModel.AllMaterials.NumMaterials), sizeof(int), &dwByte, nullptr);
 	m_tModel.AllMaterials.tMaterial = new TMATERIAL[m_tModel.AllMaterials.NumMaterials];
@@ -322,7 +323,7 @@ HRESULT CAnimModel::Load_Dat(const char * pModelFilePath, const char * pModelFil
 	for (int i = 0; i < m_tModel.NumMeshes; ++i)
 	{
 		//ID3D11Device * pDevice, ID3D11DeviceContext * pContext, _fmatrix PivotMatrix, TANIMCONTAINER _tIn)
-		CAnimMeshContainer*		pMeshContainer = CAnimMeshContainer::Create(m_pDevice, m_pContext, XMLoadFloat4x4( &(m_tModel.Pivot)), m_tModel.tMeshes[i]);
+		CAnimMeshContainer*		pMeshContainer = CAnimMeshContainer::Create(m_pDevice, m_pContext, XMLoadFloat4x4(&(m_tModel.Pivot)), m_tModel.tMeshes[i]);
 		if (nullptr == pMeshContainer)
 			return E_FAIL;
 
@@ -345,9 +346,10 @@ HRESULT CAnimModel::Load_Default(const char * pModelFilePath, const char * pMode
 	return E_NOTIMPL;
 }
 
+
 HRESULT CAnimModel::Set_AnimationIndex(_uint _AnimationIndex)
 {
-	
+
 	if (m_Animations.size() <= _AnimationIndex)
 	{
 		MSG_BOX(TEXT("Over the AnimationIndex"));
@@ -361,7 +363,7 @@ HRESULT CAnimModel::Set_AnimationIndex(_uint _AnimationIndex)
 		m_iPreAnimIndex = _AnimationIndex;
 		m_iCurrentAnimIndex = _AnimationIndex;
 	}
-	
+
 	if (m_iCurrentAnimIndex != _AnimationIndex)
 	{
 		m_Animations[m_iCurrentAnimIndex]->Reset_KeyFrame();
@@ -371,9 +373,26 @@ HRESULT CAnimModel::Set_AnimationIndex(_uint _AnimationIndex)
 	return S_OK;
 }
 
-_bool CAnimModel::Play_Animation(_float _fTimeDelta, _float4* _vAnim, _float* pOut)
+_bool CAnimModel::Play_Animation(_float _fTimeDelta, _float4* _vAnim, _float* pOut, _bool& _bAgain)
 {
 	_bool _bResult = false;
+
+	if (_bAgain == true)
+	{
+		//이미 진행하는 애니메이션과 보간한다.
+		if (m_Animations[m_iCurrentAnimIndex]->Play_Animation(_fTimeDelta, m_Animations[m_iCurrentAnimIndex], m_TotalChannel))
+		{
+			m_iPreAnimIndex = m_iCurrentAnimIndex;
+			_bAgain = false;
+			return _bResult;
+		}
+		for (auto& pHierarchyNode : m_HierarchyNodes)
+		{
+			pHierarchyNode->Set_CombinedTransformation(_vAnim, true);
+		}
+		return _bResult;
+	}
+
 	if (m_iPreAnimIndex == m_iCurrentAnimIndex)
 	{
 		if (m_Animations[m_iCurrentAnimIndex]->Play_Animation(_fTimeDelta, pOut))
@@ -399,20 +418,6 @@ _bool CAnimModel::Play_Animation(_float _fTimeDelta, _float4* _vAnim, _float* pO
 		}
 	}
 
-	//1. 현재 재생하고자하는 애니메이션이 제어해야할 뼈들의 지역행렬을 갱신해낸다.
-	// 만약 끝났으면 다음 애니메이션을 재생시켜야한다.
-	/*if (m_Animations[m_iPreAnimIndex]->Play_Animation(_fTimeDelta, m_Animations[m_iCurrentAnimIndex]))
-	{
-		m_iPreAnimIndex = m_iCurrentAnimIndex;
-	}*/
-	//2. 지역행렬을 순차적으로(부모에서 자식으로) 누적하여 m_CombinedTransformation를 만든다.
-	/*for (auto& pHierarchyNode : m_HierarchyNodes)
-	{
-		if(m_iCurrentAnimIndex == m_iPreAnimIndex)
-			pHierarchyNode->Set_CombinedTransformation(_AnimMatrix);
-		else
-			pHierarchyNode->Set_CombinedTransformation(_AnimMatrix, true);
-	}*/
 	return _bResult;
 }
 
@@ -436,12 +441,12 @@ HRESULT CAnimModel::Render(CShader * pShader, _uint _iPass, _uint _iMeshIndex)
 {
 	_float4x4		BoneMatrices[256];
 
-	
+
 	m_Meshes[_iMeshIndex]->SetUp_BoneMatrices(BoneMatrices, XMLoadFloat4x4(&m_PivotMatrix));
 
 	if (FAILED(pShader->Set_RawValue("g_BoneMatrices", BoneMatrices, sizeof(_float4x4) * 256)))
 		return E_FAIL;
-	
+
 
 	pShader->Begin(_iPass);
 
@@ -454,19 +459,6 @@ _uint CAnimModel::Get_MaterialIndex(_uint _iMeshIndex) const
 	return m_Meshes[_iMeshIndex]->Get_MaterialIndex();
 }
 
-TANIMMODEL CAnimModel::Get_ForSave()
-{
-	m_tModel.NumAnim = m_Animations.size();
-	Safe_Delete_Array(m_tModel.tAnim);
-	m_tModel.tAnim = new TANIM[m_tModel.NumAnim];
-	for (int i = 0; i < m_tModel.NumAnim; ++i)
-	{
-		m_tModel.tAnim[i] = m_Animations[i]->Get_ForSave();
-	}
-
-	return m_tModel;
-}
-
 HRESULT CAnimModel::Ready_MeshContainers(_fmatrix PivotMatrix)
 {
 
@@ -475,7 +467,7 @@ HRESULT CAnimModel::Ready_MeshContainers(_fmatrix PivotMatrix)
 	m_tModel.tMeshes = new TANIMCONTAINER[m_tModel.NumMeshes];
 	for (_uint i = 0; i < m_iNumMeshes; ++i)
 	{
-		CAnimMeshContainer*		pMeshContainer = CAnimMeshContainer::Create(m_pDevice, m_pContext, m_pAIScene->mMeshes[i], this,PivotMatrix, &(m_tModel.tMeshes[i]));
+		CAnimMeshContainer*		pMeshContainer = CAnimMeshContainer::Create(m_pDevice, m_pContext, m_pAIScene->mMeshes[i], this, PivotMatrix, &(m_tModel.tMeshes[i]));
 		if (nullptr == pMeshContainer)
 			return E_FAIL;
 
@@ -508,10 +500,10 @@ HRESULT CAnimModel::Ready_Animations()
 HRESULT CAnimModel::Ready_Animations(int _Num)
 {
 	m_iNumAnimations = _Num;
-	
+
 	for (_uint i = 0; i < m_iNumAnimations; ++i)
-	{		
-		CAnimation*			pAnimation = CAnimation::Create(this, m_tModel.tAnim[i],i);
+	{
+		CAnimation*			pAnimation = CAnimation::Create(this, m_tModel.tAnim[i], i);
 
 		if (nullptr == pAnimation)
 			return E_FAIL;
@@ -592,7 +584,7 @@ void CAnimModel::Free()
 		//	Safe_Delete_Array(m_tModel.tAnim[i].Channels);
 		//}
 		Safe_Delete_Array(m_tModel.tAnim);
-	}	
+	}
 }
 
 CHierarchyNode * CAnimModel::Get_HierarchyNode(char * pNodeName)
@@ -610,7 +602,7 @@ CHierarchyNode * CAnimModel::Get_HierarchyNode(char * pNodeName)
 
 HRESULT CAnimModel::Ready_HierarchyNodes(aiNode* pNode, CHierarchyNode* pParent, _uint iDepth)
 {
-	
+
 	CHierarchyNode*		pHierarchyNode = CHierarchyNode::Create(pNode, pParent, iDepth);
 	++iDepth;
 	if (nullptr == pHierarchyNode)

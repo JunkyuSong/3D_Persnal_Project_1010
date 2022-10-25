@@ -42,7 +42,7 @@ CPlayer::CPlayer(const CPlayer & rhs)
 
 HRESULT CPlayer::Initialize_Prototype()
 {
-	XMStoreFloat4(&m_AnimPos, XMVectorSet(0.f, 0.f, 0.f,1.f));
+	XMStoreFloat4(&m_AnimPos, XMVectorSet(0.f, 0.f, 0.f, 1.f));
 	m_PreAnimPos = m_AnimPos;
 
 
@@ -80,7 +80,7 @@ HRESULT CPlayer::Initialize(void * pArg)
 
 	pGameInstance->Set_Player(this);
 
-	
+
 
 	m_fAnimSpeed = 1.f;
 
@@ -115,11 +115,11 @@ HRESULT CPlayer::Initialize(void * pArg)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(34.491, 0.165, 44.676, 1.f));
 		break;
 	}
-	
+
 	return S_OK;
 }
 
-void CPlayer::Tick( _float fTimeDelta)
+void CPlayer::Tick(_float fTimeDelta)
 {
 	ImGuiTick();
 	if (m_pModelCom != nullptr)
@@ -131,14 +131,14 @@ void CPlayer::Tick( _float fTimeDelta)
 			//CheckState();
 			AfterAnim();
 			PlayAnimation(fTimeDelta);
-			
+
 		}
 		else
 		{
 			CheckAnim();
 			_float4 _vAnim;
 			XMStoreFloat4(&_vAnim, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-			if (m_pModelCom->Play_Animation(fTimeDelta, &_vAnim, &m_fPlayTime))
+			if (m_pModelCom->Play_Animation(fTimeDelta, &_vAnim, &m_fPlayTime, m_bAgainAnim))
 			{
 				//CheckEndAnim(fTimeDelta);
 			}
@@ -146,7 +146,7 @@ void CPlayer::Tick( _float fTimeDelta)
 			XMStoreFloat4(&m_AnimPos, (XMLoadFloat4(&_vAnim) - XMLoadFloat4(&m_PreAnimPos)));
 			m_PreAnimPos = _vAnim;
 		}
-		
+
 
 	}
 
@@ -162,7 +162,7 @@ void CPlayer::Tick( _float fTimeDelta)
 	Check_MotionTrail(fTimeDelta);
 }
 
-void CPlayer::LateTick( _float fTimeDelta)
+void CPlayer::LateTick(_float fTimeDelta)
 {
 	if (Collision(fTimeDelta))
 	{
@@ -170,7 +170,7 @@ void CPlayer::LateTick( _float fTimeDelta)
 		AfterAnim();
 		PlayAnimation(fTimeDelta);
 	}
-	
+
 	if (m_pTarget)
 	{
 		CUI_Targeting* _pUI_Targeting = static_cast<CUI_Targeting*>(CUI_Mgr::Get_Instance()->Get_UI(TEXT("Targeting")));
@@ -193,7 +193,7 @@ HRESULT CPlayer::Render()
 		return E_FAIL;
 
 	_uint		iNumMeshes;//메쉬 갯수를 알고 메쉬 갯수만큼 렌더를 할 것임. 여기서!
-	
+
 	SetUp_ShaderResources();
 
 	iNumMeshes = m_pModelCom->Get_NumMesh();//메쉬 갯수를 알고 메쉬 갯수만큼 렌더를 할 것임. 여기서!
@@ -203,15 +203,15 @@ HRESULT CPlayer::Render()
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, 0,i)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, 0, i)))
 			return E_FAIL;
 	}
 
 #ifdef _DEBUG
 	/*for (_uint i = 0; i < COLLILDERTYPE_END; ++i)
 	{
-		if (nullptr != m_pColliderCom[i])
-			m_pColliderCom[i]->Render();
+	if (nullptr != m_pColliderCom[i])
+	m_pColliderCom[i]->Render();
 	}*/
 
 	m_pNavigationCom->Render();
@@ -222,13 +222,13 @@ HRESULT CPlayer::Render()
 	return S_OK;
 }
 
-void CPlayer::PlayAnimation( _float fTimeDelta)
+void CPlayer::PlayAnimation(_float fTimeDelta)
 {
 	if (m_bAnimStop)
 		return;
 	_float4 _vAnim;
 	XMStoreFloat4(&_vAnim, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-	if (m_pModelCom->Play_Animation(fTimeDelta, &_vAnim, &m_fPlayTime))
+	if (m_pModelCom->Play_Animation(fTimeDelta, &_vAnim, &m_fPlayTime, m_bAgainAnim))
 	{
 		CheckEndAnim();
 	}
@@ -247,7 +247,7 @@ void CPlayer::Set_Info(OBJ_DESC _tInfo)
 		__super::Add_Component(LEVEL_GAMEPLAY, m_tInfo.szModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom);
 
 	}
-	else if (lstrcmp( m_tInfo.szModelTag, _tInfo.szModelTag))
+	else if (lstrcmp(m_tInfo.szModelTag, _tInfo.szModelTag))
 	{
 		Safe_Delete_Array(m_tInfo.szModelTag);
 		Safe_Release(m_pModelCom);
@@ -280,10 +280,10 @@ void CPlayer::KeySetting()
 	KeyInput[STATE_RUN_F] = &CPlayer::KeyInput_Idle;
 }
 
-void CPlayer::KeyInputMain( _float fTimeDelta)
+void CPlayer::KeyInputMain(_float fTimeDelta)
 {
 	/*for (int i = 0; i< KeyInput[m_eCurState].size(); ++i)
-		(this->*(KeyInput[m_eCurState][i]))(fTimeDelta);*/
+	(this->*(KeyInput[m_eCurState][i]))(fTimeDelta);*/
 	//KeyInput[m_eCurState](fTimeDelta);
 
 	switch (m_eCurState)
@@ -326,7 +326,7 @@ void CPlayer::KeyInputMain( _float fTimeDelta)
 		KP_AVOIDATTACK(fTimeDelta);
 		break;
 	case Client::CPlayer::STATE_JUMPAVOID:
-		
+
 		break;
 	case Client::CPlayer::STATE_AVOIDBACK:
 		KP_AVOIDATTACK(fTimeDelta);
@@ -415,7 +415,7 @@ void CPlayer::KeyInputMain( _float fTimeDelta)
 	}
 }
 
-void CPlayer::KeyInput_Idle( _float fTimeDelta)
+void CPlayer::KeyInput_Idle(_float fTimeDelta)
 {
 	AUTOINSTANCE(CGameInstance, pGameInstance);
 	if (m_pTarget)
@@ -426,7 +426,7 @@ void CPlayer::KeyInput_Idle( _float fTimeDelta)
 	{
 		Move(fTimeDelta);
 	}
-	
+
 	//if (CGameInstance::Get_Instance()->KeyDown(DIK_SPACE))
 	if (pGameInstance->MouseDown(DIMK_LBUTTON))
 	{
@@ -465,7 +465,7 @@ void CPlayer::KeyInput_Idle( _float fTimeDelta)
 		m_bCollision[COLLIDERTYPE_BODY] = false;
 	}
 	if (pGameInstance->KeyDown(DIK_2))
-	{		
+	{
 		m_eCurState = Corvus_PW_Axe;
 		m_bCollision[COLLIDERTYPE_BODY] = false;
 	}
@@ -647,7 +647,7 @@ void CPlayer::TargetingMove(_float fTimeDelta)
 
 	_vLook = m_pTransformCom->Get_State(CTransform::STATE_LOOK);
 	_vRight = m_pTransformCom->Get_State(CTransform::STATE_RIGHT);
-	
+
 	switch (m_eDir)
 	{
 	case Client::CPlayer::DIR_F:
@@ -736,7 +736,7 @@ void CPlayer::KP_ATT(_float fTimeDelta)
 			{
 				m_eReserveState = STATE_ATT3;
 			}
-			
+
 		}
 		if (m_fPlayTime > m_vecLimitTime[STATE_ATT2][ATTACKLIMIT_CHANGE])
 		{
@@ -744,7 +744,7 @@ void CPlayer::KP_ATT(_float fTimeDelta)
 			{
 				m_eReserveState = ParryL;
 			}
-			
+
 		}
 		break;
 	case Client::CPlayer::STATE_ATT3:
@@ -762,7 +762,7 @@ void CPlayer::KP_ATT(_float fTimeDelta)
 			{
 				m_eReserveState = ParryL;
 			}
-			
+
 		}
 		break;
 	case Client::CPlayer::STATE_ATT4:
@@ -795,7 +795,7 @@ void CPlayer::KP_ATT(_float fTimeDelta)
 	if (pGameInstance->MouseDown(DIMK_RBUTTON))
 	{
 		m_eReserveState = Raven_ClawNear;
-		
+
 	}
 	if (pGameInstance->KeyDown(DIK_SPACE))
 	{
@@ -809,7 +809,7 @@ void CPlayer::KP_ATT(_float fTimeDelta)
 
 void CPlayer::KP_Parry(_float fTimeDelta)
 {
-	
+
 }
 
 void CPlayer::KP_AVOIDATTACK(_float fTimeDelta)
@@ -825,8 +825,13 @@ void CPlayer::KP_AVOIDATTACK(_float fTimeDelta)
 				m_eCurState = STATE_AVOIDBACK;
 				m_eWeapon = WEAPON_BASE;
 			}
+			if (m_bAgainAnim == false)
+			{
+				m_bAgainAnim = true;
+				Set_Anim(m_eCurState);
+			}
 		}
-	}	
+	}
 }
 
 void CPlayer::KP_ClawNear(_float fTimeDelta)
@@ -875,7 +880,7 @@ void CPlayer::Targeting()
 		Safe_Release(m_pTarget);
 		static_cast<CCamera_Player*>(CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER))->Get_Target(nullptr);
 	}
-	
+
 }
 
 void CPlayer::TargetCheck()
@@ -928,6 +933,7 @@ void CPlayer::CheckEndAnim()
 		break;
 	case Client::CPlayer::STATE_AVOIDATTACK:
 		m_bCollision[COLLIDERTYPE_BODY] = true;
+		m_iHitCount = 0;
 		m_eCurState = STATE_IDLE;
 		break;
 	case Client::CPlayer::STATE_JUMPAVOID:
@@ -935,6 +941,7 @@ void CPlayer::CheckEndAnim()
 		break;
 	case Client::CPlayer::STATE_AVOIDBACK:
 		m_bCollision[COLLIDERTYPE_BODY] = true;
+		m_iHitCount = 0;
 		m_eCurState = STATE_IDLE;
 		break;
 	case Client::CPlayer::Corvus_PW_Axe:
@@ -985,7 +992,7 @@ void CPlayer::CheckEndAnim()
 	case Client::CPlayer::PW_Bloodwhip:
 		m_eCurState = STATE_IDLE;
 		break;
-	case Client::CPlayer::PW_CaneSword_SP01:		
+	case Client::CPlayer::PW_CaneSword_SP01:
 		m_eCurState = PW_CaneSword_SP02;
 		break;
 	case Client::CPlayer::PW_CaneSword_SP02:
@@ -1090,6 +1097,10 @@ void CPlayer::CheckLimit()
 	case Client::CPlayer::STATE_WALK:
 		break;
 	case Client::CPlayer::STATE_AVOIDATTACK:
+		if (m_fPlayTime > m_vecLimitTime[STATE_AVOIDATTACK][0])
+		{
+
+		}
 		break;
 	case Client::CPlayer::Corvus_PW_Axe:
 		if (m_fPlayTime > m_vecLimitTime[Corvus_PW_Axe][4])//다시 무기 스왑 및 타이머 정상화
@@ -1155,7 +1166,7 @@ void CPlayer::CheckLimit()
 		{
 			m_pSkillParts[SKILL_DUAL][HAND_LEFT]->Set_CollisionOn(false);
 			m_pSkillParts[SKILL_DUAL][HAND_RIGHT]->Set_CollisionOn(false);
-			if(m_pSkillParts[SKILL_DUAL][HAND_LEFT]->Trail_GetOn())
+			if (m_pSkillParts[SKILL_DUAL][HAND_LEFT]->Trail_GetOn())
 				m_pSkillParts[SKILL_DUAL][HAND_LEFT]->TrailOff();
 			if (m_pSkillParts[SKILL_DUAL][HAND_RIGHT]->Trail_GetOn())
 				m_pSkillParts[SKILL_DUAL][HAND_RIGHT]->TrailOff();
@@ -1220,7 +1231,7 @@ void CPlayer::CheckLimit()
 		break;
 	case Client::CPlayer::SD_ParryToMob:
 		break;
-	case Client::CPlayer::SD_HurtIdle:		
+	case Client::CPlayer::SD_HurtIdle:
 		if (m_fPlayTime > 5.f)
 		{
 			m_bCollision[COLLIDERTYPE_BODY] = true;
@@ -1235,7 +1246,7 @@ void CPlayer::CheckLimit()
 	case Client::CPlayer::SD_StrongHurt_Start:
 		if (m_fPlayTime > 5.f)
 		{
-			m_bCollision[COLLIDERTYPE_BODY] = true;
+			//m_bCollision[COLLIDERTYPE_BODY] = true;
 			//m_eWeapon = WEAPON_BASE;
 		}
 		else if (m_fPlayTime > 0.f)
@@ -1258,7 +1269,7 @@ void CPlayer::CheckLimit()
 
 _bool CPlayer::CheckLimit_Att(STATE _eAtt)
 {
-	
+
 
 	if (m_fPlayTime > m_vecLimitTime[_eAtt][ATTACKLIMIT_CHANGE])
 	{
@@ -1380,11 +1391,11 @@ void CPlayer::AfterAnim()
 		break;
 	case Client::CPlayer::ParryR:
 		m_bCollision[COLLIDERTYPE_BODY] = true;
-		
+
 		break;
 	case Client::CPlayer::ParryL:
 		m_bCollision[COLLIDERTYPE_BODY] = true;
-		
+
 		break;
 	case Client::CPlayer::DualKnife:
 		break;
@@ -1487,7 +1498,7 @@ void CPlayer::Get_AnimMat()
 		_vPos.m128_f32[1] = m_pNavigationCom->Get_PosY(_vPos);
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
 	}
-		
+
 }
 
 void CPlayer::Cancle()
@@ -1502,7 +1513,7 @@ void CPlayer::Cancle()
 	{
 		if (_pParts->Trail_GetOn())
 			_pParts->TrailOff();
-		
+
 		_pParts->Set_CollisionOn(false);
 	}
 
@@ -1537,6 +1548,7 @@ _bool CPlayer::Collision(_float fTimeDelta)
 	{
 		//MSG_BOX(TEXT("Parry"));
 		static_cast<CMonster*>(_pTarget)->Set_MonsterState(CMonster::ATTACK_STUN);
+		m_iHitCount = 0;
 	}
 	else
 	{
@@ -1544,14 +1556,23 @@ _bool CPlayer::Collision(_float fTimeDelta)
 		if (_pTarget)
 		{
 			//패링 안되고 몸 충돌되었을때
-			
-			if (m_eCurState == SD_HurtIdle)
+			if (m_iHitCount > 2)
 			{
 				m_eCurState = SD_StrongHurt_Start;
+			}
+			else if (m_eCurState == SD_HurtIdle)
+			{
+				if (m_bAgainAnim == false)
+				{
+					m_bAgainAnim = true;
+					Set_Anim(m_eCurState);
+				}
+				++m_iHitCount;
 			}
 			else
 			{
 				m_eCurState = SD_HurtIdle;
+				++m_iHitCount;
 			}
 
 			for (auto& _Part : m_pBaseParts)
@@ -1560,7 +1581,7 @@ _bool CPlayer::Collision(_float fTimeDelta)
 				{
 					_Part->TrailOff();
 				}
-				
+
 				_Part->Set_CollisionOn(false);
 			}
 			m_pTransformCom->LookAt_ForLandObject(
@@ -1628,7 +1649,7 @@ HRESULT CPlayer::Ready_Components()
 	CTransform::TRANSFORMDESC	_Desc;
 	_Desc.fRotationPerSec = XMConvertToRadians(90.f);
 	//_Desc.fSpeedPerSec = 1.5f;
-	_Desc.fSpeedPerSec =4.f;
+	_Desc.fSpeedPerSec = 4.f;
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom, &_Desc)))
 		return E_FAIL;
 
@@ -1744,7 +1765,7 @@ HRESULT CPlayer::Ready_AnimLimit()
 	m_vecLimitTime[STATE_ATT5].push_back(50.f);
 	m_vecLimitTime[STATE_ATT5].push_back(20.f);
 	m_vecLimitTime[STATE_ATT5].push_back(50.f);
-	
+
 	//도끼스킬
 	m_vecLimitTime[Corvus_PW_Axe].push_back(40.f);
 	m_vecLimitTime[Corvus_PW_Axe].push_back(40.f);
@@ -1763,7 +1784,9 @@ HRESULT CPlayer::Ready_AnimLimit()
 	//패리
 	m_vecLimitTime[ParryL].push_back(0.f);
 	m_vecLimitTime[ParryL].push_back(90.f);
-	
+
+	//회피
+	m_vecLimitTime[STATE_AVOIDATTACK].push_back(30.f);
 
 	return S_OK;
 }
@@ -1771,7 +1794,7 @@ HRESULT CPlayer::Ready_AnimLimit()
 HRESULT CPlayer::Ready_Collider()
 {
 	/* For.Com_OBB */
-	CCollider::COLLIDERDESC		ColliderDesc;	
+	CCollider::COLLIDERDESC		ColliderDesc;
 	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
 
 	ColliderDesc.vSize = _float3(0.7f, 1.4f, 0.7f);
@@ -1789,7 +1812,7 @@ HRESULT CPlayer::Ready_Collider()
 	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
 
 	ColliderDesc.vSize = _float3(0.5f, 0.2f, 0.5f);
-	_float3 vCenter = _float3(m_pModelCom->Get_HierarchyNode("ik_hand_gun")->Get_Trans()._41, 
+	_float3 vCenter = _float3(m_pModelCom->Get_HierarchyNode("ik_hand_gun")->Get_Trans()._41,
 		m_pModelCom->Get_HierarchyNode("ik_hand_gun")->Get_Trans()._42,
 		m_pModelCom->Get_HierarchyNode("ik_hand_gun")->Get_Trans()._43);
 	ColliderDesc.vCenter = vCenter;
@@ -2053,7 +2076,7 @@ void CPlayer::Free()
 	{
 		Safe_Release(_Motion);
 	}
-	
+
 	for (auto& _Motion : m_listDeadMotion)
 	{
 		Safe_Release(_Motion);
@@ -2076,7 +2099,7 @@ void CPlayer::Free()
 		{
 			if (_pPart)
 				Safe_Release(_pPart);
-		}		
+		}
 	}
 
 	for (auto& _pCollider : m_pColliderCom)
