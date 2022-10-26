@@ -7,6 +7,7 @@ BEGIN(Engine)
 class CShader;
 class CRenderer;
 class CAnimModel;
+class CCollider;
 class CTransform;
 class CNavigation;
 END

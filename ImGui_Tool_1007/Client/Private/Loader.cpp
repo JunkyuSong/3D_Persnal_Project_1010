@@ -467,7 +467,9 @@ HRESULT CLoader::Loading_ForLevel_Stage02_1()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_02_1, TEXT("Prototype_Component_Model_Stage_GreenHouse"),
 		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Stage/GreenHouse/", "GreenHouse.dat"))))
 		return E_FAIL;
-
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_02_1, TEXT("Prototype_Component_Model_Monster_Weapon_Axe"),
+		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Item/MonsterWeapon", "Axe.dat"))))
+		return E_FAIL;
 	
 
 	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));

@@ -191,6 +191,8 @@
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\Public\Dagger.h" />
     <ClInclude Include="..\public\Dummy.h" />
+    <ClInclude Include="..\Public\Extra01.h" />
+    <ClInclude Include="..\Public\Extra02.h" />
     <ClInclude Include="..\Public\ImGuiMgr.h" />
     <ClInclude Include="..\Public\Knife.h" />
     <ClInclude Include="..\Public\Level_Client.h" />
@@ -257,6 +259,8 @@
     <ClCompile Include="..\private\Client_Camere.cpp" />
     <ClCompile Include="..\Private\Dagger.cpp" />
     <ClCompile Include="..\private\Dummy.cpp" />
+    <ClCompile Include="..\Private\Extra01.cpp" />
+    <ClCompile Include="..\Private\Extra02.cpp" />
     <ClCompile Include="..\Private\ImGuiMgr.cpp" />
     <ClCompile Include="..\Private\Knife.cpp" />
     <ClCompile Include="..\Private\Level_Client.cpp" />

@@ -211,6 +211,12 @@
     <Filter Include="02.GameObjects\Map\Stage_02\Stage_02_1">
       <UniqueIdentifier>{236e3520-fa14-45d2-8bcc-e8b61b3e248d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\05. Monster\Extra\Extra01">
+      <UniqueIdentifier>{94063005-27ec-4d29-a200-77550a44a563}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05. Monster\Extra\Extra02">
+      <UniqueIdentifier>{d5182fcf-ade3-4dd1-b9fb-1465d07563e5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -417,6 +423,12 @@
     <ClInclude Include="..\Public\Level_Stage_02_1.h">
       <Filter>01.Levels\03.Stage_02\Stage_02_01</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Extra01.h">
+      <Filter>02.GameObjects\05. Monster\Extra\Extra01</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Extra02.h">
+      <Filter>02.GameObjects\05. Monster\Extra\Extra02</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -604,6 +616,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Level_Stage_02_1.cpp">
       <Filter>01.Levels\03.Stage_02\Stage_02_01</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Extra01.cpp">
+      <Filter>02.GameObjects\05. Monster\Extra\Extra01</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Extra02.cpp">
+      <Filter>02.GameObjects\05. Monster\Extra\Extra02</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
