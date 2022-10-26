@@ -41,7 +41,7 @@ void CStage_Lobby::LateTick( _float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }
 
 HRESULT CStage_Lobby::Render()

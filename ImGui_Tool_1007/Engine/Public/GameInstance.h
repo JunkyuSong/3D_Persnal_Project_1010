@@ -7,10 +7,11 @@
 #include "Object_Manager.h"
 #include "Component_Manager.h"
 #include "CollisionMgr.h"
-#include "LightMgr.h"
+#include "Light_Manager.h"
 #include "PipeLine.h"
 #include "Picking.h"
 #include "RandMgr.h"
+#include "Target_Manager.h"
 
 /* 클라이언트로 보여주기위한 가장 대표적인 클래스이다. */
 /* 각종 매니져클래스들의 주요함수를 클라로 보여준다.  */
@@ -104,6 +105,7 @@ private:
 	CLight_Manager*					m_pLight_Manager = nullptr;
 	CCollisionMgr*					m_pCollision_Mgr = nullptr;
 	CRandMgr*						m_pRand_Mgr = nullptr;
+	CTarget_Manager*				m_pTarget_Manager = nullptr;
 
 public:
 	static void Release_Engine();

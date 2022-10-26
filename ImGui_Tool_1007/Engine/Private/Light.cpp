@@ -1,4 +1,6 @@
 #include "..\Public\Light.h"
+#include "Shader.h"
+#include "VIBuffer_Rect.h"
 
 CLight::CLight(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: m_pDevice(pDevice)
@@ -11,6 +13,32 @@ CLight::CLight(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 HRESULT CLight::Initialize(const LIGHTDESC & LightDesc)
 {
 	m_LightDesc = LightDesc;
+
+	return S_OK;
+}
+
+HRESULT CLight::Render(CShader * pShader, CVIBuffer_Rect * pVIBuffer)
+{
+	_uint		iPassIndex = 0;
+
+	if (LIGHTDESC::TYPE_DIRECTIONAL == m_LightDesc.eType)
+	{
+		iPassIndex = 1;
+
+		if (FAILED(pShader->Set_RawValue("g_vLightDir", &m_LightDesc.vDirection, sizeof(_float4))))
+			return E_FAIL;
+	}
+	else
+	{
+		iPassIndex = 2;
+	}
+
+	if (FAILED(pShader->Set_RawValue("g_vLightAmbient", &m_LightDesc.vAmbient, sizeof(_float4))))
+		return E_FAIL;
+
+	pShader->Begin(iPassIndex);
+
+	pVIBuffer->Render();
 
 	return S_OK;
 }

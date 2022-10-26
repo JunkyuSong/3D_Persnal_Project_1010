@@ -16,6 +16,10 @@ protected:
 public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg);
+#ifdef _DEBUG
+public:
+	virtual HRESULT Render() { return S_OK; }
+#endif // _DEBUG
 
 protected:
 	ID3D11Device*			m_pDevice = nullptr;

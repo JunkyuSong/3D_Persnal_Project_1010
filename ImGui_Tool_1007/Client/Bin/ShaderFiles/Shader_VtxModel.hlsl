@@ -2,18 +2,6 @@
 matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D	g_DiffuseTexture;
 
-vector		g_vLightDir;
-
-vector		g_vLightDiffuse;
-vector		g_vLightAmbient;
-vector		g_vLightSpecular;
-
-vector		g_vMtrlAmbient = vector(0.4f, 0.4f, 0.4f, 1.f);
-vector		g_vMtrlSpecular = vector(1.f, 1.f, 1.f, 1.f);
-float		g_vSpecularPower = 15.f;
-
-vector		g_vCamPosition;
-
 float		g_fAlpha;
 
 sampler DefaultSampler = sampler_state {
@@ -47,10 +35,8 @@ struct VS_IN
 struct VS_OUT
 {
 	float4		vPosition : SV_POSITION;
-	float		fShade : COLOR0;
-	float		fSpecular : COLOR1;
+	float3		vNormal : NORMAL;
 	float2		vTexUV : TEXCOORD0;
-	float4		vWorldPos : TEXCOORD1;
 };
 
 
@@ -64,37 +50,10 @@ VS_OUT VS_MAIN(VS_IN In)
 	matWVP = mul(matWV, g_ProjMatrix);
 
 	Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
+	Out.vNormal = normalize(mul(float4(In.vNormal, 0.f), g_WorldMatrix));
 	Out.vTexUV = In.vTexUV;
 
-	float4		vNormal = mul(float4(In.vNormal, 0.f), g_WorldMatrix);
 
-	Out.fShade = max(dot(normalize(g_vLightDir.xyz) * -1.f,
-		normalize(vNormal.xyz)), 0.f);
-
-	float4		vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
-
-	float3		vReflect = reflect(normalize(g_vLightDir.xyz), normalize(vNormal.xyz));
-	float3		vLook = (vWorldPos - g_vCamPosition).xyz;
-
-	Out.fSpecular = pow(max(dot(normalize(vLook) * -1.f,
-		normalize(vReflect)), 0.f), g_vSpecularPower);
-
-	Out.vWorldPos = vWorldPos;
-
-	return Out;
-}
-
-VS_OUT VS_MAIN_2(VS_IN In)
-{
-	VS_OUT		Out = (VS_OUT)0;
-
-	matrix		matWV, matWVP;
-
-	matWV = mul(g_WorldMatrix, g_ViewMatrix);
-	matWVP = mul(matWV, g_ProjMatrix);
-
-	Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
-	Out.vTexUV = In.vTexUV;
 
 	return Out;
 }
@@ -102,31 +61,31 @@ VS_OUT VS_MAIN_2(VS_IN In)
 struct PS_IN
 {
 	float4		vPosition : SV_POSITION;
-	float		fShade : COLOR0;
-	float		fSpecular : COLOR1;
+	float3		vNormal : NORMAL;
 	float2		vTexUV : TEXCOORD0;
-	float4		vWorldPos : TEXCOORD1;
 };
 
 struct PS_OUT
 {
-	float4		vColor : SV_TARGET0;
+	float4		vDiffuse : SV_TARGET0;
+	float4		vNormal : SV_TARGET1;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	Out.vColor = (vector)1.f;
+	Out.vDiffuse = (vector)1.f;
 
-	vector			vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
 
-
-
-	Out.vColor = (g_vLightDiffuse * vMtrlDiffuse) * saturate(In.fShade + (g_vLightAmbient * g_vMtrlAmbient)) +
-		(g_vLightSpecular * g_vMtrlSpecular) * In.fSpecular;
-	if (0 == Out.vColor.a)
+	if (0 == Out.vDiffuse.a)
 		discard;
+
+	// -1 ~ 1
+	//  0 ~ 1
+	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+
 	return Out;
 }
 
@@ -134,12 +93,17 @@ PS_OUT PS_MAIN_2(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	Out.vColor = (vector)1.f;
+	Out.vDiffuse = (vector)1.f;
 
-	vector			vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
-	Out.vColor = vMtrlDiffuse;
-	if (0 == Out.vColor.a)
+	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+
+	if (0 == Out.vDiffuse.a)
 		discard;
+
+	// -1 ~ 1
+	//  0 ~ 1
+	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+
 	return Out;
 }
 
@@ -147,13 +111,17 @@ PS_OUT PS_Sky(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	Out.vColor = (vector)1.f;
+	Out.vDiffuse = (vector)1.f;
 
-	vector			vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
-	Out.vColor = vMtrlDiffuse;
-	//Out.vColor = (vector)0.f;
-	if (0 == Out.vColor.a)
+	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+
+	if (0 == Out.vDiffuse.a)
 		discard;
+
+	// -1 ~ 1
+	//  0 ~ 1
+	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+
 	return Out;
 }
 
@@ -161,12 +129,17 @@ PS_OUT PS_Stage(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	Out.vColor = (vector)1.f;
+	Out.vDiffuse = (vector)1.f;
 
-	vector			vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
-	Out.vColor = vMtrlDiffuse;
-	if (0 == Out.vColor.a)
+	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+
+	if (0 == Out.vDiffuse.a)
 		discard;
+
+	// -1 ~ 1
+	//  0 ~ 1
+	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+
 	return Out;
 }
 
@@ -174,13 +147,13 @@ PS_OUT PS_MAIN_3(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	Out.vColor = (vector)1.f;
+	Out.vDiffuse = (vector)1.f;
 
 	vector			vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
-	Out.vColor = vMtrlDiffuse;
-	Out.vColor.a *= g_fAlpha;
+	Out.vDiffuse = vMtrlDiffuse;
+	Out.vDiffuse.a *= g_fAlpha;
 
-	if (0 == Out.vColor.a)
+	if (0 == Out.vDiffuse.a)
 		discard;
 	
 	return Out;
@@ -189,17 +162,17 @@ PS_OUT PS_MAIN_SEl(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	Out.vColor = (vector)1.f;
+	Out.vDiffuse = (vector)1.f;
 
 	vector			vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
 
 
-	Out.vColor = vMtrlDiffuse;
+	Out.vDiffuse = vMtrlDiffuse;
 	//Out.vColor = (g_vLightDiffuse * vMtrlDiffuse) * saturate(In.fShade + (g_vLightAmbient * g_vMtrlAmbient)) +
 	//	(g_vLightSpecular * g_vMtrlSpecular) * In.fSpecular + 0.8f;
-	Out.vColor.g = 1.f;
-	Out.vColor *= vector(0.8f, 1.f, 0.8f, 1.f);
-	if (0 == Out.vColor.a)
+	Out.vDiffuse.g = 1.f;
+	Out.vDiffuse *= vector(0.8f, 1.f, 0.8f, 1.f);
+	if (0 == Out.vDiffuse.a)
 		discard;
 	return Out;
 }
@@ -208,21 +181,21 @@ PS_OUT PS_MAIN_ADD(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	Out.vColor = (vector)1.f;
+	Out.vDiffuse = (vector)1.f;
 
 	vector			vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
 
 
-	Out.vColor = vMtrlDiffuse;
+	Out.vDiffuse = vMtrlDiffuse;
 	//Out.vColor = (g_vLightDiffuse * vMtrlDiffuse) * saturate(In.fShade + (g_vLightAmbient * g_vMtrlAmbient)) +
 	//	(g_vLightSpecular * g_vMtrlSpecular) * In.fSpecular + 0.8f;
 	/*Out.vColor.g = Out.vColor.b;
 	Out.vColor.r = Out.vColor.b;*/
 
-	Out.vColor.r = 1.f;
-	Out.vColor *= vector(1.f, 0.8f, 0.8f, 1.f);
+	Out.vDiffuse.r = 1.f;
+	Out.vDiffuse *= vector(1.f, 0.8f, 0.8f, 1.f);
 
-	if (0 == Out.vColor.a)
+	if (0 == Out.vDiffuse.a)
 		discard;
 	return Out;
 }
@@ -231,14 +204,14 @@ PS_OUT PS_MAIN4(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	Out.vColor = (vector)1.f;
+	Out.vDiffuse = (vector)1.f;
 
-	Out.vColor.r = 1.f;
-	Out.vColor.g = 1.f;
-	Out.vColor.b = 0.f;
+	Out.vDiffuse.r = 1.f;
+	Out.vDiffuse.g = 1.f;
+	Out.vDiffuse.b = 0.f;
 
 	
-	if (0 == Out.vColor.a)
+	if (0 == Out.vDiffuse.a)
 		discard;
 	return Out;
 }
@@ -257,7 +230,7 @@ technique11 DefaultTechnique
 		SetRasterizerState(RS_Default);
 		SetDepthStencilState(DSS_Default, 0);
 		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-		VertexShader = compile vs_5_0 VS_MAIN_2();
+		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_2();
 	}
@@ -266,7 +239,7 @@ technique11 DefaultTechnique
 		SetRasterizerState(RS_Default);
 		SetDepthStencilState(DSS_Default, 0);
 		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-		VertexShader = compile vs_5_0 VS_MAIN_2();
+		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_SEl();
 	}
@@ -276,7 +249,7 @@ technique11 DefaultTechnique
 		SetRasterizerState(RS_Default);
 		SetDepthStencilState(DSS_Default, 0);
 		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-		VertexShader = compile vs_5_0 VS_MAIN_2();
+		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_ADD();
 	}
@@ -286,7 +259,7 @@ technique11 DefaultTechnique
 		SetRasterizerState(RS_Default);
 		SetDepthStencilState(DSS_Default, 0);
 		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-		VertexShader = compile vs_5_0 VS_MAIN_2();
+		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_3();
 	}
@@ -296,7 +269,7 @@ technique11 DefaultTechnique
 		SetRasterizerState(RS_Default);
 		SetDepthStencilState(DSS_Default, 0);
 		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-		VertexShader = compile vs_5_0 VS_MAIN_2();
+		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN4();
 	}
@@ -306,8 +279,8 @@ technique11 DefaultTechnique
 		SetRasterizerState(RS_CullNone);
 		SetDepthStencilState(DSS_Default, 0);
 		//BS_AlphaBlend
-		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-		VertexShader = compile vs_5_0 VS_MAIN_2();
+		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_Stage();
 	}
@@ -321,7 +294,7 @@ technique11 DefaultTechnique
 		SetRasterizerState();
 		*/
 
-		VertexShader = compile vs_5_0 VS_MAIN_2();
+		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_Sky();
 	}

@@ -119,7 +119,7 @@ HRESULT CBoss_Bat::Render()
 
 
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, 3, i)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, 0, i)))
 			return E_FAIL;
 	}
 

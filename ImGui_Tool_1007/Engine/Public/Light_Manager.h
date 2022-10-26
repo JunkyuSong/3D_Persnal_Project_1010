@@ -18,7 +18,7 @@ public:
 
 public:
 	HRESULT Add_Light(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const LIGHTDESC& LightDesc);
-
+	HRESULT Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
 private:
 	list<class CLight*>			m_Lights;
 	typedef list<class CLight*>	LIGHTS;
