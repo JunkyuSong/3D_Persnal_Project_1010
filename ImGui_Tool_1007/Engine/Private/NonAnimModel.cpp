@@ -4,6 +4,8 @@
 
 #include "Texture.h"
 
+#include "PipeLine.h"
+
 
 CNonAnimModel::CNonAnimModel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CModel(pDevice, pContext)
@@ -78,12 +80,31 @@ HRESULT CNonAnimModel::Render(_uint _iMeshIndex)
 
 _bool CNonAnimModel::Picking(CTransform * pTransform, _vector & pOut)
 {
+	_vector	_vFinalPos{ 0.f,0.f,0.f,1.f };
+	_float	_vFinalDis = 10000.f;
+
+	_float	_vCurDis = 0.f;
+
+	_bool	_bPicking = false;
+
 	for (auto& _Mesh : m_Meshes)
 	{
 		if (_Mesh->Picking(pTransform, pOut))
-			return true;
+		{
+			
+			_vCurDis = XMVectorGetX(XMVector3Length(pOut - XMLoadFloat4(&(CPipeLine::Get_Instance()->Get_CamPosition()))));
+			if (_vCurDis < _vFinalDis)
+			{
+				_vFinalDis = _vCurDis;
+				_vFinalPos = pOut;
+			}
+			_bPicking = true;
+
+		}
+			
 	}
-	return false;
+	pOut = _vFinalPos;
+	return _bPicking;
 }
 
 HRESULT CNonAnimModel::Ready_MeshContainers()

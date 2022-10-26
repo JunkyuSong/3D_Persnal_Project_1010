@@ -30,9 +30,10 @@ CObj_Tool::CObj_Tool()
 	ZeroMemory(&m_tObj_Desc, sizeof(CObj_Plus::OBJ_DESC));
 	ZeroMemory(&m_szModelTag, 256);
 	ZeroMemory(&m_szLayer, 256);
-
+	
 	m_pLevels.push_back("LEVEL_STAGE_LOBBY");
 	m_pLevels.push_back("LEVEL_STAGE_01");
+	m_pLevels.push_back("LEVEL_STAGE_02_1");
 	m_pLevels.push_back("LEVEL_STAGE_02");
 	m_pLevels.push_back("LEVEL_STAGE_LAST");
 }
@@ -94,8 +95,9 @@ void CObj_Tool::Save_Map()
 	case Client::LEVEL_STAGE_LOBBY:
 		lstrcpy(szFileName, TEXT("LEVEL_STAGE_LOBBY"));
 		break;
-	case Client::LEVEL_END:
-		return;
+	case Client::LEVEL_STAGE_02_1:
+		lstrcpy(szFileName, TEXT("LEVEL_STAGE_02_1"));
+		break;
 	default:
 		return;
 	}
@@ -378,9 +380,12 @@ void CObj_Tool::ReserveLevel()
 		_Instance->Reserve_Level(LEVEL_GAMEPLAY);
 		return;
 	case 2:
-		_Instance->Reserve_Level(LEVEL_STAGE_02);
+		_Instance->Reserve_Level(LEVEL_STAGE_02_1);
 		return;
 	case 3:
+		_Instance->Reserve_Level(LEVEL_STAGE_02);
+		return;
+	case 4:
 		_Instance->Reserve_Level(LEVEL_STAGE_LAST);
 		return;
 	}

@@ -137,6 +137,12 @@ HRESULT CTerrain::Ready_Components()
 		if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation_GamePlay"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom)))
 			return E_FAIL;
 		break;
+	case Client::LEVEL_STAGE_02_1:
+		if (FAILED(__super::Add_Component(LEVEL_STAGE_02, TEXT("Prototype_Component_Texture_Terrain_02"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		if (FAILED(__super::Add_Component(LEVEL_STAGE_02, TEXT("Prototype_Component_Navigation_Stage_02"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom)))
+			return E_FAIL;
+		break;
 	case Client::LEVEL_STAGE_02:
 		if (FAILED(__super::Add_Component(LEVEL_STAGE_02, TEXT("Prototype_Component_Texture_Terrain_02"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 			return E_FAIL;

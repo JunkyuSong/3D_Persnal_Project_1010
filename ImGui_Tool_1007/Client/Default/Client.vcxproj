@@ -198,6 +198,7 @@
     <ClInclude Include="..\Public\Level_Loading.h" />
     <ClInclude Include="..\Public\Level_Logo.h" />
     <ClInclude Include="..\Public\Level_Stage_02.h" />
+    <ClInclude Include="..\Public\Level_Stage_02_1.h" />
     <ClInclude Include="..\Public\Level_Stage_Last.h" />
     <ClInclude Include="..\Public\Level_Stage_Lobby.h" />
     <ClInclude Include="..\Public\Loader.h" />
@@ -215,6 +216,7 @@
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\Stage_01.h" />
     <ClInclude Include="..\Public\Stage_02.h" />
+    <ClInclude Include="..\Public\Stage_02_1.h" />
     <ClInclude Include="..\Public\Stage_Last.h" />
     <ClInclude Include="..\Public\Stage_Lobby.h" />
     <ClInclude Include="..\Public\Status.h" />
@@ -262,6 +264,7 @@
     <ClCompile Include="..\Private\Level_Loading.cpp" />
     <ClCompile Include="..\Private\Level_Logo.cpp" />
     <ClCompile Include="..\Private\Level_Stage_02.cpp" />
+    <ClCompile Include="..\Private\Level_Stage_02_1.cpp" />
     <ClCompile Include="..\Private\Level_Stage_Last.cpp" />
     <ClCompile Include="..\Private\Level_Stage_Lobby.cpp" />
     <ClCompile Include="..\Private\Loader.cpp" />
@@ -279,6 +282,7 @@
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\Stage_01.cpp" />
     <ClCompile Include="..\Private\Stage_02.cpp" />
+    <ClCompile Include="..\Private\Stage_02_1.cpp" />
     <ClCompile Include="..\Private\Stage_Last.cpp" />
     <ClCompile Include="..\Private\Stage_Lobby.cpp" />
     <ClCompile Include="..\Private\Status.cpp" />

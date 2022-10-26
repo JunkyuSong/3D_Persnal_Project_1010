@@ -28,6 +28,7 @@
 #include "Navigation.h"
 #include "Stage_01.h"
 #include "Stage_02.h"
+#include "Stage_02_1.h"
 #include "Stage_Lobby.h"
 #include "Sky.h"
 #include "Boss_Bat.h"
@@ -58,6 +59,9 @@ _uint APIENTRY LoadingMain(void* pArg)
 		break;
 	case LEVEL_STAGE_02:
 		pLoader->Loading_ForLevel_Stage02();
+		break;
+	case LEVEL_STAGE_02_1:
+		pLoader->Loading_ForLevel_Stage02_1();
 		break;
 	case LEVEL_STAGE_LAST:
 		//pLoader->Loading_ForGamePlayLevel();
@@ -437,6 +441,65 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 	m_isFinished = true;
 
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_ForLevel_Stage02_1()
+{
+	AUTOINSTANCE(CGameInstance, pGameInstance);
+
+	lstrcpy(m_szLoadingText, TEXT("객체원형을 로딩중입니다."));
+
+	/* 객체원형 로드한다. */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Stage_02_1"),
+		CStage_02_1::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+
+	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
+	/* 텍스쳐를 로드한다. */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_02, TEXT("Prototype_Component_Texture_Terrain_02"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Fire_tiling_floor.png")))))//Grass_%d.dds
+		return E_FAIL;
+
+	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
+	/* 모델를 로드한다. */
+
+	_matrix		PivotMatrix = XMMatrixIdentity();
+
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_02_1, TEXT("Prototype_Component_Model_Stage_GreenHouse"),
+		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Stage/GreenHouse/", "GreenHouse.dat"))))
+		return E_FAIL;
+
+	
+
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_02_1, TEXT("Prototype_Component_Model_Monster_Extra01"),
+		CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Monster_List/Extra01/", "Extra01.dat", PivotMatrix))))
+		return E_FAIL;
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_02_1, TEXT("Prototype_Component_Model_Monster_Extra2"),
+		CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Monster_List/Extra02/", "Extra2.dat", PivotMatrix))))
+		return E_FAIL;
+
+
+	/* For.Prototype_Component_Shader_Cube */
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Sky"),
+	//	CShader::Create(m_pGraphic_Device, TEXT("../Bin/ShaderFiles/Shader_Sky.hlsl")))))
+	//	return E_FAIL;
+
+	lstrcpy(m_szLoadingText, TEXT("충돌체를 로딩중입니다. "));
+
+	lstrcpy(m_szLoadingText, TEXT("네비게이션데이터를 생성하는 중입니다."));
+
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_02_1, TEXT("Prototype_Component_Navigation_Stage_02"),
+		CNavigation::Create(m_pDevice, m_pContext, TEXT("../Bin/Data/Stage_02.dat")))))
+		return E_FAIL;
+
+	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
+
+	m_isFinished = true;
+
+	return S_OK;
 	return S_OK;
 }
 
