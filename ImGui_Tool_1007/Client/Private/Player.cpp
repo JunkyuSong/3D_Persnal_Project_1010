@@ -106,6 +106,9 @@ HRESULT CPlayer::Initialize(void * pArg)
 	case Client::LEVEL_GAMEPLAY:
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(69.083f, 2.402f, 42.580f, 1.f));
 		break;
+	case Client::LEVEL_STAGE_02_1:
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(51.979, 0.115, -7.650, 1.f));
+		break;
 	case Client::LEVEL_STAGE_02:
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(44.083f, 0.f, 17.580f, 1.f));
 		break;
@@ -1684,7 +1687,7 @@ HRESULT CPlayer::Ready_Components()
 			return E_FAIL;
 		break;
 	case Client::LEVEL_STAGE_02_1:
-		if (FAILED(__super::Add_Component(LEVEL_STAGE_02, TEXT("Prototype_Component_Navigation_Stage_02"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
+		if (FAILED(__super::Add_Component(LEVEL_STAGE_02_1, TEXT("Prototype_Component_Navigation_Stage_02_1"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
 			return E_FAIL;
 		break;
 	case Client::LEVEL_STAGE_02:

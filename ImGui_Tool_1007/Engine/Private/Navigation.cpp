@@ -265,6 +265,37 @@ CPointInCell* CNavigation::PickingPoint()
 	return nullptr;
 }
 
+CPointInCell * CNavigation::FindPoint(_float3 _fPoints)
+{
+	for (auto& _Point : m_Points)
+	{
+		_float3 _fPointCell_Points = _Point->Get_Point();
+		if (_fPointCell_Points.x == _fPoints.x)
+		{
+			if (_fPointCell_Points.y == _fPoints.y)
+			{
+				return _Point;
+			}
+		}
+		else if (_fPointCell_Points.x == _fPoints.y)
+		{
+			if (_fPointCell_Points.z == _fPoints.x)
+			{
+				return _Point;
+			}
+		}
+		else if (_fPointCell_Points.x == _fPoints.z)
+		{
+			if (_fPointCell_Points.y == _fPoints.x)
+			{
+				return _Point;
+			}
+		}
+	}
+
+	return nullptr;
+}
+
 #endif // _DEBUG
 
 HRESULT CNavigation::Ready_Neighbor()

@@ -458,12 +458,9 @@ HRESULT CLoader::Loading_ForLevel_Stage02_1()
 
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
 	/* 텍스쳐를 로드한다. */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_02, TEXT("Prototype_Component_Texture_Terrain_02"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Fire_tiling_floor.png")))))//Grass_%d.dds
-		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
-	/* 모델를 로드한다. */
+	/* 모델을 로드한다. */
 
 	_matrix		PivotMatrix = XMMatrixIdentity();
 
@@ -491,8 +488,8 @@ HRESULT CLoader::Loading_ForLevel_Stage02_1()
 
 	lstrcpy(m_szLoadingText, TEXT("네비게이션데이터를 생성하는 중입니다."));
 
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_02_1, TEXT("Prototype_Component_Navigation_Stage_02"),
-		CNavigation::Create(m_pDevice, m_pContext, TEXT("../Bin/Data/Stage_02.dat")))))
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_02_1, TEXT("Prototype_Component_Navigation_Stage_02_1"),
+		CNavigation::Create(m_pDevice, m_pContext, TEXT("../Bin/Data/Stage_02_1.dat")))))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));

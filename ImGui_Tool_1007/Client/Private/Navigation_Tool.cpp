@@ -256,6 +256,9 @@ void CNavigation_Tool::Save(_tchar* _szName)
 
 void CNavigation_Tool::Load(_tchar* _szName)
 {
+	Safe_Release(m_pNavi);
+	//로드하면 일단 셀들 로드하고 그거 싹 돌면서 포인트 생성하고 있으면 거기에 셀에 넣어주고
+	// 좀 빡세겠는데
 	_tchar szFullPath[MAX_PATH] = TEXT(""); //여기에 넣을 예정
 
 	lstrcpy(szFullPath, TEXT("../Bin/Data/"));
@@ -266,10 +269,39 @@ void CNavigation_Tool::Load(_tchar* _szName)
 	//경로 넣고
 	AUTOINSTANCE(CGameInstance, _Instance);
 	//Safe_Release(m_pNavi);
-	m_pNavi = static_cast<CNavigation*>( _Instance->Clone_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation_GamePlay")));
+	
+
+	_ulong			dwByte = 0;
+	HANDLE			hFile = CreateFile(szFullPath, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	if (0 == hFile)
+		return;
+
+	m_pNavi = static_cast<CNavigation*>(_Instance->Clone_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation_Ampty")));
 	CTerrainMgr::Get_Instance()->Get_Terrain(g_eCurLevel)->Set_Navi(m_pNavi);
 
-	return;
+	while (true)
+	{
+		_float3			vPoints[3];
+		CPointInCell*	pPoints[3];
+		ReadFile(hFile, vPoints, sizeof(_float3) * 3, &dwByte, nullptr);
+
+		if (0 == dwByte)
+			break;
+
+		for (_uint i = 0; i < 3; ++i)
+		{
+			pPoints[i] = m_pNavi->FindPoint(vPoints[i]);
+			if (pPoints[i] == nullptr)
+			{
+				pPoints[i] = CPointInCell::Create(vPoints[i]);
+				m_pNavi->MakePoint(pPoints[i]);
+			}
+		}
+		
+		m_pNavi->MakeCell(pPoints[0], pPoints[1], pPoints[2]);
+	}
+	m_pNavi->Ready_Neighbor();
+	CloseHandle(hFile);
 }
 
 void CNavigation_Tool::Free()
