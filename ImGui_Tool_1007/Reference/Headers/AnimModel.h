@@ -18,6 +18,8 @@ public:
 public:
 	HRESULT Set_AnimationIndex(_uint _AnimationIndex);
 	_bool	Play_Animation(_float _fTimeDelta, _float4* _vAnim, _float* pOut, _bool& _bAgain);
+	_bool	Play_Animation(_float _fTimeDelta, _float4* _vAnim, _float* pOut, _bool& _bAgain, char* RootY);
+	void	DirectAnim(_uint _iAnimIndex);
 	_bool	Repeat_Animation(_float _fTimeDelta, _float4* _vAnim, _float* pOut);
 	HRESULT Render(class CShader* pShader, _uint _iPass, _uint _iMeshIndex);
 	_uint   Get_MaterialIndex(_uint _iMeshIndex) const;
@@ -79,6 +81,7 @@ public:
 	vector<CAnimation*>* Get_AllAnimation() {
 		return &m_Animations;
 	}
+	TANIMMODEL Get_ForSave();
 	TANIMMODEL Get_ModelInfo() { return m_tModel; }
 };
 

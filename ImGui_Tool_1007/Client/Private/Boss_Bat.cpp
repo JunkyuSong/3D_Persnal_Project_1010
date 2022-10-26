@@ -60,11 +60,11 @@ void CBoss_Bat::Tick(_float fTimeDelta)
 	AUTOINSTANCE(CGameInstance, _Instance);
 	if (_Instance->KeyDown(DIK_NUMPAD1))
 	{
-		m_eCurState = BossBat_AttackL_01_1;
+		m_eCurState = BossBat_JumpSmash_Chest;
 	}
 	else if (_Instance->KeyDown(DIK_NUMPAD2))
 	{
-		m_eCurState = BossBat_TurnL90;
+		m_eCurState = BossBat_JumpSmashForwardL;
 	}
 	else if (_Instance->KeyDown(DIK_NUMPAD3))
 	{
@@ -72,7 +72,7 @@ void CBoss_Bat::Tick(_float fTimeDelta)
 	}
 	else if (_Instance->KeyDown(DIK_NUMPAD4))
 	{
-		m_eCurState = BossBat_AttackR_01_1;
+		m_eCurState = BossBat_Dash;
 	}
 
 	if (m_pModelCom != nullptr)
@@ -80,8 +80,9 @@ void CBoss_Bat::Tick(_float fTimeDelta)
 		Check_Stun();
 		CheckAnim();
 
-		CheckState(fTimeDelta);
+		
 		PlayAnimation(fTimeDelta);
+		CheckState(fTimeDelta);
 	}
 
 	Update_Collider();
@@ -176,9 +177,13 @@ void CBoss_Bat::CheckEndAnim()
 		m_eCurState = BossBat_Idle;
 		break;
 	case Client::CBoss_Bat::BossBat_FTurn_L:
+		m_pModelCom->DirectAnim(BossBat_Idle);
+		m_pTransformCom->Turn_Angle(XMVectorSet(0.f,1.f,0.f,0.f),XMConvertToRadians(180.f));
 		m_eCurState = BossBat_Idle;
 		break;
 	case Client::CBoss_Bat::BossBat_FTurn_R:
+		m_pModelCom->DirectAnim(BossBat_Idle);
+		m_pTransformCom->Turn_Angle(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
 		m_eCurState = BossBat_Idle;
 		break;
 	case Client::CBoss_Bat::BossBat_HurtXL_R:
@@ -218,7 +223,6 @@ void CBoss_Bat::CheckEndAnim()
 		m_eCurState = BossBat_Idle;
 		break;
 	case Client::CBoss_Bat::BossBat_WalkF:
-		m_eCurState = BossBat_Idle;
 		break;
 	}
 
@@ -253,6 +257,7 @@ void CBoss_Bat::CheckState(_float fTimeDelta)
 	case Client::CBoss_Bat::BossBat_HurtXL_L:
 		break;
 	case Client::CBoss_Bat::BossBat_Idle:
+		Turn();
 		break;
 	case Client::CBoss_Bat::BossBat_JumpSmash_Chest:
 		break;
@@ -273,6 +278,8 @@ void CBoss_Bat::CheckState(_float fTimeDelta)
 	case Client::CBoss_Bat::BossBat_TurnR90:
 		break;
 	case Client::CBoss_Bat::BossBat_WalkF:
+		Turn();
+		m_pTransformCom->Go_Straight(fTimeDelta / 2.f);
 		break;
 	}
 	Get_AnimMat();
@@ -283,34 +290,160 @@ void CBoss_Bat::CheckLimit()
 	switch (m_eCurState)
 	{
 	case Client::CBoss_Bat::BossBat_AttackL_01_1:
+		if (m_vecLimitTime[BossBat_AttackL_01_1][1] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, true);
+			On_Collider(COLLIDERTYPE_HAND_L, false);
+		}
+		else if (m_vecLimitTime[BossBat_AttackL_01_1][0] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, false);
+			On_Collider(COLLIDERTYPE_HAND_L, true);
+		}
 		break;
 	case Client::CBoss_Bat::BossBat_AttackL_01_2b:
+		if (m_vecLimitTime[BossBat_AttackL_01_2b][1] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, true);
+			On_Collider(COLLIDERTYPE_HAND_L, false);
+		}
+		else if (m_vecLimitTime[BossBat_AttackL_01_2b][0] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, false);
+			On_Collider(COLLIDERTYPE_HAND_L, true);
+		}
 		break;
 	case Client::CBoss_Bat::BossBat_AttackL_01_3a:
+		if (m_vecLimitTime[BossBat_AttackL_01_3a][1] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, true);
+			On_Collider(COLLIDERTYPE_HAND_R, false);
+		}
+		else if (m_vecLimitTime[BossBat_AttackL_01_3a][0] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, false);
+			On_Collider(COLLIDERTYPE_HAND_R, true);
+		}
 		break;
 	case Client::CBoss_Bat::BossBat_AttackR_01_1:
+		if (m_vecLimitTime[BossBat_AttackR_01_1][1] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, true);
+			On_Collider(COLLIDERTYPE_HAND_R, false);
+		}
+		else if (m_vecLimitTime[BossBat_AttackR_01_1][0] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, false);
+			On_Collider(COLLIDERTYPE_HAND_R, true);
+		}
 		break;
 	case Client::CBoss_Bat::BossBat_AttackR_01_2b:
+		if (m_vecLimitTime[BossBat_AttackR_01_2b][1] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, true);
+			On_Collider(COLLIDERTYPE_HAND_R, false);
+		}
+		else if (m_vecLimitTime[BossBat_AttackR_01_2b][0] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, false);
+			On_Collider(COLLIDERTYPE_HAND_R, true);
+		}
 		break;
 	case Client::CBoss_Bat::BossBat_Bite_2:
+		if (m_vecLimitTime[BossBat_Bite_2][1] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, true);
+			On_Collider(COLLIDERTYPE_MOUSE, false);
+		}
+		else if (m_vecLimitTime[BossBat_Bite_2][0] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, false);
+			On_Collider(COLLIDERTYPE_MOUSE, true);
+		}
 		break;
 	case Client::CBoss_Bat::BossBat_Dash:
+		if (m_vecLimitTime[BossBat_Dash][1] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, true);
+			On_Collider(COLLIDERTYPE_ATTBODY, false);
+		}
+		else if (m_vecLimitTime[BossBat_Dash][0] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, false);
+			On_Collider(COLLIDERTYPE_ATTBODY, true);
+		}
+		On_Collider(COLLIDERTYPE_ATTBODY, true);
 		break;
 	case Client::CBoss_Bat::BossBat_FTurn_L:
+
 		break;
 	case Client::CBoss_Bat::BossBat_FTurn_R:
 		break;
 	case Client::CBoss_Bat::BossBat_HurtXL_R:
+		if (m_vecLimitTime[BossBat_HurtXL_R][1] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, true);
+		}
+		else if (m_vecLimitTime[BossBat_HurtXL_R][0] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, false);
+		}
 		break;
 	case Client::CBoss_Bat::BossBat_HurtXL_L:
+		if (m_vecLimitTime[BossBat_HurtXL_L][1] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, true);
+		}
+		else if (m_vecLimitTime[BossBat_HurtXL_L][0] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, false);
+		}
 		break;
 	case Client::CBoss_Bat::BossBat_Idle:
 		break;
 	case Client::CBoss_Bat::BossBat_JumpSmash_Chest:
+		if (m_vecLimitTime[BossBat_JumpSmash_Chest][1] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, true);
+			On_Collider(COLLIDERTYPE_ATTBODY, false);
+		}
+		else if (m_vecLimitTime[BossBat_JumpSmash_Chest][0] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, false);
+			On_Collider(COLLIDERTYPE_ATTBODY, true);
+		}
 		break;
 	case Client::CBoss_Bat::BossBat_JumpSmashForwardL:
+		if (m_vecLimitTime[BossBat_JumpSmashForwardL][2] < m_fPlayTime)
+		{
+			m_eCurState = BossBat_Idle;
+		}
+		else if (m_vecLimitTime[BossBat_JumpSmashForwardL][1] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, true);
+			On_Collider(COLLIDERTYPE_ATTBODY, false);
+		}
+		else if (m_vecLimitTime[BossBat_JumpSmashForwardL][0] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, false);
+			On_Collider(COLLIDERTYPE_ATTBODY, true);
+		}
 		break;
 	case Client::CBoss_Bat::BossBat_JumpSmashL:
+		if (m_vecLimitTime[BossBat_JumpSmashL][2] < m_fPlayTime)
+		{
+			m_eCurState = BossBat_Idle;
+		}
+		else if (m_vecLimitTime[BossBat_JumpSmashL][1] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, true);
+			On_Collider(COLLIDERTYPE_ATTBODY, false);
+		}
+		else if (m_vecLimitTime[BossBat_JumpSmashL][0] < m_fPlayTime)
+		{
+			On_Collider(COLLIDERTYPE_BODY, false);
+			On_Collider(COLLIDERTYPE_ATTBODY, true);
+		}
 		break;
 	case Client::CBoss_Bat::BossBat_FightStart:
 		break;
@@ -366,13 +499,13 @@ void CBoss_Bat::Get_AnimMat()
 
 	_bool		isMove = true;
 
-	_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 	if (nullptr != m_pNavigationCom)
-		isMove = m_pNavigationCom->isMove(_vPos, &vNormal);
+		isMove = m_pNavigationCom->isMove(_vPos, nullptr);
 
 	if (true == isMove)
 	{
-		_vPos.m128_f32[1] = m_pNavigationCom->Get_PosY(_vPos);
+		if (m_eCurState == BossBat_WalkF || m_eCurState == BossBat_Idle)
+			_vPos.m128_f32[1] = m_pNavigationCom->Get_PosY(_vPos);
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
 	}
 }
@@ -382,7 +515,7 @@ void CBoss_Bat::RenderGroup()
 	if (nullptr == m_pRendererCom)
 		return;
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }
 
 _bool CBoss_Bat::Collision(_float fTimeDelta)
@@ -446,6 +579,11 @@ _bool CBoss_Bat::Collision(_float fTimeDelta)
 			{
 				m_eCurState = BossBat_HurtXL_L;
 			}
+			
+		}
+		for (_uint i = 0; i < COLLILDERTYPE_END; ++i)
+		{
+			On_Collider((MAGICIANCOLLIDER)i, false);
 		}
 
 		return true;
@@ -468,6 +606,10 @@ void CBoss_Bat::On_Collider(MAGICIANCOLLIDER _eCollider, _bool _bCollision)
 	case Client::CBoss_Bat::COLLIDERTYPE_HAND_L:
 		if (m_bCollision[COLLIDERTYPE_HAND_L] = _bCollision)
 			CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_WEAPON, m_pColliderCom[COLLIDERTYPE_HAND_L], this);
+		break;
+	case Client::CBoss_Bat::COLLIDERTYPE_ATTBODY:
+		if (m_bCollision[COLLIDERTYPE_ATTBODY] = _bCollision)
+			CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_WEAPON, m_pColliderCom[COLLIDERTYPE_ATTBODY], this);
 		break;
 	}
 }
@@ -508,7 +650,7 @@ void CBoss_Bat::Look_Player()
 	m_pTransformCom->LookAt_ForLandObject(_Trans->Get_State(CTransform::STATE_POSITION));
 }
 
-void CBoss_Bat::Turn(_float fTimeDelta)
+void CBoss_Bat::Turn()
 {
 	/*
 	플레이어가 룩의 일정 범위 안에 있으면 턴 안하고
@@ -525,14 +667,89 @@ void CBoss_Bat::Turn(_float fTimeDelta)
 
 	_float _fAngle = XMVector3Dot(_vLook, _vDestLook).m128_f32[0];
 
-	if (fabs(_fAngle) < sqrtf(3.f) / 2.f)
+
+	m_eCurState = BossBat_WalkF;
+
+	m_pTransformCom->Turn(_vLook,
+		_vDestLook
+		, 0.8f);
+
+	if (_fAngle > ((sqrtf(6.f) + sqrtf(2.f)) / 4.f))
+		Pattern();
+
+}
+
+void CBoss_Bat::Pattern()
+{
+	//거리에 따라 확률적으로 공격하고 날라댕기고
+	// 거리 짧으면 또 그러고 어키어키
+	AUTOINSTANCE(CGameInstance, _pInstance);
+	_uint chance = _pInstance->Rand_Int(1,100);
+
+	CTransform* _pPlayerTransform = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")));
+	_float _fDistance = XMVector3Length(_pPlayerTransform->Get_State(CTransform::STATE_POSITION) - m_pTransformCom->Get_State(CTransform::STATE_POSITION)).m128_f32[0];
+
+	//공격인지 아이들인지 먼저 체크
+	if (chance > 5 || _fDistance > 30.f)
 	{
-		//패턴
+		return;
+	}
+
+	// 공격 패턴 짜기 시작
+	//플레이어와의 거리
+	
+	if (_fDistance < 10.f)
+	{
+		_uint ChanceShort = _pInstance->Rand_Int(0, 7);
+		switch (ChanceShort)
+		{
+		case 0:
+			m_eCurState = BossBat_AttackL_01_1;
+			break;
+		case 1:
+			m_eCurState = BossBat_AttackL_01_2b;
+			break;
+		case 2:
+			m_eCurState = BossBat_AttackL_01_3a;
+			break;
+		case 3:
+			m_eCurState = BossBat_AttackR_01_1;
+			break;
+		case 4:
+			m_eCurState = BossBat_AttackR_01_2b;
+			break;
+		case 5:
+			m_eCurState = BossBat_Bite_2;
+			break;
+		case 6:
+			m_eCurState = BossBat_Dash;
+			break;
+		case 7:
+			m_eCurState = BossBat_JumpSmashL;
+			break;
+		}
 	}
 	else
 	{
-		//회전 - 뭐가 회전하고 있는지 알아야하니까
-
+		_uint ChanceShort = _pInstance->Rand_Int(0, 4);
+		switch (ChanceShort)
+		{
+		case 0:
+			m_eCurState = BossBat_JumpSmash_Chest;
+			break;
+		case 1:
+			m_eCurState = BossBat_JumpSmashForwardL;
+			break;
+		case 2:
+			m_eCurState = BossBat_Dash;
+			break;
+		case 3:
+			m_eCurState = BossBat_FTurn_L;
+			break;
+		case 4:
+			m_eCurState = BossBat_FTurn_R;
+			break;
+		}
 
 	}
 }
@@ -586,10 +803,17 @@ HRESULT CBoss_Bat::Ready_Components()
 
 	CCollider::COLLIDERDESC		ColliderDesc;
 	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
-	ColliderDesc.vSize = _float3(0.7f, 1.8f, 0.7f);
-	ColliderDesc.vCenter = _float3(0.f, ColliderDesc.vSize.y * 0.5f, 0.f);
+	ColliderDesc.vSize = _float3(6.f, 5.f, 6.f);
+	ColliderDesc.vCenter = _float3(0.f, ColliderDesc.vSize.y * 0.5f, 2.f);
 	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_BODY], &ColliderDesc)))
+		return E_FAIL;
+
+	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
+	ColliderDesc.vSize = _float3(6.f, 5.f, 6.f);
+	ColliderDesc.vCenter = _float3(0.f, ColliderDesc.vSize.y * 0.5f, 2.f);
+	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB_AttBody"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_ATTBODY], &ColliderDesc)))
 		return E_FAIL;
 
 	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
@@ -612,6 +836,12 @@ HRESULT CBoss_Bat::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB_Hand_L"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_HAND_L], &ColliderDesc)))
 		return E_FAIL;
 
+	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
+	ColliderDesc.vSize = _float3(1.7f, 1.8f, 1.7f);
+	ColliderDesc.vCenter = _float3(0.f, 2.7f, 5.f);
+	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB_Mouse"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_MOUSE], &ColliderDesc)))
+		return E_FAIL;
 
 	/* For.Com_Navigation */
 	CNavigation::NAVIGATIONDESC			NaviDesc;
@@ -688,11 +918,35 @@ void CBoss_Bat::Ready_LimitTime()
 	m_vecLimitTime[BossBat_AttackR_01_2b].push_back(50.f); // 오른손 on
 	m_vecLimitTime[BossBat_AttackR_01_2b].push_back(230.f); // 오른손 off
 
-	//BossBat_Bite_2
-	m_vecLimitTime[BossBat_Bite_2].push_back(50.f); // 오른손 on
-	m_vecLimitTime[BossBat_Bite_2].push_back(230.f); // 오른손 off
+	//BossBat_Bite_2 -> 여기부터
+	m_vecLimitTime[BossBat_Bite_2].push_back(120.f); // 입 on
+	m_vecLimitTime[BossBat_Bite_2].push_back(240.f); // 입 off
 
+	//BossBat_Dash -> 여기부터
+	m_vecLimitTime[BossBat_Dash].push_back(170.f); // 바디 무기로
+	m_vecLimitTime[BossBat_Dash].push_back(400.f); // 바디 다시 피격으로
 
+	//BossBat_HurtXL_R -> 여기부터
+	m_vecLimitTime[BossBat_HurtXL_R].push_back(0.f); // 바디 무기로
+	m_vecLimitTime[BossBat_HurtXL_R].push_back(10.f); // 바디 다시 피격으로
+
+	//BossBat_HurtXL_L -> 여기부터
+	m_vecLimitTime[BossBat_HurtXL_L].push_back(0.f); // 바디 무기로
+	m_vecLimitTime[BossBat_HurtXL_L].push_back(10.f); // 바디 다시 피격으로
+
+	//BossBat_JumpSmash_Chest  -> 여기부터
+	m_vecLimitTime[BossBat_JumpSmash_Chest].push_back(60.f); // 바디 무기로
+	m_vecLimitTime[BossBat_JumpSmash_Chest].push_back(100.f); // 바디 다시 피격으로
+
+	//BossBat_JumpSmashForwardL  -> 여기부터
+	m_vecLimitTime[BossBat_JumpSmashForwardL].push_back(150.f); // 바디 무기로
+	m_vecLimitTime[BossBat_JumpSmashForwardL].push_back(200.f); // 바디 다시 피격으로
+	m_vecLimitTime[BossBat_JumpSmashForwardL].push_back(400.f); // 아이들 상태로
+
+	//BossBat_JumpSmashL  -> 여기부터
+	m_vecLimitTime[BossBat_JumpSmashL].push_back(150.f); // 바디 무기로
+	m_vecLimitTime[BossBat_JumpSmashL].push_back(200.f); // 바디 다시 피격으로
+	m_vecLimitTime[BossBat_JumpSmashL].push_back(400.f); // 아이들 상태로
 }
 
 CBoss_Bat * CBoss_Bat::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -742,16 +996,28 @@ void CBoss_Bat::Update_Collider()
 		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
 	}
 
-	//if (m_bCollision[COLLIDERTYPE_HAND_R])
+	if (m_bCollision[COLLIDERTYPE_ATTBODY])
+	{
+		m_pColliderCom[COLLIDERTYPE_ATTBODY]->Update(m_pTransformCom->Get_WorldMatrix());
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_WEAPON, m_pColliderCom[COLLIDERTYPE_ATTBODY], this);
+	}
+
+	if (m_bCollision[COLLIDERTYPE_HAND_R])
 	{
 		m_pColliderCom[COLLIDERTYPE_HAND_R]->Update(m_pModelCom->Get_HierarchyNode("middle_01_r")->Get_CombinedTransformation()*XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())*m_pTransformCom->Get_WorldMatrix());
 		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_WEAPON, m_pColliderCom[COLLIDERTYPE_HAND_R], this);
 	}
 
-	//if (m_bCollision[COLLIDERTYPE_HAND_L])
+	if (m_bCollision[COLLIDERTYPE_HAND_L])
 	{
 		m_pColliderCom[COLLIDERTYPE_HAND_L]->Update(m_pModelCom->Get_HierarchyNode("middle_01_l")->Get_CombinedTransformation()*XMLoadFloat4x4(&m_pModelCom->Get_PivotMatrix())*m_pTransformCom->Get_WorldMatrix());
 		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_WEAPON, m_pColliderCom[COLLIDERTYPE_HAND_L], this);
+	}
+
+	if (m_bCollision[COLLIDERTYPE_MOUSE])
+	{
+		m_pColliderCom[COLLIDERTYPE_MOUSE]->Update(m_pTransformCom->Get_WorldMatrix());
+		CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_WEAPON, m_pColliderCom[COLLIDERTYPE_MOUSE], this);
 	}
 }
 

@@ -51,7 +51,9 @@ public:
 	HRESULT Initialize_Proto(THIERARCKY _tIn, vector<CHierarchyNode*>* _HierarchyNodes);
 	HRESULT Initialize(void* pArg = nullptr);
 	void Set_CombinedTransformation(_float4* _vAnim, _float4x4 _pivot);
+	void Set_CombinedTransformation(_float4* _vAnim, _float4x4 _pivot, char* RootY);
 	void Set_CombinedTransformation(_float4* _vAnim, _bool);
+	void Set_CombinedTransformation(_float4* _vAnim, _bool, char* RootY);
 	void Set_OffsetMatrix(_fmatrix OffsetMatrix);
 
 	void	Set_Index(_uint _iIndex)	{ m_iIndex = _iIndex; }

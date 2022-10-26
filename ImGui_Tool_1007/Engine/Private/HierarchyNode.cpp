@@ -118,6 +118,40 @@ void CHierarchyNode::Set_CombinedTransformation(_float4* _vAnim, _float4x4 _pivo
 	}
 }
 
+void CHierarchyNode::Set_CombinedTransformation(_float4 * _vAnim, _float4x4 _pivot, char * RootY)
+{
+	if (nullptr != m_pParent)
+		XMStoreFloat4x4(&m_CombinedTransformation, XMLoadFloat4x4(&m_Transformation) * XMLoadFloat4x4(&m_pParent->m_CombinedTransformation));
+	else
+		m_CombinedTransformation = m_Transformation;
+
+
+	if (!strcmp(m_szName, "root"))
+	{
+		_float4x4 _Temp;
+
+		XMStoreFloat4x4(&_Temp, XMLoadFloat4x4(&m_CombinedTransformation)*(XMLoadFloat4x4(&_pivot)));
+		_vAnim->x = _Temp._41;
+		_vAnim->y = _Temp._42;
+		_vAnim->z = _Temp._43;
+		_vAnim->w = _Temp._44;
+		m_CombinedTransformation._41 = 0.f;
+		m_CombinedTransformation._42 = 0.f;
+		m_CombinedTransformation._43 = 0.f;
+	}
+	else if (!strcmp(m_szName, RootY))
+	{
+		/*_float4x4 _Temp;
+
+		XMStoreFloat4x4(&_Temp, XMLoadFloat4x4(&m_CombinedTransformation)*(XMLoadFloat4x4(&_pivot)));
+
+		_vAnim->y += _Temp._42;
+
+		m_CombinedTransformation._42 = 0.f;*/
+
+	}
+}
+
 void CHierarchyNode::Set_CombinedTransformation(_float4* _vAnim, _bool)
 {
 	//if (!strcmp(m_szName, "root"))
@@ -139,8 +173,25 @@ void CHierarchyNode::Set_CombinedTransformation(_float4* _vAnim, _bool)
 		m_CombinedTransformation._41 = 0.f;
 		m_CombinedTransformation._42 = 0.f;
 		m_CombinedTransformation._43 = 0.f;
+	}
+}
 
-		//XMStoreFloat4x4(_AnimMatrix, XMLoadFloat4x4(&m_CombinedTransformation));
+void CHierarchyNode::Set_CombinedTransformation(_float4 * _vAnim, _bool, char * RootY)
+{
+	if (nullptr != m_pParent)
+		XMStoreFloat4x4(&m_CombinedTransformation, XMLoadFloat4x4(&m_Transformation) * XMLoadFloat4x4(&m_pParent->m_CombinedTransformation));
+	else
+		m_CombinedTransformation = m_Transformation;
+
+	if (!strcmp(m_szName, "root"))
+	{
+		m_CombinedTransformation._41 = 0.f;
+		m_CombinedTransformation._42 = 0.f;
+		m_CombinedTransformation._43 = 0.f;
+	}
+	else if (!strcmp(m_szName, RootY))
+	{
+		//m_CombinedTransformation._42 = 0.f;
 	}
 }
 

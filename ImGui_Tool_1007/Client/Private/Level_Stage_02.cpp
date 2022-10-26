@@ -141,12 +141,9 @@ HRESULT CLevel_Stage_02::Ready_Layer_Monster(const _tchar * pLayerTag)
 {
 	AUTOINSTANCE(CGameInstance, pGameInstance);
 
-	for (_uint i = 0; i < 3; ++i)
-	{
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Bat"), LEVEL_STAGE_02, pLayerTag)))
-			return E_FAIL;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Bat"), LEVEL_STAGE_02, pLayerTag)))
+		return E_FAIL;
 
-	}
 
 
 
@@ -166,12 +163,15 @@ HRESULT CLevel_Stage_02::Ready_Layer_UI(const _tchar * pLayerTag)
 	}
 
 	*/
-	//CGameObject* _pGameObj = nullptr;
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_UI_PlayerHpBar"), LEVEL_STAGE_02, pLayerTag, nullptr, &_pGameObj)))
-	//	return E_FAIL;
-	//CUI_Mgr::Get_Instance()->Add_UI(TEXT("PLAYER_HP_BAR"), _pGameObj);
+	CGameObject* _pGameObj = nullptr;
+	
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_UI_PlayerHpBar"), LEVEL_STAGE_02, pLayerTag, nullptr, &_pGameObj)))
+		return E_FAIL;
+	CUI_Mgr::Get_Instance()->Add_UI(TEXT("PLAYER_HP_BAR"), _pGameObj);
 
-
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_UI_Targeting"), LEVEL_GAMEPLAY, pLayerTag, nullptr, &_pGameObj)))
+		return E_FAIL;
+	CUI_Mgr::Get_Instance()->Add_UI(TEXT("Targeting"), _pGameObj);
 
 
 	return S_OK;

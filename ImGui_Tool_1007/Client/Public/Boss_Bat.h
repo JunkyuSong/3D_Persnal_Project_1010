@@ -24,7 +24,7 @@ BEGIN(Client)
 class CBoss_Bat final : public CMonster
 {
 public:
-	enum MAGICIANCOLLIDER { COLLIDERTYPE_BODY, COLLIDERTYPE_HAND_R, COLLIDERTYPE_HAND_L, COLLILDERTYPE_END };
+	enum MAGICIANCOLLIDER { COLLIDERTYPE_BODY, COLLIDERTYPE_ATTBODY, COLLIDERTYPE_HAND_R, COLLIDERTYPE_HAND_L, COLLIDERTYPE_MOUSE, COLLILDERTYPE_END };
 	enum STATE {
 		BossBat_AttackL_01_1,
 		BossBat_AttackL_01_2b,
@@ -91,7 +91,8 @@ private:
 	void Look_Move_Player(_float _fPosX, _float _fPosZ);
 	void Look_Player();
 
-	void Turn(_float fTimeDelta);
+	void Turn();
+	void Pattern();
 	void CurrentRot();
 
 	_bool	m_bAgainAnim = false;

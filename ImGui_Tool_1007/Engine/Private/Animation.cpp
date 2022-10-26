@@ -257,8 +257,6 @@ _bool CAnimation::Play_Animation(_float fTimeDelta, _float* _pOut)//같을때
 
 _bool CAnimation::Play_Animation(_float fTimeDelta, CAnimation * pNextAnim, set<_uint>& _TotalChannel)//다를때
 {
-
-
 	m_fTermTime += m_fTickPerSecond * fTimeDelta;
 	//m_fPlayTime += m_fTickPerSecond * fTimeDelta;
 	if (m_fTermTime >= m_fMaxTermTime*m_fTickPerSecond)

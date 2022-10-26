@@ -169,42 +169,42 @@ void CObj_Anim::CheckEndAnim()
 	switch (m_eCurState)
 	{
 	case Client::CObj_Anim::STATE_ATT1:
-		m_eCurState = STATE_IDLE;
+		m_eCurState = STATE_ATT1;
 		break;
 	case Client::CObj_Anim::STATE_ATT2:
-		m_eCurState = STATE_IDLE;
+		m_eCurState = STATE_ATT1;
 		break;
 	case Client::CObj_Anim::STATE_ATT3:
-		m_eCurState = STATE_IDLE;
+		m_eCurState = STATE_ATT1;
 		break;
 	case Client::CObj_Anim::STATE_ATT4:
-		m_eCurState = STATE_IDLE;
+		m_eCurState = STATE_ATT1;
 		break;
 	case Client::CObj_Anim::STATE_ATT5:
-		m_eCurState = STATE_IDLE;
+		m_eCurState = STATE_ATT1;
 		break;
 	case Client::CObj_Anim::STATE_RUN_B:
-		m_eCurState = STATE_IDLE;
+		m_eCurState = STATE_ATT1;
 		break;
 	case Client::CObj_Anim::STATE_RUN_F:
-		m_eCurState = STATE_IDLE;
+		m_eCurState = STATE_ATT1;
 		break;
 	case Client::CObj_Anim::STATE_RUN_L:
-		m_eCurState = STATE_IDLE;
+		m_eCurState = STATE_ATT1;
 		break;
 	case Client::CObj_Anim::STATE_RUN_R:
-		m_eCurState = STATE_IDLE;
+		m_eCurState = STATE_ATT1;
 		break;
 	case Client::CObj_Anim::STATE_APPROACH:
-		m_eCurState = STATE_IDLE;
+		m_eCurState = STATE_ATT1;
 		break;
 	case Client::CObj_Anim::STATE_WALK:
-		m_eCurState = STATE_IDLE;
+		m_eCurState = STATE_ATT1;
 		break;
 	case Client::CObj_Anim::STATE_IDLE:
 		break;
 	case Client::CObj_Anim::STATE_AVOIDATTACK:
-		m_eCurState = STATE_IDLE;
+		m_eCurState = STATE_ATT1;
 		break;
 	default:
 		break;

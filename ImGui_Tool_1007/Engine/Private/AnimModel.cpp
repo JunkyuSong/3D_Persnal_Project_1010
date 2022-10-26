@@ -343,7 +343,7 @@ HRESULT CAnimModel::Load_Dat(const char * pModelFilePath, const char * pModelFil
 
 HRESULT CAnimModel::Load_Default(const char * pModelFilePath, const char * pModelFileName, _fmatrix PivotMatrix)
 {
-	return E_NOTIMPL;
+	return S_OK;
 }
 
 
@@ -419,6 +419,84 @@ _bool CAnimModel::Play_Animation(_float _fTimeDelta, _float4* _vAnim, _float* pO
 	}
 
 	return _bResult;
+}
+
+_bool CAnimModel::Play_Animation(_float _fTimeDelta, _float4 * _vAnim, _float * pOut, _bool & _bAgain, char * RootY)
+{
+	_bool _bResult = false;
+
+	if (_bAgain == true)
+	{
+		//이미 진행하는 애니메이션과 보간한다.
+		if (m_Animations[m_iCurrentAnimIndex]->Play_Animation(_fTimeDelta, m_Animations[m_iCurrentAnimIndex], m_TotalChannel))
+		{
+			m_iPreAnimIndex = m_iCurrentAnimIndex;
+			_bAgain = false;
+			return _bResult;
+		}
+		for (auto& pHierarchyNode : m_HierarchyNodes)
+		{
+			pHierarchyNode->Set_CombinedTransformation(_vAnim, true, RootY);
+		}
+		return _bResult;
+	}
+
+	if (m_iPreAnimIndex == m_iCurrentAnimIndex)
+	{
+		if (m_Animations[m_iCurrentAnimIndex]->Play_Animation(_fTimeDelta, pOut))
+		{
+			//_bResult = true;
+			return true;
+		}
+		for (auto& pHierarchyNode : m_HierarchyNodes)
+		{
+			pHierarchyNode->Set_CombinedTransformation(_vAnim, m_PivotMatrix, RootY);
+		}
+	}
+	else if (m_iPreAnimIndex != m_iCurrentAnimIndex)//다른 애니메이션 보간
+	{
+		if (m_Animations[m_iPreAnimIndex]->Play_Animation(_fTimeDelta, m_Animations[m_iCurrentAnimIndex], m_TotalChannel))
+		{
+			m_iPreAnimIndex = m_iCurrentAnimIndex;
+			return _bResult;
+		}
+		for (auto& pHierarchyNode : m_HierarchyNodes)
+		{
+			pHierarchyNode->Set_CombinedTransformation(_vAnim, true, RootY);
+		}
+	}
+
+	return _bResult;
+}
+
+void CAnimModel::DirectAnim(_uint _iAnimIndex)
+{
+	KEYFRAME Dest;
+	for (int i = 0; i < m_HierarchyNodes.size(); ++i)
+	{
+		vector<CChannel*> NextAnimChannels = m_Animations[_iAnimIndex]->Get_vecChannel();
+
+		if (NextAnimChannels[i] == nullptr)
+		{
+			Dest = m_HierarchyNodes[i]->Get_DefaultKeyFrame();
+		}
+		else
+		{
+			Dest = NextAnimChannels[i]->Get_KeyFrame(0);
+		}
+
+		CHierarchyNode* pNode = m_HierarchyNodes[i];
+
+		_matrix		TransformationMatrix = XMMatrixAffineTransformation(XMLoadFloat3(&Dest.vScale), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMLoadFloat4(&Dest.vRotation), XMVectorSetW(XMLoadFloat3(&Dest.vPosition), 1.f));
+
+		if (nullptr != pNode)
+			pNode->Set_Transformation(TransformationMatrix);
+	}
+	for (auto& pHierarchyNode : m_HierarchyNodes)
+	{
+		pHierarchyNode->Set_CombinedTransformation(nullptr, true);
+	}
+	m_iPreAnimIndex = _iAnimIndex;
 }
 
 _bool CAnimModel::Repeat_Animation(_float _fTimeDelta, _float4 * _vAnim, _float * pOut)
@@ -618,3 +696,15 @@ HRESULT CAnimModel::Ready_HierarchyNodes(aiNode* pNode, CHierarchyNode* pParent,
 	return S_OK;
 }
 
+TANIMMODEL CAnimModel::Get_ForSave()
+{
+	m_tModel.NumAnim = m_Animations.size();
+	Safe_Delete_Array(m_tModel.tAnim);
+	m_tModel.tAnim = new TANIM[m_tModel.NumAnim];
+	for (int i = 0; i < m_tModel.NumAnim; ++i)
+	{
+		m_tModel.tAnim[i] = m_Animations[i]->Get_ForSave();
+	}
+
+	return m_tModel;
+}
