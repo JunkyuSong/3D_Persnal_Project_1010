@@ -64,6 +64,7 @@ void CExtra01::Tick(_float fTimeDelta)
 {
 	if (m_bDead)
 	{
+		m_eMonsterState = ATTACK_DEAD;
 		return;
 	}
 	AUTOINSTANCE(CGameInstance, _Instance);

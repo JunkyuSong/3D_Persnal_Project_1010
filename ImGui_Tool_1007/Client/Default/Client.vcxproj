@@ -228,6 +228,7 @@
     <ClInclude Include="..\public\Texture_Tool.h" />
     <ClInclude Include="..\Public\Trail.h" />
     <ClInclude Include="..\public\UI_Mgr.h" />
+    <ClInclude Include="..\Public\UI_MonsterHpBar.h" />
     <ClInclude Include="..\public\UI_PlayerHpBar.h" />
     <ClInclude Include="..\public\UI_Plus.h" />
     <ClInclude Include="..\public\UI_Targeting.h" />
@@ -297,6 +298,7 @@
     <ClCompile Include="..\private\Texture_Tool.cpp" />
     <ClCompile Include="..\Private\Trail.cpp" />
     <ClCompile Include="..\private\UI_Mgr.cpp" />
+    <ClCompile Include="..\Private\UI_MonsterHpBar.cpp" />
     <ClCompile Include="..\private\UI_PlayerHpBar.cpp" />
     <ClCompile Include="..\private\UI_Plus.cpp" />
     <ClCompile Include="..\private\UI_Targeting.cpp" />

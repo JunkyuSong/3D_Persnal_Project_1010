@@ -136,6 +136,26 @@ HRESULT CLevel_Loading::Render()
 	if (FAILED(__super::Render()))
 		return E_FAIL;
 
+	switch (m_eNextLevel)
+	{
+	case LEVEL_LOGO:
+		//m_LoadingMax = 21;
+		break;
+
+	case LEVEL_GAMEPLAY:
+		//m_LoadingMax = 0;
+		break;
+	case LEVEL_STAGE_02:
+		//pLoader->Loading_ForGamePlayLevel();
+		break;
+	case LEVEL_STAGE_LAST:
+		//pLoader->Loading_ForGamePlayLevel();
+		break;
+	case LEVEL_STAGE_LOBBY:
+		//pLoader->Loading_ForGamePlayLevel();
+		break;
+	}
+
 	SetWindowText(g_hWnd, m_pLoader->Get_LoadingText());
 
 	return S_OK;

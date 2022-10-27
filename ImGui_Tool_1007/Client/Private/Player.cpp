@@ -877,6 +877,9 @@ void CPlayer::Targeting()
 		_float _fClosedDis(15.f);
 		for (auto iter : Monsters)
 		{
+			if (static_cast<CMonster*>(iter)->Get_MonsterState() == CMonster::ATTACK_DEAD)
+				continue;
+
 			_float _fDis = fabs(XMVectorGetX(XMVector3Length(static_cast<CTransform*>(iter->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION)
 				- _vPos)));
 			if (_fDis < 15.f)
@@ -905,7 +908,7 @@ void CPlayer::Targeting()
 void CPlayer::TargetCheck()
 {
 	//¾ÆÁ÷ °Å¸® ¾ÈÁá³ß ¤¾Çì¤Ä¤Ä
-	if (static_cast<CMonster*>(m_pTarget)->Get_MonsterState() == CMonster::ATTACK_DISAPPEAR)
+	if (static_cast<CMonster*>(m_pTarget)->Get_MonsterState() == CMonster::ATTACK_DISAPPEAR || static_cast<CMonster*>(m_pTarget)->Get_MonsterState() == CMonster::ATTACK_DEAD)
 	{
 		Safe_Release(m_pTarget);
 		static_cast<CCamera_Player*>(CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER))->Get_Target(nullptr);

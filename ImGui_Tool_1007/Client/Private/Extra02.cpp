@@ -66,7 +66,11 @@ HRESULT CExtra02::Initialize(void * pArg)
 void CExtra02::Tick(_float fTimeDelta)
 {
 	if (m_bDead)
+	{
+		m_eMonsterState = ATTACK_DEAD;
 		return;
+	}
+		
 	AUTOINSTANCE(CGameInstance, _Instance);
 
 	if (m_Coll_Target == true)
@@ -124,6 +128,7 @@ void CExtra02::LateTick(_float fTimeDelta)
 {
 	if (m_bDead)
 	{
+		
 		RenderGroup();
 		return;
 	}

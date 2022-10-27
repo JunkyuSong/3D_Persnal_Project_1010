@@ -220,6 +220,12 @@
     <Filter Include="02.GameObjects\05. Monster\Extra\ExtraWeapon">
       <UniqueIdentifier>{f32d26e3-c853-4aa7-bf09-bc53ff4d4568}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\03. UI\HP_Bar\UI_PlayerHpBar">
+      <UniqueIdentifier>{3916198e-8947-40e3-8608-385492e872ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\03. UI\HP_Bar\UI_MonsterHpBar">
+      <UniqueIdentifier>{cc57fab3-b199-4216-9295-3443aa737c2a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -378,9 +384,6 @@
     <ClInclude Include="..\public\UI_Mgr.h">
       <Filter>02.GameObjects\03. UI\Mgr</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\UI_PlayerHpBar.h">
-      <Filter>02.GameObjects\03. UI\HP_Bar</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Status.h">
       <Filter>03. Component\01. Status</Filter>
     </ClInclude>
@@ -434,6 +437,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\MonsterAxe.h">
       <Filter>02.GameObjects\05. Monster\Extra\ExtraWeapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_PlayerHpBar.h">
+      <Filter>02.GameObjects\03. UI\HP_Bar\UI_PlayerHpBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_MonsterHpBar.h">
+      <Filter>02.GameObjects\03. UI\HP_Bar\UI_MonsterHpBar</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -575,9 +584,6 @@
     <ClCompile Include="..\private\UI_Mgr.cpp">
       <Filter>02.GameObjects\03. UI\Mgr</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\UI_PlayerHpBar.cpp">
-      <Filter>02.GameObjects\03. UI\HP_Bar</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Status.cpp">
       <Filter>03. Component\01. Status</Filter>
     </ClCompile>
@@ -631,6 +637,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\MonsterAxe.cpp">
       <Filter>02.GameObjects\05. Monster\Extra\ExtraWeapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_PlayerHpBar.cpp">
+      <Filter>02.GameObjects\03. UI\HP_Bar\UI_PlayerHpBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_MonsterHpBar.cpp">
+      <Filter>02.GameObjects\03. UI\HP_Bar\UI_MonsterHpBar</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

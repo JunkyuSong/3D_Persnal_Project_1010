@@ -49,10 +49,14 @@ void CCameraMgr::Tick(_float fTimedelta)
 	AUTOINSTANCE(CGameInstance, pInstance);
 	if (pInstance->KeyDown(DIK_TAB))
 	{
-		if (m_eCameraType == CAMERA_FREE)
-			Change_Camera(CAMERA_PLAYER);
-		else
-			Change_Camera(CAMERA_FREE);
+		if (m_pCameras[CAMERA_FREE] != nullptr && m_pCameras[CAMERA_PLAYER] != nullptr)
+		{
+			if (m_eCameraType == CAMERA_FREE)
+				Change_Camera(CAMERA_PLAYER);
+			else
+				Change_Camera(CAMERA_FREE);
+		}	
+		
 	}
 	if (m_pCameras[m_eCameraType])
 		m_pCameras[m_eCameraType]->Tick(fTimedelta);
