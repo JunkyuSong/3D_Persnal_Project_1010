@@ -23,6 +23,7 @@
 #include "UI_Mgr.h"
 
 #include "Extra01.h"
+#include "Extra02.h"
 
 CPlayer::CPlayer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -1585,7 +1586,16 @@ void CPlayer::Execution()
 			}
 			break;
 		case CMonster::MONSTER_EXTRA02:
-			
+			if (false == static_cast<CExtra02*>(_pMonster)->Get_Battle())
+			{
+				static_cast<CExtra02*>(_pMonster)->Set_AnimState(CExtra02::LV2Villager01_M_VS_TakeExecution_01);
+				m_eCurState = Corvus_VSLV2Villager_M_Execution;
+				m_pModelCom->DirectAnim(Corvus_VSLV2Villager_M_Execution);
+				CTransform* _TargetTrans = static_cast<CTransform*>(_pMonster->Get_ComponentPtr(TEXT("Com_Transform")));
+
+				m_pTransformCom->LookAt_ForLandObject(_TargetTrans->Get_State(CTransform::STATE_POSITION));
+				_TargetTrans->LookAt_ForLandObject(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			}
 			break;
 		}
 	}

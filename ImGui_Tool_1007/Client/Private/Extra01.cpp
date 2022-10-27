@@ -62,6 +62,10 @@ HRESULT CExtra01::Initialize(void * pArg)
 
 void CExtra01::Tick(_float fTimeDelta)
 {
+	if (m_bDead)
+	{
+		return;
+	}
 	AUTOINSTANCE(CGameInstance, _Instance);
 
 	if (m_Coll_Target == true)
@@ -113,6 +117,11 @@ void CExtra01::Tick(_float fTimeDelta)
 
 void CExtra01::LateTick(_float fTimeDelta)
 {
+	if (m_bDead)
+	{
+		RenderGroup();
+		return;
+	}
 	if (Collision(fTimeDelta))
 	{
 		CheckAnim();
@@ -203,7 +212,8 @@ void CExtra01::CheckEndAnim()
 		m_eCurState = LV1Villager_M_IdleGeneral;
 		break;
 	case Client::CExtra01::LV1Villager_M_VSTakeExecution:
-		m_eCurState = LV1Villager_M_IdleGeneral;
+		m_bDead = true;
+		//m_eCurState = LV1Villager_M_IdleGeneral;
 		break;
 	case Client::CExtra01::LV1Villager_M_WalkF:
 		m_eCurState = LV1Villager_M_WalkF;
@@ -343,6 +353,10 @@ void CExtra01::CheckLimit()
 	case Client::CExtra01::LV1Villager_M_Attack02:
 		break;
 	case Client::CExtra01::LV1Villager_M_Attack03:
+		if (m_vecLimitTime[LV1Villager_M_Attack03][0] < m_fPlayTime)
+		{
+			m_pParts->Set_CollisionOn(false);
+		}
 		break;
 	case Client::CExtra01::LV1Villager_M_Die01:
 		break;

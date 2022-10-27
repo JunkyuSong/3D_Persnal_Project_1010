@@ -3,7 +3,9 @@
 #include "Client_Defines.h"
 #include "Monster.h"
 
-
+BEGIN(Engine)
+class CHierarchyNode;
+END
 BEGIN(Client)
 
 /*
@@ -14,7 +16,7 @@ BEGIN(Client)
 class CExtra02 final : public CMonster
 {
 public:
-	enum EXTRA02COLLIDER { COLLIDERTYPE_BODY, COLLILDERTYPE_END };
+	enum EXTRA02COLLIDER { COLLIDERTYPE_BODY, COLLIDERTYPE_PUSH, COLLIDERTYPE_ARM, COLLILDERTYPE_END };
 	enum STATE {
 		LV1Villager_M_Attack01,
 		LV1Villager_M_Attack02,
@@ -32,6 +34,7 @@ public:
 		LV2Villager01_M_ComboA02,
 		LV2Villager01_M_VS_TakeExecution_01,
 		LV2Villager01_M_Walk,
+		LV1Villager_M_IdleGeneral,
 		STATE_END
 	};
 private:
@@ -42,6 +45,7 @@ private:
 	CExtra02(const CExtra02& rhs);
 	virtual ~CExtra02() = default;
 
+
 public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg);
@@ -49,6 +53,8 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 	void PlayAnimation(_float fTimeDelta);
+
+	_bool	Get_Battle() { return m_bPreStateAtt; }
 
 public:
 	void		Set_AnimState(STATE	_eState) { m_eCurState = _eState; }
@@ -74,14 +80,18 @@ private:
 	void Look_Move_Player(_float _fPosX, _float _fPosZ);
 	void Look_Player();
 
-	void Turn();
+	_bool InRange();
 	void Pattern();
+
+
 
 	_bool	m_bAgainAnim = false;
 
+	_bool	m_bDead = false;
+
 private:
 	STATE					m_eReserveState = STATE_END;
-	STATE					m_eCurState = LV2Villager01_M_Walk;
+	STATE					m_eCurState = LV1Villager_M_IdleGeneral;
 	STATE					m_ePreState = STATE_END;
 
 	_float4					m_AnimPos;
@@ -97,6 +107,12 @@ private:
 
 	DIRECT					m_eDir = DIR_END;
 
+	_float					m_fMove = 0.f;
+	_bool					m_bLine = false;
+
+	_float3					m_vNextLook;
+	_bool					m_bPreStateAtt = false;
+
 private:
 	HRESULT Ready_Components();
 	HRESULT SetUp_ShaderResources();
@@ -108,7 +124,13 @@ private:
 	void	Check_Stun();
 
 private:
-	_float	m_fStay = 0.f;
+	HRESULT Ready_Weapon();
+
+	HRESULT Update_Weapon();
+
+	class CWeapon*				m_pParts = nullptr;
+	class CHierarchyNode*		m_pSockets = nullptr;
+
 
 
 public:

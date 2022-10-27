@@ -63,6 +63,8 @@ private:
 	class CShader*			m_pShader = nullptr;
 	_int					m_iPointIndex[POINT_END];
 #endif
+public:
+	//_bool	operator == (const CCell& rhs);
 
 public:
 	static CCell* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _float3* pPoints, _int iIndex);

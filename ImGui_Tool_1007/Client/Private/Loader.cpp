@@ -34,6 +34,7 @@
 #include "Boss_Bat.h"
 #include "MonsterAxe.h"
 #include "Extra01.h"
+#include "Extra02.h"
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice(pDevice)
@@ -462,6 +463,9 @@ HRESULT CLoader::Loading_ForLevel_Stage02_1()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_Extra01"),
 		CExtra01::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_Extra02"),
+		CExtra02::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
@@ -489,7 +493,7 @@ HRESULT CLoader::Loading_ForLevel_Stage02_1()
 		return E_FAIL;
 
 	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_02_1, TEXT("Prototype_Component_Model_Monster_anim"),
-	//	CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Monster_List/Extra01/", "anim.fbx", PivotMatrix))))
+	//	CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Monster_List/Extra02/", "anim.fbx", PivotMatrix))))
 	//	return E_FAIL;
 
 
