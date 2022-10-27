@@ -37,6 +37,7 @@ struct VS_OUT
 	float4		vPosition : SV_POSITION;
 	float3		vNormal : NORMAL;
 	float2		vTexUV : TEXCOORD0;
+	float4		vProjPos : TEXCOORD1;
 };
 
 
@@ -52,7 +53,7 @@ VS_OUT VS_MAIN(VS_IN In)
 	Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
 	Out.vNormal = normalize(mul(float4(In.vNormal, 0.f), g_WorldMatrix));
 	Out.vTexUV = In.vTexUV;
-
+	Out.vProjPos = Out.vPosition;
 
 
 	return Out;
@@ -63,12 +64,14 @@ struct PS_IN
 	float4		vPosition : SV_POSITION;
 	float3		vNormal : NORMAL;
 	float2		vTexUV : TEXCOORD0;
+	float4		vProjPos : TEXCOORD1;
 };
 
 struct PS_OUT
 {
 	float4		vDiffuse : SV_TARGET0;
 	float4		vNormal : SV_TARGET1;
+	float4		vDepth : SV_TARGET2;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
@@ -85,6 +88,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	// -1 ~ 1
 	//  0 ~ 1
 	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 300.0f, 0.0f, 0.0f);
 
 	return Out;
 }
@@ -103,6 +107,7 @@ PS_OUT PS_MAIN_2(PS_IN In)
 	// -1 ~ 1
 	//  0 ~ 1
 	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 300.0f, 0.0f, 0.0f);
 
 	return Out;
 }
@@ -121,6 +126,7 @@ PS_OUT PS_Sky(PS_IN In)
 	// -1 ~ 1
 	//  0 ~ 1
 	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 300.0f, 0.0f, 0.0f);
 
 	return Out;
 }
@@ -139,6 +145,7 @@ PS_OUT PS_Stage(PS_IN In)
 	// -1 ~ 1
 	//  0 ~ 1
 	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 300.0f, 0.0f, 0.0f);
 
 	return Out;
 }

@@ -130,17 +130,33 @@ HRESULT CMagician::Render()
 	SetUp_ShaderResources();
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMesh();//메쉬 갯수를 알고 메쉬 갯수만큼 렌더를 할 것임. 여기서!
-
-	for (_uint i = 0; i < iNumMeshes; ++i)
+	if (m_fAppear < 1.f)
 	{
-		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-			return E_FAIL;
-		
+		for (_uint i = 0; i < iNumMeshes; ++i)
+		{
+			if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+				return E_FAIL;
 
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, 1,i)))
-			return E_FAIL;
+
+			if (FAILED(m_pModelCom->Render(m_pShaderCom, 1, i)))
+				return E_FAIL;
+		}
 	}
+	else
+	{
+		for (_uint i = 0; i < iNumMeshes; ++i)
+		{
+			if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+				return E_FAIL;
+
+
+
+			if (FAILED(m_pModelCom->Render(m_pShaderCom, 0, i)))
+				return E_FAIL;
+		}
+	}
+	
 
 	/*for (_uint i = 0; i < COLLILDERTYPE_END; ++i)
 	{

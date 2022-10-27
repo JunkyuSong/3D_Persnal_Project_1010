@@ -1815,7 +1815,7 @@ void CPlayer::Add_Render()
 	case Client::CPlayer::WEAPON_BASE:
 		for (auto& _pPart : m_pBaseParts)
 		{
-			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, _pPart);
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, _pPart);
 		}
 		break;
 	case Client::CPlayer::WEAPON_SKILL:
