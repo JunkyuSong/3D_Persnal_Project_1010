@@ -49,7 +49,7 @@ HRESULT CExtra02::Initialize(void * pArg)
 
 	if (true == isMove)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(30.672, 2.402, 50.622, 1.f));
-	m_eCurState = BossBat_Idle;
+
 
 
 	return S_OK;
@@ -60,19 +60,19 @@ void CExtra02::Tick(_float fTimeDelta)
 	AUTOINSTANCE(CGameInstance, _Instance);
 	if (_Instance->KeyDown(DIK_NUMPAD1))
 	{
-		m_eCurState = BossBat_JumpSmash_Chest;
+		m_eCurState = LV1Villager_M_Attack01;
 	}
 	else if (_Instance->KeyDown(DIK_NUMPAD2))
 	{
-		m_eCurState = BossBat_JumpSmashForwardL;
+		m_eCurState = LV1Villager_M_Attack02;
 	}
 	else if (_Instance->KeyDown(DIK_NUMPAD3))
 	{
-		m_eCurState = BossBat_AttackL_01_3a;
+		m_eCurState = LV1Villager_M_Attack03;
 	}
 	else if (_Instance->KeyDown(DIK_NUMPAD4))
 	{
-		m_eCurState = BossBat_Dash;
+		m_eCurState = LV1Villager_M_Attack04;
 	}
 
 	if (m_pModelCom != nullptr)
@@ -153,78 +153,7 @@ void CExtra02::CheckEndAnim()
 {
 	m_fPlaySpeed = 1.f;
 
-	switch (m_eCurState)
-	{
-	case Client::CExtra02::BossBat_AttackL_01_1:
-		m_eCurState = BossBat_Idle;
-		break;
-	case Client::CExtra02::BossBat_AttackL_01_2b:
-		m_eCurState = BossBat_Idle;
-		break;
-	case Client::CExtra02::BossBat_AttackL_01_3a:
-		m_eCurState = BossBat_Idle;
-		break;
-	case Client::CExtra02::BossBat_AttackR_01_1:
-		m_eCurState = BossBat_Idle;
-		break;
-	case Client::CExtra02::BossBat_AttackR_01_2b:
-		m_eCurState = BossBat_Idle;
-		break;
-	case Client::CExtra02::BossBat_Bite_2:
-		m_eCurState = BossBat_Idle;
-		break;
-	case Client::CExtra02::BossBat_Dash:
-		m_eCurState = BossBat_Idle;
-		break;
-	case Client::CExtra02::BossBat_FTurn_L:
-		m_pModelCom->DirectAnim(BossBat_Idle);
-		m_pTransformCom->Turn_Angle(XMVectorSet(0.f,1.f,0.f,0.f),XMConvertToRadians(180.f));
-		m_eCurState = BossBat_Idle;
-		break;
-	case Client::CExtra02::BossBat_FTurn_R:
-		m_pModelCom->DirectAnim(BossBat_Idle);
-		m_pTransformCom->Turn_Angle(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
-		m_eCurState = BossBat_Idle;
-		break;
-	case Client::CExtra02::BossBat_HurtXL_R:
-		m_eCurState = BossBat_Idle;
-		break;
-	case Client::CExtra02::BossBat_HurtXL_L:
-		m_eCurState = BossBat_Idle;
-		break;
-	case Client::CExtra02::BossBat_Idle:
-		m_eCurState = BossBat_Idle;
-		break;
-	case Client::CExtra02::BossBat_JumpSmash_Chest:
-		m_eCurState = BossBat_Idle;
-		break;
-	case Client::CExtra02::BossBat_JumpSmashForwardL:
-		m_eCurState = BossBat_Idle;
-		break;
-	case Client::CExtra02::BossBat_JumpSmashL:
-		m_eCurState = BossBat_Idle;
-		break;
-	case Client::CExtra02::BossBat_FightStart:
-		m_eCurState = BossBat_Idle;
-		break;
-	case Client::CExtra02::BossBat_Stun:
-		m_eCurState = BossBat_Idle;
-		break;
-	case Client::CExtra02::BossBat_TakeExecution_End:
-		m_eCurState = BossBat_Idle;
-		break;
-	case Client::CExtra02::BossBat_TakeExecution_DeadStart01:
-		m_eCurState = BossBat_Idle;
-		break;
-	case Client::CExtra02::BossBat_TurnL90:
-		m_eCurState = BossBat_Idle;
-		break;
-	case Client::CExtra02::BossBat_TurnR90:
-		m_eCurState = BossBat_Idle;
-		break;
-	case Client::CExtra02::BossBat_WalkF:
-		break;
-	}
+	
 
 	XMStoreFloat4(&m_AnimPos, XMVectorSet(0.f, 0.f, 0.f, 1.f));
 	m_PreAnimPos = m_AnimPos;
@@ -232,56 +161,7 @@ void CExtra02::CheckEndAnim()
 
 void CExtra02::CheckState(_float fTimeDelta)
 {
-	switch (m_eCurState)
-	{
-	case Client::CExtra02::BossBat_AttackL_01_1:
-		break;
-	case Client::CExtra02::BossBat_AttackL_01_2b:
-		break;
-	case Client::CExtra02::BossBat_AttackL_01_3a:
-		break;
-	case Client::CExtra02::BossBat_AttackR_01_1:
-		break;
-	case Client::CExtra02::BossBat_AttackR_01_2b:
-		break;
-	case Client::CExtra02::BossBat_Bite_2:
-		break;
-	case Client::CExtra02::BossBat_Dash:
-		break;
-	case Client::CExtra02::BossBat_FTurn_L:
-		break;
-	case Client::CExtra02::BossBat_FTurn_R:
-		break;
-	case Client::CExtra02::BossBat_HurtXL_R:
-		break;
-	case Client::CExtra02::BossBat_HurtXL_L:
-		break;
-	case Client::CExtra02::BossBat_Idle:
-		Turn();
-		break;
-	case Client::CExtra02::BossBat_JumpSmash_Chest:
-		break;
-	case Client::CExtra02::BossBat_JumpSmashForwardL:
-		break;
-	case Client::CExtra02::BossBat_JumpSmashL:
-		break;
-	case Client::CExtra02::BossBat_FightStart:
-		break;
-	case Client::CExtra02::BossBat_Stun:
-		break;
-	case Client::CExtra02::BossBat_TakeExecution_End:
-		break;
-	case Client::CExtra02::BossBat_TakeExecution_DeadStart01:
-		break;
-	case Client::CExtra02::BossBat_TurnL90:
-		break;
-	case Client::CExtra02::BossBat_TurnR90:
-		break;
-	case Client::CExtra02::BossBat_WalkF:
-		Turn();
-		m_pTransformCom->Go_Straight(fTimeDelta / 2.f);
-		break;
-	}
+	
 	Get_AnimMat();
 }
 
@@ -304,14 +184,7 @@ void CExtra02::CheckAnim()
 {
 	if (m_ePreState != m_eCurState)
 	{
-		if (m_ePreState == BossBat_TurnL90)
-		{
-			//아이들 상태로 바꿔주는 작업...? 아니지 들어온 애니메이션의 첫 상태로 싹 세팅해주는 작업이 필요함.
-
-			// 싹 돌되
-
-			//조금 빡센데...
-		}
+		
 		Set_Anim(m_eCurState);
 		m_ePreState = m_eCurState;
 	}
@@ -332,8 +205,7 @@ void CExtra02::Get_AnimMat()
 
 	if (true == isMove)
 	{
-		if (m_eCurState == BossBat_WalkF || m_eCurState == BossBat_Idle)
-			_vPos.m128_f32[1] = m_pNavigationCom->Get_PosY(_vPos);
+		_vPos.m128_f32[1] = m_pNavigationCom->Get_PosY(_vPos);
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
 	}
 }
@@ -421,7 +293,7 @@ void CExtra02::Turn()
 	_float _fAngle = XMVector3Dot(_vLook, _vDestLook).m128_f32[0];
 
 
-	m_eCurState = BossBat_WalkF;
+	m_eCurState = LV2Villager01_M_Walk;
 
 	m_pTransformCom->Turn(_vLook,
 		_vDestLook
@@ -454,73 +326,13 @@ void CExtra02::Pattern()
 	if (_fDistance < 10.f)
 	{
 		_uint ChanceShort = _pInstance->Rand_Int(0, 7);
-		switch (ChanceShort)
-		{
-		case 0:
-			m_eCurState = BossBat_AttackL_01_1;
-			break;
-		case 1:
-			m_eCurState = BossBat_AttackL_01_2b;
-			break;
-		case 2:
-			m_eCurState = BossBat_AttackL_01_3a;
-			break;
-		case 3:
-			m_eCurState = BossBat_AttackR_01_1;
-			break;
-		case 4:
-			m_eCurState = BossBat_AttackR_01_2b;
-			break;
-		case 5:
-			m_eCurState = BossBat_Bite_2;
-			break;
-		case 6:
-			m_eCurState = BossBat_Dash;
-			break;
-		case 7:
-			m_eCurState = BossBat_JumpSmashL;
-			break;
-		}
+		
 	}
 	else
 	{
 		_uint ChanceShort = _pInstance->Rand_Int(0, 4);
-		switch (ChanceShort)
-		{
-		case 0:
-			m_eCurState = BossBat_JumpSmash_Chest;
-			break;
-		case 1:
-			m_eCurState = BossBat_JumpSmashForwardL;
-			break;
-		case 2:
-			m_eCurState = BossBat_Dash;
-			break;
-		case 3:
-			m_eCurState = BossBat_FTurn_L;
-			break;
-		case 4:
-			m_eCurState = BossBat_FTurn_R;
-			break;
-		}
 
 	}
-}
-
-void CExtra02::CurrentRot()
-{
-	// 그 순간의 회전값을 얻어와서 다시 행렬을 세팅.
-	KEYFRAME _tOldKeyFrame = (*(m_pModelCom->Get_AllAnimation()))[BossBat_TurnL90]->Get_OldKeyFrame(m_pModelCom->Get_HierarchyNode("root")->Get_Index());
-	_tOldKeyFrame.vScale = m_pTransformCom->Get_Scale();
-
-	XMStoreFloat3(&_tOldKeyFrame.vPosition, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-
-	_tOldKeyFrame.vRotation; // 쿼터니언으로 받아옴 - 새로운 회전 행렬을 만들어준다
-
-	_matrix		TransformationMatrix = XMMatrixAffineTransformation(XMLoadFloat3(&_tOldKeyFrame.vScale), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMLoadFloat4(&_tOldKeyFrame.vRotation), XMVectorSetW(XMLoadFloat3(&_tOldKeyFrame.vPosition), 1.f));
-	_float4x4	_World;
-	XMStoreFloat4x4(&_World, TransformationMatrix);
-	m_pTransformCom->Set_WorldFloat4x4(_World);
 }
 
 HRESULT CExtra02::Ready_Components()
@@ -542,13 +354,13 @@ HRESULT CExtra02::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_STAGE_02, TEXT("Prototype_Component_Model_Monster_bat"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STAGE_02, TEXT("Prototype_Component_Model_Monster_Extra02"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
 	/* For.Com_Status */
 	CStatus::STATUS _tStatus;
-	_tStatus.fMaxHp = 500.f;
-	_tStatus.fAttack = 20.f;
+	_tStatus.fMaxHp = 100.f;
+	_tStatus.fAttack = 10.f;
 	_tStatus.fHp = _tStatus.fMaxHp;
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Status"), TEXT("Com_Status"), (CComponent**)&m_pStatusCom, &_tStatus)))
 		return E_FAIL;
@@ -560,23 +372,6 @@ HRESULT CExtra02::Ready_Components()
 	ColliderDesc.vCenter = _float3(0.f, ColliderDesc.vSize.y * 0.5f, 2.f);
 	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_BODY], &ColliderDesc)))
-		return E_FAIL;
-
-	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
-	ColliderDesc.vSize = _float3(6.f, 5.f, 6.f);
-	ColliderDesc.vCenter = _float3(0.f, ColliderDesc.vSize.y * 0.5f, 2.f);
-	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB_AttBody"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_BODY], &ColliderDesc)))
-		return E_FAIL;
-
-	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
-	ColliderDesc.vSize = _float3(1.5f, 1.5f, 1.5f);
-	_float3 vCenter = _float3(m_pModelCom->Get_HierarchyNode("middle_01_r")->Get_Trans()._41,
-		m_pModelCom->Get_HierarchyNode("middle_01_r")->Get_Trans()._42,
-		m_pModelCom->Get_HierarchyNode("middle_01_r")->Get_Trans()._43);
-	ColliderDesc.vCenter = vCenter;
-	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB_Hand_R"), (CComponent**)&m_pColliderCom[COLLIDERTYPE_ATT], &ColliderDesc)))
 		return E_FAIL;
 
 	/* For.Com_Navigation */
@@ -600,28 +395,6 @@ HRESULT CExtra02::SetUp_ShaderResources()
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
-	//if (FAILED(m_pShaderCom->Set_RawValue("g_vCamPosition", &pGameInstance->Get_CamPosition(), sizeof(_float4))))
-	//	return E_FAIL;
-
-
-	//const LIGHTDESC* pLightDesc = pGameInstance->Get_LightDesc(0);
-	//if (nullptr == pLightDesc)
-	//	return E_FAIL;
-
-	//if (LIGHTDESC::TYPE_DIRECTIONAL == pLightDesc->eType)
-	//{
-	//	if (FAILED(m_pShaderCom->Set_RawValue("g_vLightDir", &pLightDesc->vDirection, sizeof(_float4))))
-	//		return E_FAIL;
-	//}
-
-	//if (FAILED(m_pShaderCom->Set_RawValue("g_vLightDiffuse", &pLightDesc->vDiffuse, sizeof(_float4))))
-	//	return E_FAIL;
-
-	//if (FAILED(m_pShaderCom->Set_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof(_float4))))
-	//	return E_FAIL;
-
-	///*if (FAILED(m_pShaderCom->Set_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
-	//	return E_FAIL;*/
 
 	RELEASE_INSTANCE(CGameInstance);
 
@@ -630,59 +403,7 @@ HRESULT CExtra02::SetUp_ShaderResources()
 
 void CExtra02::Ready_LimitTime()
 {
-	//BossBat_AttackL_01_1
-	m_vecLimitTime[BossBat_AttackL_01_1].push_back(120.f); // 왼손 on
-	m_vecLimitTime[BossBat_AttackL_01_1].push_back(240.f); // 왼손 off
-
-	//BossBat_AttackL_01_2b
-	m_vecLimitTime[BossBat_AttackL_01_2b].push_back(60.f); // 왼손 on
-	m_vecLimitTime[BossBat_AttackL_01_2b].push_back(230.f); // 왼손 off
-
-	//BossBat_AttackL_01_2b
-	m_vecLimitTime[BossBat_AttackL_01_3a].push_back(70.f); // 오른손 on
-	m_vecLimitTime[BossBat_AttackL_01_3a].push_back(130.f); // 오른손 off
-
-	//BossBat_AttackL_01_3a
-	m_vecLimitTime[BossBat_AttackL_01_3a].push_back(70.f); // 오른손 on
-	m_vecLimitTime[BossBat_AttackL_01_3a].push_back(130.f); // 오른손 off
-
-	//BossBat_AttackR_01_1
-	m_vecLimitTime[BossBat_AttackR_01_1].push_back(40.f); // 오른손 on
-	m_vecLimitTime[BossBat_AttackR_01_1].push_back(120.f); // 오른손 off
-
-	//BossBat_AttackR_01_2b
-	m_vecLimitTime[BossBat_AttackR_01_2b].push_back(50.f); // 오른손 on
-	m_vecLimitTime[BossBat_AttackR_01_2b].push_back(230.f); // 오른손 off
-
-	//BossBat_Bite_2 -> 여기부터
-	m_vecLimitTime[BossBat_Bite_2].push_back(120.f); // 입 on
-	m_vecLimitTime[BossBat_Bite_2].push_back(240.f); // 입 off
-
-	//BossBat_Dash -> 여기부터
-	m_vecLimitTime[BossBat_Dash].push_back(170.f); // 바디 무기로
-	m_vecLimitTime[BossBat_Dash].push_back(400.f); // 바디 다시 피격으로
-
-	//BossBat_HurtXL_R -> 여기부터
-	m_vecLimitTime[BossBat_HurtXL_R].push_back(0.f); // 바디 무기로
-	m_vecLimitTime[BossBat_HurtXL_R].push_back(10.f); // 바디 다시 피격으로
-
-	//BossBat_HurtXL_L -> 여기부터
-	m_vecLimitTime[BossBat_HurtXL_L].push_back(0.f); // 바디 무기로
-	m_vecLimitTime[BossBat_HurtXL_L].push_back(10.f); // 바디 다시 피격으로
-
-	//BossBat_JumpSmash_Chest  -> 여기부터
-	m_vecLimitTime[BossBat_JumpSmash_Chest].push_back(60.f); // 바디 무기로
-	m_vecLimitTime[BossBat_JumpSmash_Chest].push_back(100.f); // 바디 다시 피격으로
-
-	//BossBat_JumpSmashForwardL  -> 여기부터
-	m_vecLimitTime[BossBat_JumpSmashForwardL].push_back(150.f); // 바디 무기로
-	m_vecLimitTime[BossBat_JumpSmashForwardL].push_back(200.f); // 바디 다시 피격으로
-	m_vecLimitTime[BossBat_JumpSmashForwardL].push_back(400.f); // 아이들 상태로
-
-	//BossBat_JumpSmashL  -> 여기부터
-	m_vecLimitTime[BossBat_JumpSmashL].push_back(150.f); // 바디 무기로
-	m_vecLimitTime[BossBat_JumpSmashL].push_back(200.f); // 바디 다시 피격으로
-	m_vecLimitTime[BossBat_JumpSmashL].push_back(400.f); // 아이들 상태로
+	
 }
 
 CExtra02 * CExtra02::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -720,6 +441,7 @@ void CExtra02::Free()
 		if (_Collider)
 			Safe_Release(_Collider);
 	}
+
 }
 
 void CExtra02::Update_Collider()
@@ -739,7 +461,7 @@ void CExtra02::Check_Stun()
 {
 	if (m_eMonsterState == CMonster::ATTACK_STUN)
 	{
-		m_eCurState = BossBat_Stun;
+		m_eCurState = LV1Villager_M_HurtCounter;
 		m_eMonsterState = CMonster::ATTACK_IDLE;
 	}
 }

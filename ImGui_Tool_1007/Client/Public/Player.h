@@ -53,6 +53,8 @@ public:
 		SD_Dead,
 		STATE_RUN_BL, STATE_RUN_BR, STATE_RUN_FL, STATE_RUN_FR,
 		STATE_AVOIDATTACK_2,
+		Corvus_VSLV1Villager_M_Execution,
+		Corvus_VSLV2Villager_M_Execution,
 		STATE_END
 	};
 
@@ -113,6 +115,8 @@ private:
 
 	void	Get_AnimMat();
 
+	void	Execution();
+
 public:
 	void	Cancle();
 private:
@@ -125,9 +129,14 @@ private:
 	enum SKILL { SKILL_AXE, SKILL_DUAL, SKILL_END };
 	enum HAND { HAND_RIGHT, HAND_LEFT, HAND_END };
 
+	enum BONE { WEAPON_R, WEAPON_L, BONE_END };
+
 	typedef vector<class CWeapon*>		PARTS;
 	class CHierarchyNode*				m_pHands[HAND_END];
+	class CHierarchyNode*				m_pBones[BONE_END];
 	_float4x4							m_matHands[HAND_END];
+
+	_bool								m_bOneChange = false;
 
 	PARTS								m_pBaseParts;
 	vector<_uint>						m_pBaseHands;
@@ -203,6 +212,8 @@ private:
 	HRESULT Update_Hands_Matrix();
 	HRESULT Update_Weapon_Base();
 	HRESULT Update_Weapon_Skill();
+
+	HRESULT Change_Hand();
 
 public:
 	static CPlayer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

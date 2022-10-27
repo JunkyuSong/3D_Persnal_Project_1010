@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "..\Public\Camera_Player.h"
 #include "GameInstance.h"
+#include "Cell.h"
 
 CCamera_Player::CCamera_Player(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CClient_Camere(pDevice, pContext)
@@ -42,21 +43,46 @@ HRESULT CCamera_Player::Initialize(void * pArg)
 	
 	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 1.f), XMConvertToRadians(60.f));
 	m_fAngleY = XMConvertToRadians(60.f);
-	return S_OK;
+
+	/* For.Com_Navigation */
+	CNavigation::NAVIGATIONDESC			NaviDesc;
+	ZeroMemory(&NaviDesc, sizeof(CNavigation::NAVIGATIONDESC));
+	NaviDesc.iCurrentIndex = 0;
+	switch (g_eCurLevel)
+	{
+	case Client::LEVEL_GAMEPLAY:
+		if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation_GamePlay"), TEXT("Com_Navigation"), (CComponent**)&m_pNaviCom, &NaviDesc)))
+			return E_FAIL;
+		break;
+	case Client::LEVEL_STAGE_02_1:
+		if (FAILED(__super::Add_Component(LEVEL_STAGE_02_1, TEXT("Prototype_Component_Navigation_Stage_02_1"), TEXT("Com_Navigation"), (CComponent**)&m_pNaviCom, &NaviDesc)))
+			return E_FAIL;
+		break;
+	case Client::LEVEL_STAGE_02:
+		if (FAILED(__super::Add_Component(LEVEL_STAGE_02, TEXT("Prototype_Component_Navigation_Stage_02"), TEXT("Com_Navigation"), (CComponent**)&m_pNaviCom, &NaviDesc)))
+			return E_FAIL;
+		break;
+	case Client::LEVEL_STAGE_LAST:
+		break;
+	case Client::LEVEL_STAGE_LOBBY:
+		if (FAILED(__super::Add_Component(LEVEL_STAGE_LOBBY, TEXT("Prototype_Component_Navigation_Stage_Lobby"), TEXT("Com_Navigation"), (CComponent**)&m_pNaviCom, &NaviDesc)))
+			return E_FAIL;
+		break;
+	}
 }
 
 void CCamera_Player::Tick(_float fTimeDelta)
 {
 	AUTOINSTANCE(CGameInstance, pGameInstance);
-
+	_vector _vPos = static_cast<CTransform*>(m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE::STATE_POSITION);
 	if (m_pTarget)
 	{
 		_vector _vTargetPos = m_pTarget->Get_State(CTransform::STATE::STATE_POSITION);
-		_vector _vPos = static_cast<CTransform*>(m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE::STATE_POSITION);
+		
 		_float	_fDis = fabs(XMVectorGetX(XMVector3Length(_vTargetPos - _vPos)));
 		if (_fDis > 1.f)
 			Targeting();
-		Check_Dis();
+		//Check_Dis();
 	}
 	else
 	{
@@ -77,11 +103,22 @@ void CCamera_Player::Tick(_float fTimeDelta)
 			m_pTransformCom->Turn(m_pTransformCom->Get_State(CTransform::STATE_RIGHT), MouseMove * fTimeDelta * 0.05f);
 			}*/
 		}
-		Check_Dis();
+		//Check_Dis();
+	}
+	Check_Dis();
+	_vector	vCamPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	if (m_pNaviCom->isMove(vCamPos, nullptr))
+	{
+		_float Y = m_pNaviCom->Get_PosY(vCamPos);
+		if (Y - vCamPos.m128_f32[1] > - 0.5f)
+		{
+			vCamPos.m128_f32[1] = m_pNaviCom->Get_PosY(vCamPos) + 0.5f;
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPos);
+			
+			//m_pTransformCom->LookAt(_vPos);
+		}
 	}
 	
-	
-
 	
 	__super::Tick(fTimeDelta);
 }
@@ -190,5 +227,5 @@ void CCamera_Player::Free()
 {
 	__super::Free();
 
-
+	Safe_Release(m_pNaviCom);
 }

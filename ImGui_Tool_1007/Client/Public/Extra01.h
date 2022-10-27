@@ -3,7 +3,9 @@
 #include "Client_Defines.h"
 #include "Monster.h"
 
-
+BEGIN(Engine)
+class CHierarchyNode;
+END
 
 BEGIN(Client)
 
@@ -15,31 +17,19 @@ BEGIN(Client)
 class CExtra01 final : public CMonster
 {
 public:
-	enum EXTRA01COLLIDER { COLLIDERTYPE_BODY, COLLIDERTYPE_ATT, COLLILDERTYPE_END };
+	enum EXTRA01COLLIDER { COLLIDERTYPE_BODY, COLLIDERTYPE_PUSH, COLLILDERTYPE_END };
 	enum STATE {
-		BossBat_AttackL_01_1,
-		BossBat_AttackL_01_2b,
-		BossBat_AttackL_01_3a,
-		BossBat_AttackR_01_1,
-		BossBat_AttackR_01_2b,
-		BossBat_Bite_2,
-		BossBat_Dash,
-		BossBat_FTurn_L,
-		BossBat_FTurn_R,
-		BossBat_HurtXL_R,
-		BossBat_HurtXL_L,
-		BossBat_Idle,
-		BossBat_JumpSmash_Chest,
-		BossBat_JumpSmashForwardL,
-		BossBat_JumpSmashL,
-		BossBat_SonicBoom,
-		BossBat_FightStart,
-		BossBat_Stun,
-		BossBat_TakeExecution_End,
-		BossBat_TakeExecution_DeadStart01,
-		BossBat_TurnL90,
-		BossBat_TurnR90,
-		BossBat_WalkF,
+		LV1Villager_M_Attack01,
+		LV1Villager_M_Attack02,
+		LV1Villager_M_Attack03,
+		LV1Villager_M_Die01,
+		LV1Villager_M_HurtCounter,
+		LV1Villager_M_HurtL_F,
+		LV1Villager_M_Sit_Idle,
+		LV1Villager_M_SP_Idle1,
+		LV1Villager_M_VSTakeExecution,
+		LV1Villager_M_WalkF,
+		LV1Villager_M_IdleGeneral,
 		STATE_END
 	};
 private:
@@ -57,6 +47,8 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 	void PlayAnimation(_float fTimeDelta);
+
+	_bool	Get_Battle() { return m_bPreStateAtt; }
 
 public:
 	void		Set_AnimState(STATE	_eState) { m_eCurState = _eState; }
@@ -82,15 +74,18 @@ private:
 	void Look_Move_Player(_float _fPosX, _float _fPosZ);
 	void Look_Player();
 
-	void Turn();
+	_bool InRange();
 	void Pattern();
-	void CurrentRot();
+
+
 
 	_bool	m_bAgainAnim = false;
 
+	_bool	m_bDead = false;
+
 private:
 	STATE					m_eReserveState = STATE_END;
-	STATE					m_eCurState = BossBat_Idle;
+	STATE					m_eCurState = LV1Villager_M_SP_Idle1;
 	STATE					m_ePreState = STATE_END;
 
 	_float4					m_AnimPos;
@@ -106,6 +101,12 @@ private:
 
 	DIRECT					m_eDir = DIR_END;
 
+	_float					m_fMove = 0.f;
+	_bool					m_bLine = false;
+
+	_float3					m_vNextLook;
+	_bool					m_bPreStateAtt = false;
+
 private:
 	HRESULT Ready_Components();
 	HRESULT SetUp_ShaderResources();
@@ -117,7 +118,13 @@ private:
 	void	Check_Stun();
 
 private:
-	_float	m_fStay = 0.f;
+	HRESULT Ready_Weapon();
+
+	HRESULT Update_Weapon();
+
+	class CWeapon*				m_pParts = nullptr;
+	class CHierarchyNode*		m_pSockets = nullptr;
+
 
 
 public:

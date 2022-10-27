@@ -137,6 +137,35 @@ _float CNavigation::Get_PosY(_vector vPos)
 	return (-a * x - c * z - d) / b;
 }
 
+_float CNavigation::Get_DistanceToCell(_fvector vPosition)
+{
+	if (isMove(vPosition, nullptr))
+	{
+		
+		_vector PointA = XMVectorSetW(XMLoadFloat3(&m_Cells[m_NavigationDesc.iCurrentIndex]->Get_Point(CCell::POINT_A)), 1);
+		_vector PointB = XMVectorSetW(XMLoadFloat3(&m_Cells[m_NavigationDesc.iCurrentIndex]->Get_Point(CCell::POINT_B)), 1);
+		_vector PointC = XMVectorSetW(XMLoadFloat3(&m_Cells[m_NavigationDesc.iCurrentIndex]->Get_Point(CCell::POINT_C)), 1);
+
+		_vector Plane = XMPlaneFromPoints(PointA, PointB, PointC);
+		
+		_float x = XMVectorGetX(vPosition);
+		_float y = XMVectorGetY(vPosition);
+		_float z = XMVectorGetZ(vPosition);
+		
+		_float a = XMVectorGetX(Plane);
+		_float b = XMVectorGetY(Plane);
+		_float c = XMVectorGetZ(Plane);
+		_float d = -(a*x + y*b + c*z);
+		//XMVectorGetW(Plane);
+
+		/* y = (-ax - cz - d) / b */
+		//0 = ax + yb + cz + d;
+
+		return d;
+	}
+	return 1.f;
+}
+
 #ifdef _DEBUG
 
 HRESULT CNavigation::Render()

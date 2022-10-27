@@ -142,7 +142,8 @@ HRESULT CLevel_Stage_02_1::Ready_Layer_Monster(const _tchar * pLayerTag)
 	AUTOINSTANCE(CGameInstance, pGameInstance);
 
 	
-
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra01"), LEVEL_STAGE_02_1, pLayerTag)))
+		return E_FAIL;
 
 
 

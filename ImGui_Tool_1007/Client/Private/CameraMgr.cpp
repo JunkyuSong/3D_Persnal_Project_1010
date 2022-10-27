@@ -44,6 +44,8 @@ void CCameraMgr::Initialize()
 
 void CCameraMgr::Tick(_float fTimedelta)
 {
+	if (g_eCurLevel == LEVEL_LOADING)
+		return;
 	AUTOINSTANCE(CGameInstance, pInstance);
 	if (pInstance->KeyDown(DIK_TAB))
 	{

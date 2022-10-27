@@ -14,31 +14,24 @@ BEGIN(Client)
 class CExtra02 final : public CMonster
 {
 public:
-	enum EXTRA02COLLIDER { COLLIDERTYPE_BODY, COLLIDERTYPE_ATT, COLLILDERTYPE_END };
+	enum EXTRA02COLLIDER { COLLIDERTYPE_BODY, COLLILDERTYPE_END };
 	enum STATE {
-		BossBat_AttackL_01_1,
-		BossBat_AttackL_01_2b,
-		BossBat_AttackL_01_3a,
-		BossBat_AttackR_01_1,
-		BossBat_AttackR_01_2b,
-		BossBat_Bite_2,
-		BossBat_Dash,
-		BossBat_FTurn_L,
-		BossBat_FTurn_R,
-		BossBat_HurtXL_R,
-		BossBat_HurtXL_L,
-		BossBat_Idle,
-		BossBat_JumpSmash_Chest,
-		BossBat_JumpSmashForwardL,
-		BossBat_JumpSmashL,
-		BossBat_SonicBoom,
-		BossBat_FightStart,
-		BossBat_Stun,
-		BossBat_TakeExecution_End,
-		BossBat_TakeExecution_DeadStart01,
-		BossBat_TurnL90,
-		BossBat_TurnR90,
-		BossBat_WalkF,
+		LV1Villager_M_Attack01,
+		LV1Villager_M_Attack02,
+		LV1Villager_M_Attack03,
+		LV1Villager_M_Attack04,
+		LV1Villager_M_Attack05,
+		LV1Villager_M_Attack06,
+		LV1Villager_M_Die01,
+		LV1Villager_M_HurtCounter,
+		LV1Villager_M_HurtKnockBack,
+		LV1Villager_M_HurtL_F,
+		LV1Villager_M_VSTakeExecution,
+		LV1Villager_M_WalkF,
+		LV2Villager01_M_ComboA01,
+		LV2Villager01_M_ComboA02,
+		LV2Villager01_M_VS_TakeExecution_01,
+		LV2Villager01_M_Walk,
 		STATE_END
 	};
 private:
@@ -83,13 +76,12 @@ private:
 
 	void Turn();
 	void Pattern();
-	void CurrentRot();
 
 	_bool	m_bAgainAnim = false;
 
 private:
 	STATE					m_eReserveState = STATE_END;
-	STATE					m_eCurState = BossBat_Idle;
+	STATE					m_eCurState = LV2Villager01_M_Walk;
 	STATE					m_ePreState = STATE_END;
 
 	_float4					m_AnimPos;

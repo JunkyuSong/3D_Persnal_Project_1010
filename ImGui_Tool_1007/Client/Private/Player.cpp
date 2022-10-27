@@ -22,12 +22,17 @@
 #include "UI_Targeting.h"
 #include "UI_Mgr.h"
 
+#include "Extra01.h"
+
 CPlayer::CPlayer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 	, m_ePass(PASS_NONPICK)
 {
-	for (auto& _pHand : m_pHands)
-		_pHand = nullptr;
+	for (_uint i = 0; i < 2; ++i)
+	{
+		m_pBones[i] = nullptr;
+		m_pHands[i] = nullptr;
+	}
 }
 
 CPlayer::CPlayer(const CPlayer & rhs)
@@ -36,8 +41,11 @@ CPlayer::CPlayer(const CPlayer & rhs)
 	, m_AnimPos(rhs.m_AnimPos)
 	, m_PreAnimPos(rhs.m_PreAnimPos)
 {
-	for (auto& _pHand : m_pHands)
-		_pHand = nullptr;
+	for (_uint i = 0; i < 2; ++i)
+	{
+		m_pBones[i] = nullptr;
+		m_pHands[i] = nullptr;
+	}
 }
 
 HRESULT CPlayer::Initialize_Prototype()
@@ -476,6 +484,13 @@ void CPlayer::KeyInput_Idle(_float fTimeDelta)
 	{
 		Targeting();
 	}
+	if (g_eCurLevel == LEVEL_STAGE_02_1)
+	{
+		if (pGameInstance->KeyDown(DIK_Q))
+		{
+			Execution();
+		}
+	}
 }
 
 void CPlayer::Move(_float fTimeDelta)
@@ -888,11 +903,18 @@ void CPlayer::Targeting()
 
 void CPlayer::TargetCheck()
 {
+	//아직 거리 안줬넹 ㅎ헤ㅔㅔ
 	if (static_cast<CMonster*>(m_pTarget)->Get_MonsterState() == CMonster::ATTACK_DISAPPEAR)
 	{
 		Safe_Release(m_pTarget);
 		static_cast<CCamera_Player*>(CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER))->Get_Target(nullptr);
 	}
+	else if (15.f<XMVectorGetX(XMVector3Length(static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION) - m_pTransformCom->Get_State(CTransform::STATE_POSITION))))
+	{
+		Safe_Release(m_pTarget);
+		static_cast<CCamera_Player*>(CCameraMgr::Get_Instance()->Get_Cam(CCameraMgr::CAMERA_PLAYER))->Get_Target(nullptr);
+	}
+
 }
 
 void CPlayer::CheckEndAnim()
@@ -1053,7 +1075,21 @@ void CPlayer::CheckEndAnim()
 	case Client::CPlayer::STATE_RUN_FR:
 		m_eCurState = STATE_IDLE;
 		break;
-	default:
+	case Client::CPlayer::Corvus_VSLV1Villager_M_Execution:
+		if (m_bOneChange)
+		{
+			Change_Hand();
+			m_bOneChange = false;
+		}
+		m_eCurState = STATE_IDLE;
+		break;
+	case Client::CPlayer::Corvus_VSLV2Villager_M_Execution:
+		if (m_bOneChange)
+		{
+			Change_Hand();
+			m_bOneChange = false;
+		}
+		m_eCurState = STATE_IDLE;
 		break;
 	}
 
@@ -1453,6 +1489,15 @@ void CPlayer::AfterAnim()
 		break;
 	case Client::CPlayer::SD_Dead:
 		break;
+	case Client::CPlayer::Corvus_VSLV1Villager_M_Execution:
+		if (m_bOneChange == false)
+		{
+			Change_Hand();
+			m_bOneChange = true;
+		}
+		break;
+	case Client::CPlayer::Corvus_VSLV2Villager_M_Execution:
+		break;
 	case Client::CPlayer::STATE_END:
 		break;
 	default:
@@ -1502,6 +1547,48 @@ void CPlayer::Get_AnimMat()
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vPos);
 	}
 
+}
+
+void CPlayer::Execution()
+{
+	list<CGameObject*> Monsters = *m_MonsterLayer->Get_ListFromLayer();
+	CGameObject*		_Target = nullptr;
+	_vector _vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	_float _fClosedDis(1.5f);
+	for (auto iter : Monsters)
+	{
+		_float _fDis = fabs(XMVectorGetX(XMVector3Length(static_cast<CTransform*>(iter->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION)	- _vPos)));
+		if (_fDis < 1.5f)
+		{
+			if (_fClosedDis > _fDis)
+			{
+				_Target = iter;
+				_fClosedDis = _fDis;
+			}
+		}
+	}
+	if (_Target != nullptr)
+	{
+		CMonster* _pMonster = static_cast<CMonster*>(_Target);
+		switch (_pMonster->Get_Type())
+		{
+		case CMonster::MONSTER_EXTRA01:
+			if (false == static_cast<CExtra01*>(_pMonster)->Get_Battle())
+			{
+				static_cast<CExtra01*>(_pMonster)->Set_AnimState(CExtra01::LV1Villager_M_VSTakeExecution);
+				m_eCurState = Corvus_VSLV1Villager_M_Execution;
+				m_pModelCom->DirectAnim(Corvus_VSLV1Villager_M_Execution);
+				CTransform* _TargetTrans = static_cast<CTransform*>(_pMonster->Get_ComponentPtr(TEXT("Com_Transform")));
+
+				m_pTransformCom->LookAt_ForLandObject(_TargetTrans->Get_State(CTransform::STATE_POSITION));
+				_TargetTrans->LookAt_ForLandObject(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			}
+			break;
+		case CMonster::MONSTER_EXTRA02:
+			
+			break;
+		}
+	}
 }
 
 void CPlayer::Cancle()
@@ -1559,6 +1646,7 @@ _bool CPlayer::Collision(_float fTimeDelta)
 		if (_pTarget)
 		{
 			//패링 안되고 몸 충돌되었을때
+			static_cast<CMonster*>(_pTarget)->Set_Coll_Target(true);
 			if (m_iHitCount > 2)
 			{
 				m_eCurState = SD_StrongHurt_Start;
@@ -1882,14 +1970,25 @@ HRESULT CPlayer::Ready_Hands()
 		return E_FAIL;
 
 	CHierarchyNode*		pWeaponSocket = m_pModelCom->Get_HierarchyNode("ik_hand_gun");
+	//CHierarchyNode*		pWeaponSocket = m_pModelCom->Get_HierarchyNode("weapon_r");
 	if (nullptr == pWeaponSocket)
 		return E_FAIL;
 	m_pHands[HAND_RIGHT] = pWeaponSocket;
-
+	
 	pWeaponSocket = m_pModelCom->Get_HierarchyNode("ik_hand_l");
 	if (nullptr == pWeaponSocket)
 		return E_FAIL;
 	m_pHands[HAND_LEFT] = pWeaponSocket;
+
+	pWeaponSocket = m_pModelCom->Get_HierarchyNode("weapon_r");
+	if (nullptr == pWeaponSocket)
+		return E_FAIL;
+	m_pBones[WEAPON_R] = pWeaponSocket;
+
+	pWeaponSocket = m_pModelCom->Get_HierarchyNode("weapon_l");
+	if (nullptr == pWeaponSocket)
+		return E_FAIL;
+	m_pBones[WEAPON_L] = pWeaponSocket;
 
 	return S_OK;
 }
@@ -2049,6 +2148,22 @@ HRESULT CPlayer::Update_Weapon_Skill()
 	return S_OK;
 }
 
+HRESULT CPlayer::Change_Hand()
+{
+	CHierarchyNode* _TempHands[2];
+
+	_TempHands[0] = m_pBones[0];
+	_TempHands[1] = m_pBones[1];
+
+	m_pBones[0] = m_pHands[0];
+	m_pBones[1] = m_pHands[1];
+
+	m_pHands[0] = _TempHands[0];
+	m_pHands[1] = _TempHands[1];
+
+	return S_OK;
+}
+
 CPlayer * CPlayer::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
 	CPlayer*		pInstance = new CPlayer(pDevice, pContext);
@@ -2095,6 +2210,11 @@ void CPlayer::Free()
 		if (_pHand)
 			Safe_Release(_pHand);
 	}
+	for (auto& _pBone : m_pBones)
+	{
+		if (_pBone)
+			Safe_Release(_pBone);
+	}
 	for (auto& _Part : m_pBaseParts)
 	{
 		if (_Part)
@@ -2122,4 +2242,5 @@ void CPlayer::Free()
 	Safe_Release(m_pStatusCom);
 	Safe_Release(m_pTarget);
 	Safe_Release(m_pNavigationCom);
+
 }

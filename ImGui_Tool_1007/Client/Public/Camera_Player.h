@@ -3,6 +3,10 @@
 #include "Client_Defines.h"
 #include "Client_Camere.h"
 
+BEGIN(Engine)
+class CNavigation;
+END
+
 BEGIN(Client)
 
 class CCamera_Player final : public CClient_Camere
@@ -30,10 +34,11 @@ public:
 	virtual void Free() override;
 
 private:
-	CGameObject*	m_pPlayer;
-	CTransform	*	m_pTarget;
+	CGameObject*	m_pPlayer = nullptr;
+	CTransform	*	m_pTarget = nullptr;
 	_float3			m_vDis;
 	_float			m_fAngleY;
+	CNavigation*	m_pNaviCom = nullptr;
 };
 
 END

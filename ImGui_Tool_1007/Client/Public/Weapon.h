@@ -36,6 +36,8 @@ public:
 	void	TrailOff();
 	void	Set_CollisionOn(_bool _bColliderOn) { m_bColliderOn = _bColliderOn; }
 
+
+
 protected:
 	CShader*				m_pShaderCom = nullptr;
 
@@ -50,6 +52,7 @@ protected:
 	class CTrail*			m_pTrailCom = nullptr;
 
 	_bool					m_bColliderOn = false;
+
 
 public:
 	virtual void Free() override;

@@ -26,6 +26,7 @@ public:
 	_float	Get_PosY(_vector vPos);
 	void	Set_Index(_int _iIndex) { m_NavigationDesc.iCurrentIndex = _iIndex; }
 	_int	Get_Index() { return m_NavigationDesc.iCurrentIndex; }
+	_float	Get_DistanceToCell(_fvector vPosition);
 
 #ifdef _DEBUG
 public:

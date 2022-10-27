@@ -217,6 +217,9 @@
     <Filter Include="02.GameObjects\05. Monster\Extra\Extra02">
       <UniqueIdentifier>{d5182fcf-ade3-4dd1-b9fb-1465d07563e5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\05. Monster\Extra\ExtraWeapon">
+      <UniqueIdentifier>{f32d26e3-c853-4aa7-bf09-bc53ff4d4568}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -429,6 +432,9 @@
     <ClInclude Include="..\Public\Extra02.h">
       <Filter>02.GameObjects\05. Monster\Extra\Extra02</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\MonsterAxe.h">
+      <Filter>02.GameObjects\05. Monster\Extra\ExtraWeapon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -622,6 +628,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Extra02.cpp">
       <Filter>02.GameObjects\05. Monster\Extra\Extra02</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MonsterAxe.cpp">
+      <Filter>02.GameObjects\05. Monster\Extra\ExtraWeapon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

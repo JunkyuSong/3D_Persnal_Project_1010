@@ -966,14 +966,26 @@ void CMagician::RenderGroup()
 {
 	if (nullptr == m_pRendererCom)
 		return;
-
-	for (auto& pPart : m_pParts)
+	if (m_fAppear < 1.f)
 	{
-		if (pPart != nullptr)
-			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, pPart);
-	}
+		for (auto& pPart : m_pParts)
+		{
+			if (pPart != nullptr)
+				m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, pPart);
+		}
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, this);
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, this);
+	}
+	else
+	{
+		for (auto& pPart : m_pParts)
+		{
+			if (pPart != nullptr)
+				m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, pPart);
+		}
+
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+	}
 }
 
 _bool CMagician::Collision(_float fTimeDelta)
