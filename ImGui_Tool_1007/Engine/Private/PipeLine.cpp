@@ -5,6 +5,11 @@ IMPLEMENT_SINGLETON(CPipeLine)
 CPipeLine::CPipeLine()
 	: m_pPlayer(nullptr)
 {
+	for (_uint i = 0; i < D3DTS_END; ++i)
+	{
+		XMStoreFloat4x4( &m_TransformMatrix[i], XMMatrixIdentity());
+		XMStoreFloat4x4(&m_TransformInverseMatrix[i], XMMatrixIdentity());
+	}
 }
 
 void CPipeLine::Set_Transform(TRANSFORMSTATE eTransformState, _fmatrix TransformMatrix)

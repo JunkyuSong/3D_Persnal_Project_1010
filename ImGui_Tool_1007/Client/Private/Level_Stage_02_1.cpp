@@ -8,6 +8,7 @@
 #include "UI_Mgr.h"
 
 #include "Boss_Bat.h"
+#include "Monster.h"
 
 
 CLevel_Stage_02_1::CLevel_Stage_02_1(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -141,11 +142,47 @@ HRESULT CLevel_Stage_02_1::Ready_Layer_Monster(const _tchar * pLayerTag)
 {
 	AUTOINSTANCE(CGameInstance, pGameInstance);
 
+	CMonster::MONSTERINFO _tInfo;
+
+	ZeroMemory(&_tInfo, sizeof(CMonster::MONSTERINFO));
 	
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra01"), LEVEL_STAGE_02_1, pLayerTag)))
 		return E_FAIL;
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra02"), LEVEL_STAGE_02_1, pLayerTag)))
+	_tInfo._vPos = XMVectorSet(27.879f, 0.27f, 42.951f, 1.f);
+	_tInfo._iIndex = 145;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra01"), LEVEL_STAGE_02_1, pLayerTag, &_tInfo)))
+		return E_FAIL;
+
+	_tInfo._vPos = XMVectorSet(81.534f, 13.152f, 56.565f, 1.f);
+	_tInfo._iIndex = 79;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra01"), LEVEL_STAGE_02_1, pLayerTag, &_tInfo)))
+		return E_FAIL;
+
+	_tInfo._vPos = XMVectorSet(48.316, 0.27f, 63.743f, 1.f);
+	_tInfo._iIndex = 147;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra01"), LEVEL_STAGE_02_1, pLayerTag, &_tInfo)))
+		return E_FAIL;
+
+	_tInfo._vPos = XMVectorSet(66.204f, 0.271f, 62.829f, 1.f);
+	_tInfo._iIndex = 324;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra01"), LEVEL_STAGE_02_1, pLayerTag, &_tInfo)))
+		return E_FAIL;
+
+	
+	_tInfo._vPos = XMVectorSet(51.979, 0.115, -7.650, 1.f);
+	_tInfo._iIndex = 0;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra02"), LEVEL_STAGE_02_1, pLayerTag,&_tInfo)))
+		return E_FAIL;
+
+	_tInfo._vPos = XMVectorSet(33.041f, 0.268f, 46.252f, 1.f);
+	_tInfo._iIndex = 144;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra02"), LEVEL_STAGE_02_1, pLayerTag, &_tInfo)))
+		return E_FAIL;
+
+	_tInfo._vPos = XMVectorSet(16.554f, 13.150f, 67.046f, 1.f);
+	_tInfo._iIndex = 48;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster_Extra02"), LEVEL_STAGE_02_1, pLayerTag, &_tInfo)))
 		return E_FAIL;
 
 	return S_OK;

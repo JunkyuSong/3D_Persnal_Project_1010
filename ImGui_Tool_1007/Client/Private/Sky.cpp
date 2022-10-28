@@ -25,7 +25,7 @@ HRESULT CSky::Initialize(void * pArg)
 
 	__super::Initialize(pArg);
 	m_pTransformCom->Set_Scale(XMVectorSet(0.01f, 0.01f, 0.01f, 0.f));
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(45.f, 0.1f, 45.f, 1.f));
+	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(45.f, 0.1f, 45.f, 1.f));
 
 	return S_OK;
 }
@@ -41,6 +41,9 @@ void CSky::LateTick( _float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
+	AUTOINSTANCE(CGameInstance, _pInstance);
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&_pInstance->Get_CamPosition()));
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_PRIORITY, this);
 }
 

@@ -14,6 +14,7 @@ CGameInstance::CGameInstance()
 	, m_pCollision_Mgr(CCollisionMgr::Get_Instance())
 	, m_pRand_Mgr(CRandMgr::Get_Instance())
 	, m_pTarget_Manager(CTarget_Manager::Get_Instance())
+	, m_pFrustum(CFrustum::Get_Instance())
 {	
 	Safe_AddRef(m_pLight_Manager);
 	Safe_AddRef(m_pPipeLine);
@@ -26,6 +27,7 @@ CGameInstance::CGameInstance()
 	Safe_AddRef(m_pCollision_Mgr);
 	Safe_AddRef(m_pRand_Mgr);
 	Safe_AddRef(m_pTarget_Manager);
+	Safe_AddRef(m_pFrustum);
 }
 
 HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, HINSTANCE hInst, const GRAPHICDESC& GraphicDesc, ID3D11Device** ppDevice, ID3D11DeviceContext** ppContext)
@@ -51,6 +53,9 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, HINSTANCE hInst, cons
 	if (FAILED(m_pComponent_Manager->Reserve_Container(iNumLevels)))
 		return E_FAIL;
 
+	if (FAILED(m_pFrustum->Initialize()))
+		return E_FAIL;
+
 	CPicking::Get_Instance()->Initialize(GraphicDesc.hWnd, GraphicDesc.iWinSizeX, GraphicDesc.iWinSizeY, *ppDevice, *ppContext);
 
 	return S_OK;
@@ -69,6 +74,7 @@ void CGameInstance::Tick_Engine( _float fTimeDelta)
 	m_pInput_Device->Update();
 	m_pLevel_Manager->Tick(fTimeDelta);
 	m_pObject_Manager->Tick(fTimeDelta);
+	m_pFrustum->Tick();
 	m_pCollision_Mgr->Tick();
 	//m_pPipeLine->Update();
 	CPicking::Get_Instance()->Tick();
@@ -378,6 +384,14 @@ const _int & CGameInstance::Rand_Int(const _int & _iMin, const _int & _iMax)
 	return m_pRand_Mgr->Rand_Int(_iMin, _iMax);
 }
 
+_bool CGameInstance::isIn_Frustum_WorldSpace(_fvector vWorldPos, float fRadius)
+{
+	if (nullptr == m_pFrustum)
+		return false;
+
+	return m_pFrustum->isIn_WorldSpace(vWorldPos, fRadius);
+}
+
 void CGameInstance::Release_Engine()
 {
 	CGameInstance::Get_Instance()->Destroy_Instance();
@@ -398,6 +412,8 @@ void CGameInstance::Release_Engine()
 
 	CLight_Manager::Destroy_Instance();
 
+	CFrustum::Destroy_Instance();
+
 	CInput_Device::Destroy_Instance();
 
 	CPicking::Destroy_Instance();
@@ -410,6 +426,7 @@ void CGameInstance::Release_Engine()
 void CGameInstance::Free()
 {
 	Safe_Release(m_pTarget_Manager);
+	Safe_Release(m_pFrustum);
 	Safe_Release(m_pPipeLine);
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pTimer_Manager);

@@ -42,18 +42,38 @@ HRESULT CExtra01::Initialize(void * pArg)
 		return E_FAIL;
 
 	Ready_LimitTime();
-
-
 	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(51.979, 0.115, -7.650, 1.f));
-	_bool		isMove = true;
-	Get_AnimMat();
-	_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
-	if (nullptr != m_pNavigationCom)
-		isMove = m_pNavigationCom->isMove(XMVectorSet(30.672, 2.402, 50.622, 1.f), &vNormal);
+	if (pArg)
+	{
+		MONSTERINFO _tInfo = *static_cast<MONSTERINFO*>(pArg);
 
-	if (true == isMove)
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(30.672, 2.402, 50.622, 1.f));
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, _tInfo._vPos);
+		_bool		isMove = true;
+		Get_AnimMat();
+		_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+		if (nullptr != m_pNavigationCom)
+			isMove = m_pNavigationCom->isMove(_tInfo._vPos, &vNormal);
+
+		if (true == isMove)
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, _tInfo._vPos);
+
+		m_pNavigationCom->Set_Index(_tInfo._iIndex);
+	}
+	else
+	{
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(51.979, 0.115, -7.650, 1.f));
+		_bool		isMove = true;
+		Get_AnimMat();
+		_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+		if (nullptr != m_pNavigationCom)
+			isMove = m_pNavigationCom->isMove(XMVectorSet(30.672, 2.402, 50.622, 1.f), &vNormal);
+
+		if (true == isMove)
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(30.672, 2.402, 50.622, 1.f));
+	}
+	
+
+
 
 	m_eCurState = LV1Villager_M_IdleGeneral;
 	On_Collider(COLLIDERTYPE_BODY, true);
@@ -123,14 +143,16 @@ void CExtra01::LateTick(_float fTimeDelta)
 		RenderGroup();
 		return;
 	}
+	AUTOINSTANCE(CGameInstance, _pInstance);
 	if (Collision(fTimeDelta))
 	{
 		CheckAnim();
 		CheckState(fTimeDelta);
 		PlayAnimation(fTimeDelta);
 	}
-
-	RenderGroup();
+	_bool		isDraw = _pInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
+	if (isDraw)
+		RenderGroup();
 }
 
 HRESULT CExtra01::Render()
@@ -685,6 +707,8 @@ void CExtra01::Ready_LimitTime()
 	m_vecLimitTime[LV1Villager_M_Attack01].push_back(100.f);//공격 콜라이더 on
 	m_vecLimitTime[LV1Villager_M_Attack01].push_back(110.f);
 	m_vecLimitTime[LV1Villager_M_Attack01].push_back(165.f);//공격 콜라이더 off
+
+	m_vecLimitTime[LV1Villager_M_Attack03].push_back(60.f);//공격 콜라이더 off
 }
 
 CExtra01 * CExtra01::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)

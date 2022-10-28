@@ -12,6 +12,7 @@
 #include "Picking.h"
 #include "RandMgr.h"
 #include "Target_Manager.h"
+#include "Frustum.h"
 
 /* 클라이언트로 보여주기위한 가장 대표적인 클래스이다. */
 /* 각종 매니져클래스들의 주요함수를 클라로 보여준다.  */
@@ -94,6 +95,9 @@ public:/* For. Random_Manager*/
 	const _float &	Rand_Float(const _float & _fMin, const _float & _fMax);
 	const _int &	Rand_Int(const _int & _iMin, const _int & _iMax);
 
+public: /* For.Frustum */
+	_bool isIn_Frustum_WorldSpace(_fvector vWorldPos, float fRadius = 0.f);
+
 private:
 	CGraphic_Device*				m_pGraphic_Device = nullptr;
 	CInput_Device*					m_pInput_Device = nullptr;
@@ -106,6 +110,7 @@ private:
 	CCollisionMgr*					m_pCollision_Mgr = nullptr;
 	CRandMgr*						m_pRand_Mgr = nullptr;
 	CTarget_Manager*				m_pTarget_Manager = nullptr;
+	CFrustum*						m_pFrustum = nullptr;
 
 public:
 	static void Release_Engine();

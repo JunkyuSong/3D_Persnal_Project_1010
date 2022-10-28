@@ -47,15 +47,35 @@ HRESULT CExtra02::Initialize(void * pArg)
 
 
 	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(45.672, 0.271, 32.622, 1.f));
-	_bool		isMove = true;
-	Get_AnimMat();
-	_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
-	if (nullptr != m_pNavigationCom)
-		isMove = m_pNavigationCom->isMove(XMVectorSet(45.672, 0.271, 32.622, 1.f), &vNormal);
+	if (pArg)
+	{
+		MONSTERINFO _tInfo = *static_cast<MONSTERINFO*>(pArg);
 
-	if (true == isMove)
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(45.672, 0.271, 32.622, 1.f));
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, _tInfo._vPos);
+		_bool		isMove = true;
+		Get_AnimMat();
+		_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+		if (nullptr != m_pNavigationCom)
+			isMove = m_pNavigationCom->isMove(_tInfo._vPos, &vNormal);
+
+		if (true == isMove)
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, _tInfo._vPos);
+
+		m_pNavigationCom->Set_Index(_tInfo._iIndex);
+	}
+	else
+	{
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(51.979, 0.115, -7.650, 1.f));
+		_bool		isMove = true;
+		Get_AnimMat();
+		_vector		vNormal = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+		if (nullptr != m_pNavigationCom)
+			isMove = m_pNavigationCom->isMove(XMVectorSet(30.672, 2.402, 50.622, 1.f), &vNormal);
+
+		if (true == isMove)
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(30.672, 2.402, 50.622, 1.f));
+	}
+
 
 	m_eCurState = LV1Villager_M_IdleGeneral;
 	On_Collider(COLLIDERTYPE_BODY, true);
@@ -140,7 +160,16 @@ void CExtra02::LateTick(_float fTimeDelta)
 		PlayAnimation(fTimeDelta);
 	}
 
-	RenderGroup();
+	AUTOINSTANCE(CGameInstance, _pInstance);
+	if (Collision(fTimeDelta))
+	{
+		CheckAnim();
+		CheckState(fTimeDelta);
+		PlayAnimation(fTimeDelta);
+	}
+	_bool		isDraw = _pInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
+	//if (isDraw)
+		RenderGroup();
 }
 
 HRESULT CExtra02::Render()
