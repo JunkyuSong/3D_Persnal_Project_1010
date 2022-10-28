@@ -30,7 +30,7 @@ void CLevel_Logo::Tick(_float fTimeDelta)
 	{
 		AUTOINSTANCE(CGameInstance, pGameInstance);
 				
-		if (FAILED(pGameInstance->Reserve_Level(LEVEL_GAMEPLAY)))
+		if (FAILED(pGameInstance->Reserve_Level(LEVEL_STAGE_LOBBY)))
 			return;
 
 

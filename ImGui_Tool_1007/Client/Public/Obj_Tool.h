@@ -79,7 +79,7 @@ private:
 	char					m_szLayer[256];
 
 	vector<const char*>		m_pLevels;
-	_uint					m_iSelectLevel = 1;
+	_uint					m_iSelectLevel = 0;
 		
 private:
 	map<_tchar*, CObj_Plus*>	m_mapToolProto;

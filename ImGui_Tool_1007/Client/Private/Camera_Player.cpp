@@ -110,7 +110,7 @@ void CCamera_Player::Tick(_float fTimeDelta)
 	if (m_pNaviCom->isMove(vCamPos, nullptr))
 	{
 		_float Y = m_pNaviCom->Get_PosY(vCamPos);
-		if (Y - vCamPos.m128_f32[1] > - 0.5f)
+		if (Y + 0.5f   > vCamPos.m128_f32[1])
 		{
 			vCamPos.m128_f32[1] = m_pNaviCom->Get_PosY(vCamPos) + 0.5f;
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPos);

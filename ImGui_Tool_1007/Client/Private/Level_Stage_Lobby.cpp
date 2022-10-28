@@ -18,8 +18,8 @@ HRESULT CLevel_Stage_Lobby::Initialize()
 	if (FAILED(__super::Initialize()))
 		return E_FAIL;
 
-	/*if (FAILED(Ready_Lights()))
-		return E_FAIL;*/
+	if (FAILED(Ready_Lights()))
+		return E_FAIL;
 
 
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
@@ -71,7 +71,8 @@ HRESULT CLevel_Stage_Lobby::Ready_Lights()
 	LightDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
 	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	LightDesc.vSpecular = _float4(0.5f, 0.5f, 0.5f, 1.f);
 
 	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LightDesc)))
 		return E_FAIL;
