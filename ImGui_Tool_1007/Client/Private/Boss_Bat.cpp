@@ -935,16 +935,16 @@ void CBoss_Bat::Ready_LimitTime()
 	m_vecLimitTime[BossBat_HurtXL_L].push_back(10.f); // 바디 다시 피격으로
 
 	//BossBat_JumpSmash_Chest  -> 여기부터
-	m_vecLimitTime[BossBat_JumpSmash_Chest].push_back(60.f); // 바디 무기로
+	m_vecLimitTime[BossBat_JumpSmash_Chest].push_back(80.f); // 바디 무기로
 	m_vecLimitTime[BossBat_JumpSmash_Chest].push_back(100.f); // 바디 다시 피격으로
 
 	//BossBat_JumpSmashForwardL  -> 여기부터
-	m_vecLimitTime[BossBat_JumpSmashForwardL].push_back(150.f); // 바디 무기로
+	m_vecLimitTime[BossBat_JumpSmashForwardL].push_back(170.f); // 바디 무기로
 	m_vecLimitTime[BossBat_JumpSmashForwardL].push_back(200.f); // 바디 다시 피격으로
 	m_vecLimitTime[BossBat_JumpSmashForwardL].push_back(400.f); // 아이들 상태로
 
 	//BossBat_JumpSmashL  -> 여기부터
-	m_vecLimitTime[BossBat_JumpSmashL].push_back(150.f); // 바디 무기로
+	m_vecLimitTime[BossBat_JumpSmashL].push_back(174.f); // 바디 무기로
 	m_vecLimitTime[BossBat_JumpSmashL].push_back(200.f); // 바디 다시 피격으로
 	m_vecLimitTime[BossBat_JumpSmashL].push_back(400.f); // 아이들 상태로
 }

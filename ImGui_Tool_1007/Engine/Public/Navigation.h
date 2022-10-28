@@ -36,6 +36,7 @@ public:
 	void				DeleteCell(_uint _iIndex);
 	void				DeletePoint(CPointInCell* _pPoint);
 	class CPointInCell*	PickingPoint();
+	class CCell*		PickingCell(_vector& _vPos);
 	class CPointInCell*	FindPoint(_float3 _fPoints);
 #endif // _DEBUG
 

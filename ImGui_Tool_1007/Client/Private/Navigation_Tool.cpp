@@ -27,6 +27,12 @@ void CNavigation_Tool::Tick()
 	{
 		m_pPickModel = static_cast<CStage_01*>(_Instance->Get_Layer(g_eCurLevel, TEXT("Layer_Stage"))->Get_ObjFromLayer(0));
 	}
+	if (ImGui::Button("Load_Navi"))
+	{
+		Safe_Release(m_pNavi);
+		m_pNavi = static_cast<CNavigation*>(CTerrainMgr::Get_Instance()->Get_Terrain(g_eCurLevel)->Get_ComponentPtr(TEXT("Com_Navigation")));
+		Safe_AddRef(m_pNavi);
+	}
 	ImGui::InputText("Name", m_szName, 260);
 	if (ImGui::Button("Create_Navi"))
 	{
@@ -171,6 +177,54 @@ void CNavigation_Tool::CellTick()
 	//셀 목록 받아오고, 셀 포인트 수정은 못하고, 속성 수정가능하고, 인덱스 확인가능하고
 	// 현재 선택된 셀은 색 다르게 뜨고, 셀 삭제 가능하고.
 	// 이건 내일 오전에 하고..
+
+	AUTOINSTANCE(CGameInstance, _pInstance);
+	CCell* _Cell(nullptr);
+	if (_pInstance->MouseDown(DIMK::DIMK_LBUTTON) && _pInstance->KeyPressing(DIK_LSHIFT))
+	{
+		_vector _vPos{ 0.f,0.f,0.f,1.f };
+		_Cell = m_pNavi->PickingCell(_vPos);
+		if (_Cell != nullptr)
+		{
+			XMStoreFloat3(&m_vPickingPos, _vPos);
+			Safe_Release(m_pCell);
+			m_pCell = _Cell;
+			Safe_AddRef(m_pCell);
+		}
+	}
+	if (m_pCell != nullptr)
+	{
+		//ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		
+		ImGui::Text("Index : %d", m_pCell->Get_Index());
+
+		ImGui::PushItemWidth(100);
+		ImGui::Text("PickingPos_X : %.3f", m_vPickingPos.x);
+		ImGui::SameLine();
+		ImGui::Text("PickingPos_Y : %.3f", m_vPickingPos.y);
+		ImGui::SameLine();
+		ImGui::Text("PickingPos_Z : %.3f", m_vPickingPos.z);
+
+		ImGui::Text("POINT.A_X : %.3f", m_pCell->Get_Point(CCell::POINT_A).x);
+		ImGui::SameLine();
+		ImGui::Text("POINT.A_Y : %.3f", m_pCell->Get_Point(CCell::POINT_A).y);
+		ImGui::SameLine();
+		ImGui::Text("POINT.A_Z : %.3f", m_pCell->Get_Point(CCell::POINT_A).z);
+
+		ImGui::Text("POINT.B_X : %.3f", m_pCell->Get_Point(CCell::POINT_B).x);
+		ImGui::SameLine();
+		ImGui::Text("POINT.B_Y : %.3f", m_pCell->Get_Point(CCell::POINT_B).y);
+		ImGui::SameLine();
+		ImGui::Text("POINT.B_Z : %.3f", m_pCell->Get_Point(CCell::POINT_B).z);
+
+		ImGui::Text("POINT.C_X : %.3f", m_pCell->Get_Point(CCell::POINT_C).x);
+		ImGui::SameLine();
+		ImGui::Text("POINT.C_Y : %.3f", m_pCell->Get_Point(CCell::POINT_C).y);
+		ImGui::SameLine();
+		ImGui::Text("POINT.C_Z : %.3f", m_pCell->Get_Point(CCell::POINT_C).z);
+
+		ImGui::PopItemWidth();
+	}
 }
 
 void CNavigation_Tool::Add_Strip(CPointInCell* _pPoint)
@@ -309,4 +363,5 @@ void CNavigation_Tool::Free()
 	Safe_Release(m_pNavi);
 	for (auto& _pPoint : m_pPoint)
 		Safe_Release(_pPoint);
+	Safe_Release(m_pCell);
 }

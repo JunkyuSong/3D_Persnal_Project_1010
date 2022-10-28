@@ -160,6 +160,85 @@ void CCollisionMgr::PlayerWeapon_vs_MonsterBody()
 	}	
 }
 
+void CCollisionMgr::MonsterBody_vs_MonsterBody()
+{
+	for (auto& _WeaponPair : m_CollisionList[TYPE_MONSTER_PUSH])
+	{
+		
+		switch (_WeaponPair.second->Get_ColliderType())
+		{
+		case CCollider::TYPE_AABB:
+		{
+			CAABB* _Collider = static_cast<CAABB*>(_WeaponPair.second);
+			for (auto& _Body_Pair : m_CollisionList[TYPE_MONSTER_PUSH])
+			{
+				if (_WeaponPair.first == _Body_Pair.first)
+					continue;
+				if (_Collider->Collision(_Body_Pair.second))
+				{
+					_Collider->Set_Target(_Body_Pair.first);
+					_Body_Pair.second->Set_Target(_WeaponPair.first);
+					return;
+				}
+			}
+		}
+		break;
+		case CCollider::TYPE_OBB:
+		{
+			COBB* _Collider = static_cast<COBB*>(_WeaponPair.second);
+			for (auto& _Body_Pair : m_CollisionList[TYPE_MONSTER_PUSH])
+			{
+				if (_WeaponPair.first == _Body_Pair.first)
+					continue;
+				if (_Collider->Collision(_Body_Pair.second))
+				{
+					_Collider->Set_Target(_Body_Pair.first);
+					_Body_Pair.second->Set_Target(_WeaponPair.first);
+					return;
+				}
+			}
+		}
+		break;
+		case CCollider::TYPE_SPHERE:
+		{
+			CSphere* _Collider = static_cast<CSphere*>(_WeaponPair.second);
+			for (auto& _Body_Pair : m_CollisionList[TYPE_MONSTER_PUSH])
+			{
+				if (_WeaponPair.first == _Body_Pair.first)
+					continue;
+				if (_Collider->Collision(_Body_Pair.second))
+				{
+					_Collider->Set_Target(_Body_Pair.first);
+					_Body_Pair.second->Set_Target(_WeaponPair.first);
+					return;
+				}
+			}
+		}
+		break;
+		case CCollider::TYPE_CAPSULE:
+		{
+			CCapsule* _Collider = static_cast<CCapsule*>(_WeaponPair.second);
+			for (auto& _Body_Pair : m_CollisionList[TYPE_MONSTER_PUSH])
+			{
+				if (_WeaponPair.first == _Body_Pair.first)
+					continue;
+				if (_Collider->Collision(_Body_Pair.second))
+				{
+					_Collider->Set_Target(_Body_Pair.first);
+					_Body_Pair.second->Set_Target(_WeaponPair.first);
+					CCapsule* _Second_Collider = static_cast<CCapsule*>(_Body_Pair.second);
+					_Second_Collider->Set_Dir(_Collider->Get_Dir());
+					_Second_Collider->Set_Dis(_Collider->Get_Dis());
+
+					return;
+				}
+			}
+		}
+		break;
+		}
+	}
+}
+
 void CCollisionMgr::PlayerBody_vs_MonsterBody()
 {
 	for (auto& _WeaponPair : m_CollisionList[TYPE_MONSTER_PUSH])

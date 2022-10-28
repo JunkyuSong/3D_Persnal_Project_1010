@@ -42,7 +42,7 @@ private:
 	CShader*				m_pShaderCom = nullptr;
 	CTransform*				m_pTransCom[BAR_END] = { nullptr };
 	CRenderer*				m_pRendererCom = nullptr;
-	CVIBuffer_Rect*			m_pVIBufferCom =  nullptr ;
+	CVIBuffer_Rect*			m_pVIBufferCom =  nullptr;
 	CTexture*				m_pTextureCom[BAR_END] = { nullptr };
 
 private:

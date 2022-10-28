@@ -2,6 +2,8 @@
 #include "Cell.h"
 #include "PointInCell.h"
 
+#include "Picking.h"
+
 CNavigation::CNavigation(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CComponent(pDevice, pContext)
 {
@@ -291,6 +293,39 @@ CPointInCell* CNavigation::PickingPoint()
 			return _point; 
 		}
 	}
+	return nullptr;
+}
+
+CCell * CNavigation::PickingCell(_vector& _vPos)
+{
+	CPicking*		pPicking = CPicking::Get_Instance();
+	_bool _bPicking = false;
+	Safe_AddRef(pPicking);
+
+	//_matrix			WorldMatrixInv = pTransform->Get_WorldMatrixInverse();
+
+	_vector			vRayDir, vRayPos;
+
+	pPicking->Compute_LocalRayInfo(vRayDir, vRayPos, nullptr);
+	vRayDir = XMVector3Normalize(vRayDir);
+
+	_float		fDist;
+	for (auto _Cell : m_Cells)
+	{
+		_float3	_vPoints[3];
+		_vPoints[0] = _Cell->Get_Point(CCell::POINT_A);
+		_vPoints[1] = _Cell->Get_Point(CCell::POINT_B);
+		_vPoints[2] = _Cell->Get_Point(CCell::POINT_C);
+
+		if (true == TriangleTests::Intersects(vRayPos, vRayDir, XMLoadFloat3(&(_vPoints[0])) , XMLoadFloat3(&(_vPoints[1])), XMLoadFloat3(&(_vPoints[2])), fDist))
+		{
+			_vector	vPickPos = vRayPos + (vRayDir * fDist);
+			_vPos = vPickPos;
+			Safe_Release(pPicking);
+			return _Cell;
+		}
+	}
+	Safe_Release(pPicking);
 	return nullptr;
 }
 

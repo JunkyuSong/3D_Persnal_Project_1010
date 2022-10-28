@@ -4,6 +4,11 @@
 #include "Navigation.h"
 #include "PointInCell.h"
 #include "Stage_01.h"
+
+BEGIN(Engine)
+class CCell;
+END
+
 BEGIN(Client)
 class CNavigation_Tool final:
 	public CBase
@@ -40,8 +45,11 @@ private:
 	_float3			m_vPoint[CCell::POINT_END];
 	CPointInCell*	m_pPoint[CCell::POINT_END];
 
+	CCell*			m_pCell = nullptr;
+
 	_float			m_PointY = 0.f;
-	CStage_01*	m_pPickModel = nullptr;
+	CStage_01*		m_pPickModel = nullptr;
+	_float3			m_vPickingPos{ 0.f,0.f,0.f };
 	
 };
 
