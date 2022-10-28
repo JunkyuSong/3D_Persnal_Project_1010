@@ -150,6 +150,10 @@ HRESULT CTerrain::Ready_Components()
 			return E_FAIL;
 		break;
 	case Client::LEVEL_STAGE_LAST:
+		if (FAILED(__super::Add_Component(LEVEL_STAGE_LOBBY, TEXT("Prototype_Component_Texture_Terrain_02"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		if (FAILED(__super::Add_Component(LEVEL_STAGE_LOBBY, TEXT("Prototype_Component_Navigation_Stage_Lobby"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom)))
+			return E_FAIL;
 		break;
 	case Client::LEVEL_STAGE_LOBBY:
 		if (FAILED(__super::Add_Component(LEVEL_STAGE_LOBBY, TEXT("Prototype_Component_Texture_Terrain_02"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))

@@ -294,6 +294,12 @@ HRESULT CObj_Tool::Tool_Obj()
 
 	if (m_pLayer != nullptr)
 	{
+
+		if (ImGui::Button("Get_Model"))
+		{
+			m_pPickModel = static_cast<CStage_01*>(CGameInstance::Get_Instance()->Get_Layer(g_eCurLevel, TEXT("Layer_Test"))->Get_ObjFromLayer(0));
+		}
+
 		if (ImGui::Button("Add Obj"))
 		{
 			if (m_pPick != nullptr)
@@ -526,7 +532,10 @@ HRESULT CObj_Tool::Tool_Obj_Add()
 	}
 	else
 	{
-		CTerrainMgr::Get_Instance()->Get_Terrain(g_eCurLevel)->Picking(m_vPos);
+		if (m_pPickModel == nullptr)
+			CTerrainMgr::Get_Instance()->Get_Terrain(g_eCurLevel)->Picking(m_vPos);
+		else
+			m_pPickModel->Picking(m_vPos);
 
 		//m_vScale = m_pPick_Trans->Get_Scale();
 		//_float3 _vPos;
