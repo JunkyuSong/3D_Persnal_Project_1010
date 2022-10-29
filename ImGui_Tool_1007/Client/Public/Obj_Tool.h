@@ -5,6 +5,7 @@
 #include "Obj_Plus.h"
 #include "Obj_NonAnim.h"
 #include "Stage_01.h"
+#include "Stage_Test.h"
 
 class CObj_Tool :
 	public CBase
@@ -86,5 +87,5 @@ private:
 	map<_tchar*, CObj_Plus*>	m_mapToolProto;
 	_bool							m_bSetting = false;
 
-	CStage_01*		m_pPickModel = nullptr;
+	CStage_Test*				m_pPickModel = nullptr;
 };

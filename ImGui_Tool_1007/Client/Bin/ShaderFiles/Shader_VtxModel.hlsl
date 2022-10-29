@@ -165,6 +165,23 @@ PS_OUT PS_MAIN_3(PS_IN In)
 	
 	return Out;
 }
+
+PS_OUT PS_TEST(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	Out.vDiffuse = (vector)1.f;
+
+	vector			vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+	Out.vDiffuse = vMtrlDiffuse;
+	Out.vDiffuse.a = 0.5f;
+
+	if (0 == Out.vDiffuse.a)
+		discard;
+
+	return Out;
+}
+
 PS_OUT PS_MAIN_SEl(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
@@ -304,5 +321,16 @@ technique11 DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_Sky();
+	}
+
+
+	pass TEST
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_TEST();
 	}
 }

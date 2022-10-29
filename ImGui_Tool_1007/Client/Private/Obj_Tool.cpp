@@ -297,7 +297,7 @@ HRESULT CObj_Tool::Tool_Obj()
 
 		if (ImGui::Button("Get_Model"))
 		{
-			m_pPickModel = static_cast<CStage_01*>(CGameInstance::Get_Instance()->Get_Layer(g_eCurLevel, TEXT("Layer_Test"))->Get_ObjFromLayer(0));
+			m_pPickModel = static_cast<CStage_Test*>(CGameInstance::Get_Instance()->Get_Layer(g_eCurLevel, TEXT("Layer_Test"))->Get_ObjFromLayer(0));
 		}
 
 		if (ImGui::Button("Add Obj"))
@@ -307,7 +307,7 @@ HRESULT CObj_Tool::Tool_Obj()
 				static_cast<CObj_Plus*>(m_pPick)->Set_Pass(CObj_Plus::PASS_NONPICK);
 
 			}
-			XMStoreFloat3(&m_vScale, XMVectorSet(1.f, 1.f, 1.f, 0.f));
+			XMStoreFloat3(&m_vScale, XMVectorSet(0.01f, 0.01f, 0.01f, 0.f));
 			XMStoreFloat3(&m_vPos, XMVectorSet(1.f, 1.f, 1.f, 1.f));
 			XMStoreFloat3(&m_vAngle, XMVectorSet(0.f, 0.f, 0.f, 0.f));
 			m_pPick = nullptr;
@@ -428,8 +428,8 @@ HRESULT CObj_Tool::Tool_Obj_Pick()
 	m_pPick_Trans->Set_Scale(XMVectorSet(m_vScale.x, m_vScale.y, m_vScale.z, 0.f));
 
 	m_pPick_Trans->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), XMConvertToRadians(m_vAngle.z));
-	m_pPick_Trans->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), XMConvertToRadians(m_vAngle.x));
-	m_pPick_Trans->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(m_vAngle.y));
+	m_pPick_Trans->Turn(XMVectorSet(1.f, 0.f, 0.f, 0.f), XMConvertToRadians(m_vAngle.x));
+	m_pPick_Trans->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(m_vAngle.y));
 	m_pPick_Trans->Set_Rotation(XMLoadFloat3(&m_vAngle));
 	m_pPick_Trans->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_vPos.x, m_vPos.y, m_vPos.z, 1.f));
 
@@ -536,7 +536,7 @@ HRESULT CObj_Tool::Tool_Obj_Add()
 			CTerrainMgr::Get_Instance()->Get_Terrain(g_eCurLevel)->Picking(m_vPos);
 		else
 			m_pPickModel->Picking(m_vPos);
-
+		
 		//m_vScale = m_pPick_Trans->Get_Scale();
 		//_float3 _vPos;
 		//XMStoreFloat3(&_vPos, m_pPick_Trans->Get_State(CTransform::STATE_POSITION));
@@ -558,7 +558,7 @@ HRESULT CObj_Tool::Tool_Obj_Add()
 		m_vAngle.y = XMConvertToDegrees(m_vAngle.y);
 		m_vAngle.z = XMConvertToDegrees(m_vAngle.z);
 
-		m_vPos.y = XMVectorGetY(_Pos);
+		//m_vPos.y = XMVectorGetY(_Pos);
 		Key_Input();
 
 
@@ -658,10 +658,10 @@ HRESULT CObj_Tool::Tool_Obj_Add()
 		_tchar* szTemp = nullptr; // 딜리트해야하는 곳 : 오비제이, 여기
 		szTemp = CImGui::Get_Instance()->ConvertCtoWC(m_pModels[m_iSelectModel]);
 		lstrcpy(m_tObj_Desc.szModelTag, szTemp);
-
+		m_pPick_Trans->Set_Rotation(XMLoadFloat3(&m_vAngle));
 		_tchar* szLayer = nullptr;
 		szLayer = CImGui::Get_Instance()->ConvertCtoWC(m_pLayers[m_iSelectLayer]);
-
+		
 		switch (m_bAddType)
 		{
 		case TYPE_ANIM:
@@ -693,7 +693,8 @@ HRESULT CObj_Tool::Tool_Obj_Add()
 	ImGui::SameLine();
 	if (ImGui::Button("Close"))
 	{
-		static_cast<CObj_Plus*>(m_pPick)->Set_Pass(CObj_Plus::PASS_NONPICK);
+		if (m_pPick)
+			static_cast<CObj_Plus*>(m_pPick)->Set_Pass(CObj_Plus::PASS_NONPICK);
 		m_pPick = nullptr;
 		m_pPick_Trans = nullptr;
 		m_bSetting = false;

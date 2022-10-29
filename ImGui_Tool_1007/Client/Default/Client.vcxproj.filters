@@ -226,6 +226,9 @@
     <Filter Include="02.GameObjects\03. UI\HP_Bar\UI_MonsterHpBar">
       <UniqueIdentifier>{cc57fab3-b199-4216-9295-3443aa737c2a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Levels\04. Stage_Last\Test">
+      <UniqueIdentifier>{889f19f2-db93-4547-a5e3-0f83b94d3811}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -444,6 +447,9 @@
     <ClInclude Include="..\Public\UI_MonsterHpBar.h">
       <Filter>02.GameObjects\03. UI\HP_Bar\UI_MonsterHpBar</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Stage_Test.h">
+      <Filter>01.Levels\04. Stage_Last\Test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -643,6 +649,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\UI_MonsterHpBar.cpp">
       <Filter>02.GameObjects\03. UI\HP_Bar\UI_MonsterHpBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Stage_Test.cpp">
+      <Filter>01.Levels\04. Stage_Last\Test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

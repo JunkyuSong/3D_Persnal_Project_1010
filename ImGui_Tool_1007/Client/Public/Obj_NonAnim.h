@@ -29,6 +29,8 @@ public:
 
 	void		ImGuiTick();
 
+	_bool	Picking(_float3& _vPos);
+
 private:
 	CNonAnimModel*					m_pModelCom = nullptr;
 

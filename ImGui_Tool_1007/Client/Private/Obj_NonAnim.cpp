@@ -105,6 +105,17 @@ void CObj_NonAnim::ImGuiTick()
 
 }
 
+_bool CObj_NonAnim::Picking(_float3 & _vPos)
+{
+	_bool			_bPick;
+	_vector			vPickPos;
+	if (_bPick = m_pModelCom->Picking(m_pTransformCom, vPickPos))
+	{
+		XMStoreFloat3(&_vPos, vPickPos);
+	}
+	return _bPick;
+}
+
 HRESULT CObj_NonAnim::Ready_Components()
 {
 	/* For.Com_Transform */

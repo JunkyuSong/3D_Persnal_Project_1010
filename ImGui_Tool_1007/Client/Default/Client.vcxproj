@@ -222,6 +222,7 @@
     <ClInclude Include="..\Public\Stage_02_1.h" />
     <ClInclude Include="..\Public\Stage_Last.h" />
     <ClInclude Include="..\Public\Stage_Lobby.h" />
+    <ClInclude Include="..\Public\Stage_Test.h" />
     <ClInclude Include="..\Public\Status.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\Public\TerrainMgr.h" />
@@ -292,6 +293,7 @@
     <ClCompile Include="..\Private\Stage_02_1.cpp" />
     <ClCompile Include="..\Private\Stage_Last.cpp" />
     <ClCompile Include="..\Private\Stage_Lobby.cpp" />
+    <ClCompile Include="..\Private\Stage_Test.cpp" />
     <ClCompile Include="..\Private\Status.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\Private\TerrainMgr.cpp" />
