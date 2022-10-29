@@ -576,9 +576,9 @@ HRESULT CLoader::Loading_ForLevel_StageLast()
 
 	lstrcpy(m_szLoadingText, TEXT("네비게이션데이터를 생성하는 중입니다."));
 
-	/*if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_02, TEXT("Prototype_Component_Navigation_Stage_02"),
-		CNavigation::Create(m_pDevice, m_pContext, TEXT("../Bin/Data/Stage_02.dat")))))
-		return E_FAIL;*/
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Navigation_Stage_Last"),
+		CNavigation::Create(m_pDevice, m_pContext, TEXT("../Bin/Data/Stage_Last.dat")))))
+		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 

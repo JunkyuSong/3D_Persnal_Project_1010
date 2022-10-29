@@ -25,7 +25,7 @@ HRESULT CStage_Test::Initialize(void * pArg)
 
 	__super::Initialize(pArg);
 	m_pTransformCom->Set_Scale(XMVectorSet(0.01f, 0.01f, 0.01f, 0.f));
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(45.f, 0.1f, 45.f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(45.f, 0.2f, 45.f, 1.f));
 
 	return S_OK;
 }

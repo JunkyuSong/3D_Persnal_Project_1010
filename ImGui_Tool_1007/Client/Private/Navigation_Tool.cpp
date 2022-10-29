@@ -8,6 +8,10 @@
 #include "TerrainMgr.h"
 #include "ImGuiMgr.h"
 
+#include "Layer.h"
+
+#include "Obj_NonAnim.h"
+
 IMPLEMENT_SINGLETON(CNavigation_Tool)
 
 CNavigation_Tool::CNavigation_Tool()
@@ -26,6 +30,10 @@ void CNavigation_Tool::Tick()
 	if (ImGui::Button("Get_Model"))
 	{
 		m_pPickModel = static_cast<CStage_01*>(_Instance->Get_Layer(g_eCurLevel, TEXT("Layer_Stage"))->Get_ObjFromLayer(0));
+	}
+	if (ImGui::Button("Get_Layer"))
+	{
+		m_pLayer = static_cast<CLayer*>(_Instance->Get_Layer(g_eCurLevel, TEXT("Layer_Map")));
 	}
 	if (ImGui::Button("Load_Navi"))
 	{
@@ -114,7 +122,7 @@ void CNavigation_Tool::PointTick()
 		}
 	}
 	
-	if (_Instance->MouseDown(DIMK::DIMK_LBUTTON) && _Instance->KeyPressing(DIK_LSHIFT))
+	if (_Instance->MouseDown(DIMK::DIMK_LBUTTON) && _Instance->KeyPressing(DIK_RSHIFT))
 	{
 		//점을 추가 합시ㅏㄷ거미ㅏ
 		CPointInCell* _pPoint = nullptr;
@@ -122,13 +130,30 @@ void CNavigation_Tool::PointTick()
 		if (_pPoint == nullptr)
 		{
 			_float3 _vPos;
-			
+			_float	_fDIs = 1000.f;
 			//if (false == CTerrainMgr::Get_Instance()->Get_Terrain(g_eCurLevel)->Picking(_vPos))
-			if(false == m_pPickModel->Picking(_vPos))
+			/*if(m_pPickModel == nullptr || false == m_pPickModel->Picking(_vPos))
+			{
+				return;
+			}*/
+			
+			for (auto& _Obj : *(m_pLayer->Get_ListFromLayer()))
+			{
+				_float3 _vCurPos;
+				if (static_cast<CObj_NonAnim*>(_Obj)->Picking(_vCurPos))
+				{
+					_float	_fCurDis = XMVector3Length(XMLoadFloat4(&CGameInstance::Get_Instance()->Get_CamPosition()) - XMVectorSetW(XMLoadFloat3(&_vCurPos), 1.f)).m128_f32[0];
+					if (_fDIs > _fCurDis)
+					{
+						_vPos = _vCurPos;
+						_fDIs = _fCurDis;
+					}
+				}				
+			}
+			if (_fDIs == 1000.f)
 			{
 				return;
 			}
-			//_vPos.y = m_PointY;
 
 			_pPoint = CPointInCell::Create(_vPos);
 			m_pNavi->MakePoint(_pPoint);
@@ -170,6 +195,22 @@ void CNavigation_Tool::PointTick()
 			
 		}
 	}
+	ImGui::InputFloat("OneMore_PlusY", &m_fPlusY);
+	if (ImGui::Button("OneMore_Load"))
+	{
+		m_bMoreLoad = true;
+	}
+	if (m_bMoreLoad)
+	{
+		ImGui::InputText("Load", m_szName, 260);
+		if (ImGui::Button("Enter") || _Instance->KeyDown(DIK_RETURN))
+		{
+			m_bLoad = false; _tchar* _szTemp = CImGui::Get_Instance()->ConvertCtoWC(m_szName);
+			OneMoreLoad(_szTemp);
+			Safe_Delete_Array(_szTemp);
+
+		}
+	}
 }
 
 void CNavigation_Tool::CellTick()
@@ -180,7 +221,7 @@ void CNavigation_Tool::CellTick()
 
 	AUTOINSTANCE(CGameInstance, _pInstance);
 	CCell* _Cell(nullptr);
-	if (_pInstance->MouseDown(DIMK::DIMK_LBUTTON) && _pInstance->KeyPressing(DIK_LSHIFT))
+	if (_pInstance->MouseDown(DIMK::DIMK_LBUTTON) && _pInstance->KeyPressing(DIK_RSHIFT))
 	{
 		_vector _vPos{ 0.f,0.f,0.f,1.f };
 		_Cell = m_pNavi->PickingCell(_vPos);
@@ -352,6 +393,54 @@ void CNavigation_Tool::Load(_tchar* _szName)
 			}
 		}
 		
+		m_pNavi->MakeCell(pPoints[0], pPoints[1], pPoints[2]);
+	}
+	m_pNavi->Ready_Neighbor();
+	CloseHandle(hFile);
+}
+
+void CNavigation_Tool::OneMoreLoad(_tchar * _szName)
+{
+	//로드하면 일단 셀들 로드하고 그거 싹 돌면서 포인트 생성하고 있으면 거기에 셀에 넣어주고
+	// 좀 빡세겠는데
+	_tchar szFullPath[MAX_PATH] = TEXT(""); //여기에 넣을 예정
+
+	lstrcpy(szFullPath, TEXT("../Bin/Data/"));
+	//파일 경로 넣고
+	lstrcat(szFullPath, _szName);
+	//파일 이름 넣고
+	lstrcat(szFullPath, TEXT(".dat"));
+	//경로 넣고
+	AUTOINSTANCE(CGameInstance, _Instance);
+	//Safe_Release(m_pNavi);
+
+
+	_ulong			dwByte = 0;
+	HANDLE			hFile = CreateFile(szFullPath, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	if (0 == hFile)
+		return;
+
+	while (true)
+	{
+		_float3			vPoints[3];
+		CPointInCell*	pPoints[3];
+		ReadFile(hFile, vPoints, sizeof(_float3) * 3, &dwByte, nullptr);
+		vPoints[0].y += m_fPlusY;
+		vPoints[1].y += m_fPlusY;
+		vPoints[2].y += m_fPlusY;
+		if (0 == dwByte)
+			break;
+
+		for (_uint i = 0; i < 3; ++i)
+		{
+			pPoints[i] = m_pNavi->FindPoint(vPoints[i]);
+			if (pPoints[i] == nullptr)
+			{
+				pPoints[i] = CPointInCell::Create(vPoints[i]);
+				m_pNavi->MakePoint(pPoints[i]);
+			}
+		}
+
 		m_pNavi->MakeCell(pPoints[0], pPoints[1], pPoints[2]);
 	}
 	m_pNavi->Ready_Neighbor();

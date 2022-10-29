@@ -14,7 +14,7 @@ HRESULT CPointInCell::Initialize(_float3 _vPoint)
 	CCollider::COLLIDERDESC		ColliderDesc;
 	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
 
-	ColliderDesc.vSize = _float3(0.5f, 0.5f, 0.5f);
+	ColliderDesc.vSize = _float3(0.1f, 0.1f, 0.1f);
 	ColliderDesc.vCenter = _vPoint/*_float3(0.f, 0.f, 0.f)*/;
 	ColliderDesc.vRotation = _float3(0.f, 0.f, 0.f);
 	AUTOINSTANCE(CGameInstance, _pInstance);

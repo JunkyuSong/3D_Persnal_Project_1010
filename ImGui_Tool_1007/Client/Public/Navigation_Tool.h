@@ -7,6 +7,7 @@
 
 BEGIN(Engine)
 class CCell;
+class CLayer;
 END
 
 BEGIN(Client)
@@ -32,6 +33,7 @@ public:
 
 	void Save(_tchar* _szName);
 	void Load(_tchar* _szName);
+	void OneMoreLoad(_tchar* _szName);
 
 	virtual void Free();
 
@@ -39,6 +41,8 @@ public:
 private:
 	char			m_szName[260];
 	_bool			m_bLoad = false;
+	_bool			m_bMoreLoad = false;
+	_float			m_fPlusY = 0.f;
 	NAVIMODE		m_eNavi = NAVI_POINT;
 	ADDMODE			m_eMode = MODE_STRIP;
 	CNavigation*	m_pNavi = nullptr;
@@ -51,6 +55,9 @@ private:
 	CStage_01*		m_pPickModel = nullptr;
 	_float3			m_vPickingPos{ 0.f,0.f,0.f };
 	
+
+private:
+	CLayer*			m_pLayer = nullptr;
 };
 
 END

@@ -62,7 +62,9 @@ HRESULT CCamera_Player::Initialize(void * pArg)
 		if (FAILED(__super::Add_Component(LEVEL_STAGE_02, TEXT("Prototype_Component_Navigation_Stage_02"), TEXT("Com_Navigation"), (CComponent**)&m_pNaviCom, &NaviDesc)))
 			return E_FAIL;
 		break;
-	case Client::LEVEL_STAGE_LAST:
+	case Client::LEVEL_STAGE_LAST:		
+		if (FAILED(__super::Add_Component(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Navigation_Stage_Last"), TEXT("Com_Navigation"), (CComponent**)&m_pNaviCom, &NaviDesc)))
+			return E_FAIL;
 		break;
 	case Client::LEVEL_STAGE_LOBBY:
 		if (FAILED(__super::Add_Component(LEVEL_STAGE_LOBBY, TEXT("Prototype_Component_Navigation_Stage_Lobby"), TEXT("Com_Navigation"), (CComponent**)&m_pNaviCom, &NaviDesc)))
