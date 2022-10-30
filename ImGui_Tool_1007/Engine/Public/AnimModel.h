@@ -81,7 +81,7 @@ public:
 	vector<CAnimation*>* Get_AllAnimation() {
 		return &m_Animations;
 	}
-	TANIMMODEL Get_ForSave();
+	TANIMMODEL Get_ForSaveAnim();
 	TANIMMODEL Get_ModelInfo() { return m_tModel; }
 };
 

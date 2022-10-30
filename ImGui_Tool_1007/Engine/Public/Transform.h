@@ -64,6 +64,8 @@ public:
 	void Go_Up(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
 	void Go_Down(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
 
+	void Go_Dir(_vector _vDir, _float fTimeDelta);
+
 	void Set_Scale(_fvector vScaleInfo);
 	_float3 Get_Scale();
 

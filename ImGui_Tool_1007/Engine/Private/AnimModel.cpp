@@ -696,7 +696,7 @@ HRESULT CAnimModel::Ready_HierarchyNodes(aiNode* pNode, CHierarchyNode* pParent,
 	return S_OK;
 }
 
-TANIMMODEL CAnimModel::Get_ForSave()
+TANIMMODEL CAnimModel::Get_ForSaveAnim()
 {
 	m_tModel.NumAnim = m_Animations.size();
 	Safe_Delete_Array(m_tModel.tAnim);

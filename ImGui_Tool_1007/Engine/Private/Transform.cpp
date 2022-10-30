@@ -232,6 +232,15 @@ void CTransform::Go_Down(_float fTimeDelta, CNavigation* pNavigation)
 {
 }
 
+void CTransform::Go_Dir(_vector _vDir, _float fTimeDelta)
+{
+	_vector		vPosition = Get_State(CTransform::STATE_POSITION);
+
+	vPosition += XMVector3Normalize(_vDir) * m_TransformDesc.fSpeedPerSec * fTimeDelta;
+
+	Set_State(CTransform::STATE_POSITION, vPosition);
+}
+
 void CTransform::Set_Scale(_fvector vScaleInfo)
 {
 	Set_State(CTransform::STATE_RIGHT,

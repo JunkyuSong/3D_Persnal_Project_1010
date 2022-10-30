@@ -214,6 +214,7 @@
     <ClInclude Include="..\Public\Obj_Plus.h" />
     <ClInclude Include="..\public\Obj_Tool.h" />
     <ClInclude Include="..\Public\Player.h" />
+    <ClInclude Include="..\Public\Puppet.h" />
     <ClInclude Include="..\public\ReleaseMgr.h" />
     <ClInclude Include="..\Public\Saber.h" />
     <ClInclude Include="..\Public\Sky.h" />
@@ -285,6 +286,7 @@
     <ClCompile Include="..\Private\Obj_Plus.cpp" />
     <ClCompile Include="..\private\Obj_Tool.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
+    <ClCompile Include="..\Private\Puppet.cpp" />
     <ClCompile Include="..\private\ReleaseMgr.cpp" />
     <ClCompile Include="..\Private\Saber.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />

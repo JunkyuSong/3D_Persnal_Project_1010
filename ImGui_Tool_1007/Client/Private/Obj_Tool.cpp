@@ -823,7 +823,7 @@ HRESULT CObj_Tool::Load_Model()
 
 void CObj_Tool::AnimModel_Save()
 {
-	TANIMMODEL _tModel = static_cast<CAnimModel*>(m_pPick->Get_ComponentPtr(TEXT("Com_Model")))->Get_ForSave();
+	TANIMMODEL _tModel = static_cast<CAnimModel*>(m_pPick->Get_ComponentPtr(TEXT("Com_Model")))->Get_ForSaveAnim();
 
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 

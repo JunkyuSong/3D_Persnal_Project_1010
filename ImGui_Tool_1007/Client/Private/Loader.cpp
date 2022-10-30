@@ -37,6 +37,7 @@
 #include "Extra01.h"
 #include "Extra02.h"
 #include "Stage_Test.h"
+#include "Puppet.h"
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice(pDevice)
@@ -512,10 +513,10 @@ HRESULT CLoader::Loading_ForLevel_StageLast()
 		CStage_Test::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	/*	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_Bat"),
-		CBoss_Bat::Create(m_pDevice, m_pContext))))
+		if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster_Puppet"),
+		CPuppet::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
-*/
+
 
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
 	/* 텍스쳐를 로드한다. */
@@ -565,6 +566,11 @@ HRESULT CLoader::Loading_ForLevel_StageLast()
 		return E_FAIL;
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Tower03"),
 		CNonAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Stage/Stage_Last/Object/", "Tower03.fbx"))))
+		return E_FAIL;
+
+	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_LAST, TEXT("Prototype_Component_Model_Monster_Puppet"),
+		CAnimModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Meshes/Monster_List/puppet/", "puppet.dat", PivotMatrix))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_Shader_Cube */
