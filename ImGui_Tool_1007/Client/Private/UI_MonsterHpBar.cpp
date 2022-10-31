@@ -28,21 +28,26 @@ HRESULT CUI_MonsterHpBar::Initialize(void * pArg)
 {
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
-	m_pTransCom[BAR_LEFTEDGE]->Set_Scale(XMVectorSet(30.f, 15.f,0.f,1.f));
-	m_pTransCom[BAR_LEFTEDGE]->Set_State(CTransform::STATE_POSITION, XMVectorSet(-555.7f, -261.f,0.f,1.f));
-	m_pTransCom[BAR_BACK]->Set_Scale(XMVectorSet(300.f, 15.f, 0.f, 1.f));
-	m_pTransCom[BAR_BACK]->Set_State(CTransform::STATE_POSITION, XMVectorSet(-400.f, -261.f, 0.f, 1.f));
-	m_pTransCom[BAR_RIGHTEDGE]->Set_Scale(XMVectorSet(-30.f, 15.f, 0.f, 1.f));
-	m_pTransCom[BAR_RIGHTEDGE]->Set_State(CTransform::STATE_POSITION, XMVectorSet(-245.7f, -261.f, 0.f, 1.f));
-	m_pTransCom[BAR_HP]->Set_Scale(XMVectorSet(296.f, 9.f, 0.f, 1.f));
-	m_pTransCom[BAR_HP]->Set_State(CTransform::STATE_POSITION, XMVectorSet(-400.f, -261.f, 0.f, 1.f));
+	m_pTransCom[BAR_LEFTEDGE]->Set_Scale(XMVectorSet(30.f, 20.f,0.f,1.f));
+	m_pTransCom[BAR_LEFTEDGE]->Set_State(CTransform::STATE_POSITION, XMVectorSet(-232.2f, 285.4f,0.f,1.f));
+	m_pTransCom[BAR_BACK]->Set_Scale(XMVectorSet(500.f, 20.f, 0.f, 1.f));
+	m_pTransCom[BAR_BACK]->Set_State(CTransform::STATE_POSITION, XMVectorSet(31.5f, 285.4f, 0.f, 1.f));
+	m_pTransCom[BAR_RIGHTEDGE]->Set_Scale(XMVectorSet(-30.f, 20.f, 0.f, 1.f));
+	m_pTransCom[BAR_RIGHTEDGE]->Set_State(CTransform::STATE_POSITION, XMVectorSet(281.7f, 285.4f, 0.f, 1.f));
+	m_pTransCom[BAR_HP]->Set_Scale(XMVectorSet(500.f, 16.f, 0.f, 1.f));
+	m_pTransCom[BAR_HP]->Set_State(CTransform::STATE_POSITION, XMVectorSet(25.f, 285.4f, 0.f, 1.f));
 
 	AUTOINSTANCE(CGameInstance, _pInstance);
-	m_pTarget = static_cast<CStatus*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Status")));
-	Safe_AddRef(m_pTarget);
 	
-	m_fPreHP = m_pTarget->Get_MaxHp();
-	m_fMaxHP = m_pTarget->Get_MaxHp();
+	if (pArg)
+	{	
+		m_pTarget = static_cast<CStatus*>(static_cast<CGameObject*>(pArg)->Get_ComponentPtr(TEXT("Com_Status")));
+		Safe_AddRef(m_pTarget);
+
+		m_fPreHP = m_pTarget->Get_MaxHp();
+		m_fMaxHP = m_pTarget->Get_MaxHp();
+	}
+
 	return S_OK;
 }
 
@@ -56,10 +61,34 @@ void CUI_MonsterHpBar::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
-	if (m_fPreHP > m_pTarget->Get_Hp())
+	if (m_fPreHP != m_pTarget->Get_Hp())
 	{
-		m_fPreHP -= 10.f*fTimeDelta;
+		//새로운 렉트 추가
+
+		RECT _tRect;
+		m_tRects.push_back(_tRect);
+
+		
+
+		m_fPreHP = m_pTarget->Get_Hp();
 	}
+
+	//기존 렉트들 알파값 추가 및 Y값 커지기 -> 알파값이 0되면 그냥 사라짐
+
+	for (list<RECT>::iterator& _tRect = m_tRects.begin(); _tRect != m_tRects.end(); )
+	{
+		_tRect->fSizeY += fTimeDelta*0.05f;
+		_tRect->fAlpha -= fTimeDelta*0.1f;
+		if (_tRect->fAlpha < 0.f)
+		{
+			_tRect = m_tRects.erase(_tRect);
+		}
+		else
+		{
+			++_tRect;
+		}
+	}
+
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 }
@@ -103,7 +132,24 @@ HRESULT CUI_MonsterHpBar::Render()
 	if (FAILED(m_pVIBufferCom->Render()))
 		return E_FAIL;
 
+
+	for (auto& _tRect : m_tRects)
+	{
+		if (FAILED(m_pShaderCom->Begin(1)))
+			return E_FAIL;
+
+		if (FAILED(m_pVIBufferCom->Render()))
+			return E_FAIL;
+	}
+
 	return S_OK;
+}
+
+void CUI_MonsterHpBar::Set_Target(CStatus * _pTarget)
+{
+	Safe_Release(m_pTarget);
+	m_pTarget = _pTarget;
+	Safe_AddRef(m_pTarget);
 }
 
 CUI_MonsterHpBar * CUI_MonsterHpBar::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -144,6 +190,7 @@ void CUI_MonsterHpBar::Free()
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pVIBufferCom);
+	Safe_Release(m_pVIBufferCom_Point);
 	Safe_Release(m_pTarget);
 }
 
@@ -154,9 +201,12 @@ HRESULT CUI_MonsterHpBar::Ready_Components()
 		return E_FAIL;
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform_Back"), (CComponent**)&m_pTransCom[BAR_BACK])))
 		return E_FAIL;
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform__RightEdge"), (CComponent**)&m_pTransCom[BAR_RIGHTEDGE])))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform_RightEdge"), (CComponent**)&m_pTransCom[BAR_RIGHTEDGE])))
 		return E_FAIL;
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform_Hp"), (CComponent**)&m_pTransCom[BAR_HP])))
+		return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform_Disappear"), (CComponent**)&m_pTransCom[BAR_DISAPPEAR])))
 		return E_FAIL;
 
 
@@ -168,8 +218,15 @@ HRESULT CUI_MonsterHpBar::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Point"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom_Point)))
+		return E_FAIL;
+
 	/* For.Com_VIBuffer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
+		return E_FAIL;
+
+	/* For.Com_VIBuffer */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Point"), TEXT("Com_VIBuffer_Point"), (CComponent**)&m_pVIBufferCom_Point)))
 		return E_FAIL;
 
 	/* For.Com_Texture */

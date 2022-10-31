@@ -135,11 +135,14 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 	//		return E_FAIL;
 
 	//}
-
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Magician"), LEVEL_GAMEPLAY, pLayerTag)))
+	CGameObject*	_pOut = nullptr;
+	CGameObject* _pGameObj = nullptr;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Magician"), LEVEL_GAMEPLAY, pLayerTag,nullptr,&_pOut)))
 		return E_FAIL;
 
-
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_UI_MonsterHpBar"), LEVEL_GAMEPLAY, TEXT("Layer_UI"), _pOut, &_pGameObj)))
+		return E_FAIL;
+	CUI_Mgr::Get_Instance()->Add_UI(TEXT("MONSTER_HP_BAR"), _pGameObj);
 
 
 	return S_OK;

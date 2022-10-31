@@ -23,6 +23,7 @@
 #include "Axe.h"
 #include "Knife.h"
 #include "UI_PlayerHpBar.h"
+#include "UI_MonsterHpBar.h"
 #include "UI_Targeting.h"
 #include "Card.h"
 #include "Navigation.h"
@@ -175,6 +176,19 @@ HRESULT CLoader::Loading_ForLogoLevel()
 		return E_FAIL;
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MainUI_HpBar_Hp"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/GameUI/PlayerHPBar/TexUI_HPBar_3MainBar.png")))))
+		return E_FAIL;
+
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MainUI_Monster_HpBar"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/GameUI/MonsterHPBar/TexUI_HPBar_4BarBorderElite.png")))))
+		return E_FAIL;
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MainUI_Monster_Background"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/GameUI/MonsterHPBar/TexUI_HPBar_3BarBorder.png")))))
+		return E_FAIL;
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MainUI_Monster_Center"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/GameUI/MonsterHPBar/TexUI_HPBar_6BarTrack.png")))))
+		return E_FAIL;
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MainUI_Monster_Disappear"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/GameUI/MonsterHPBar/TexUI_HPBar_NewPreSTBar.png")))))
 		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
@@ -439,9 +453,9 @@ HRESULT CLoader::Loading_ForLevel_Stage02()
 
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다."));
 	/* 텍스쳐를 로드한다. */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_02, TEXT("Prototype_Component_Texture_Terrain_02"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Fire_tiling_floor.png")))))//Grass_%d.dds
-		return E_FAIL;
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_STAGE_02, TEXT("Prototype_Component_Texture_Terrain_02"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Fire_tiling_floor.png")))))//Grass_%d.dds
+	//	return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다."));
 	/* 모델를 로드한다. */
@@ -645,6 +659,10 @@ HRESULT CLoader::Loading_ForLevel_StageLobby()
 
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_PlayerHpBar"),
 		CUI_PlayerHpBar::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_MonsterHpBar"),
+		CUI_MonsterHpBar::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_Targeting"),

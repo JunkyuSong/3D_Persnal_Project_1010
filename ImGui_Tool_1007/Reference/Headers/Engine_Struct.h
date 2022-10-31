@@ -51,13 +51,35 @@ namespace Engine
 	typedef struct tagVertexPoint
 	{
 		XMFLOAT3		vPosition;
+		XMFLOAT2		vSize;
 	}VTXPOINT;
 
 	typedef struct ENGINE_DLL tagVertexPoint_Declaration
 	{
-		static const unsigned int iNumElements = 1;
+		static const unsigned int iNumElements = 2;
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
 	}VTXPOINT_DECLARATION;
+
+	typedef struct tagVertexPointInstancing
+	{
+		XMFLOAT3		vPosition;
+		XMFLOAT2		vSize;
+	}VTXPOINTINTANCE;
+
+
+	typedef struct ENGINE_DLL tagVertexPointInstancing_Declaration
+	{
+		static const unsigned int iNumElements = 6;
+		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
+	}VTXPOINTINTANCE_DECLARATION;
+
+	typedef struct tagVertexInstance
+	{
+		XMFLOAT4		vRight;
+		XMFLOAT4		vUp;
+		XMFLOAT4		vLook;
+		XMFLOAT4		vPosition;
+	}VTXINSTANCE;
 
 	typedef struct tagVertexAnimModel
 	{

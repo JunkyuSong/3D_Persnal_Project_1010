@@ -1072,6 +1072,7 @@ _bool CMagician::Collision(_float fTimeDelta)
 			else
 			{
 				m_eCurState = Hurt_Short;
+				m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack());
 				m_fAppear = 1.f;
 			}
 			
@@ -1085,6 +1086,7 @@ _bool CMagician::Collision(_float fTimeDelta)
 			else
 			{
 				m_eCurState = Hurt_Long;
+				m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack());
 				m_fAppear = 1.f;
 			}
 		}
@@ -1097,12 +1099,15 @@ _bool CMagician::Collision(_float fTimeDelta)
 			else
 			{
 				m_eCurState = Hurt_Short;
+				m_pStatusCom->Damage(static_cast<CStatus*>(_pTarget->Get_ComponentPtr(TEXT("Com_Status")))->Get_Attack());
 				m_fAppear = 1.f;
 			}
 		}
 		m_pTransformCom->LookAt_ForLandObject(
 			static_cast<CTransform*>(_pTarget->Get_ComponentPtr(TEXT("Com_Transform")))
 			->Get_State(CTransform::STATE_POSITION));
+
+		
 		return true;
 	}
 	return false;

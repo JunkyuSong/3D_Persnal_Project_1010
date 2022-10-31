@@ -8,6 +8,7 @@ class CTexture;
 class CTransform;
 class CRenderer;
 class CVIBuffer_Rect;
+class CVIBuffer_Point;
 END
 
 BEGIN(Client)
@@ -16,7 +17,14 @@ class CUI_MonsterHpBar :
 	public CGameObject
 {
 private:
-	enum HPBAR { BAR_LEFTEDGE, BAR_BACK, BAR_RIGHTEDGE, BAR_HP, BAR_END	};
+	enum HPBAR { BAR_LEFTEDGE, BAR_BACK, BAR_RIGHTEDGE, BAR_HP, BAR_DISAPPEAR, BAR_END	};
+	struct RECT
+	{
+		_float2		vCenter;
+		_float		fSizeY;
+		_float		fSizeX;
+		_float		fAlpha;
+	};
 
 public:
 	CUI_MonsterHpBar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -29,6 +37,9 @@ public:
 	virtual void Tick(_float fTimeDelta);
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
+
+	void Set_Target(class CStatus* _pTarget);
+
 
 
 private:
@@ -44,6 +55,12 @@ private:
 	CRenderer*				m_pRendererCom = nullptr;
 	CVIBuffer_Rect*			m_pVIBufferCom =  nullptr;
 	CTexture*				m_pTextureCom[BAR_END] = { nullptr };
+
+	CVIBuffer_Point*		m_pVIBufferCom_Point = nullptr;
+	CShader*				m_pShaderCom_Point = nullptr;
+
+	//렉트가 여러개? 
+	list<RECT>			m_tRects;
 
 private:
 	HRESULT Ready_Components();

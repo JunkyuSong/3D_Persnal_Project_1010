@@ -157,6 +157,9 @@
     <ClCompile Include="..\Public\Frustum.cpp">
       <Filter>04.Utility\07. Frustum</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Point_Instancing.cpp">
+      <Filter>03.Components\02.VIBuffer\Point\Instancing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -336,6 +339,9 @@
     <ClInclude Include="..\Public\Frustum.h">
       <Filter>04.Utility\07. Frustum</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Point_Instancing.h">
+      <Filter>03.Components\02.VIBuffer\Point\Instancing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="99.Defines">
@@ -508,6 +514,9 @@
     </Filter>
     <Filter Include="04.Utility\07. Frustum">
       <UniqueIdentifier>{91147ff2-63b2-45a1-ba3b-20e3bb491d3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\02.VIBuffer\Point\Instancing">
+      <UniqueIdentifier>{b42980c7-6bef-4208-9451-de3db0a9468d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

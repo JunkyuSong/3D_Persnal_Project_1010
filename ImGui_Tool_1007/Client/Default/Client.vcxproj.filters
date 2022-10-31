@@ -229,6 +229,9 @@
     <Filter Include="02.GameObjects\05. Monster\Puppet">
       <UniqueIdentifier>{e2bd935f-66ba-437d-a33f-0b0e75548e6d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00. Player\CutScene">
+      <UniqueIdentifier>{0d83a8e8-1859-41c3-a321-24461f9aef30}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -450,6 +453,9 @@
     <ClInclude Include="..\Public\Puppet.h">
       <Filter>02.GameObjects\05. Monster\Puppet</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Player_CutScene.h">
+      <Filter>02.GameObjects\00. Player\CutScene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -652,6 +658,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Puppet.cpp">
       <Filter>02.GameObjects\05. Monster\Puppet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Player_CutScene.cpp">
+      <Filter>02.GameObjects\00. Player\CutScene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
