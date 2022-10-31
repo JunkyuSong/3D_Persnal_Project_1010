@@ -183,7 +183,6 @@
     <ClInclude Include="..\public\CameraMgr.h" />
     <ClInclude Include="..\Public\Camera_Free.h" />
     <ClInclude Include="..\Public\Camera_Player.h" />
-    <ClInclude Include="..\public\Cam_Tool.h" />
     <ClInclude Include="..\Public\Cane.h" />
     <ClInclude Include="..\Public\Cane_Sword.h" />
     <ClInclude Include="..\Public\Card.h" />
@@ -256,7 +255,6 @@
     <ClCompile Include="..\private\CameraMgr.cpp" />
     <ClCompile Include="..\Private\Camera_Free.cpp" />
     <ClCompile Include="..\Private\Camera_Player.cpp" />
-    <ClCompile Include="..\private\Cam_Tool.cpp" />
     <ClCompile Include="..\Private\Cane.cpp" />
     <ClCompile Include="..\Private\Cane_Sword.cpp" />
     <ClCompile Include="..\Private\Card.cpp" />

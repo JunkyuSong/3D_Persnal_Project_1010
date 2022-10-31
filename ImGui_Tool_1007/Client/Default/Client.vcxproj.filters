@@ -61,9 +61,6 @@
     <Filter Include="96. ImGuiMgr\Tool\UI_Tool">
       <UniqueIdentifier>{bb3a2402-f96f-443d-ab04-4cc568fbd6c9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="96. ImGuiMgr\Tool\Cam_Tool">
-      <UniqueIdentifier>{97d8fcbf-18c0-48c8-a000-32b869c57bbd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="96. ImGuiMgr\Tool\Terrain_Tool">
       <UniqueIdentifier>{46407745-981f-4907-bee6-62a2428f9d3d}</UniqueIdentifier>
     </Filter>
@@ -312,9 +309,6 @@
     <ClInclude Include="..\public\UI_Tool.h">
       <Filter>96. ImGuiMgr\Tool\UI_Tool</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Cam_Tool.h">
-      <Filter>96. ImGuiMgr\Tool\Cam_Tool</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\Anim_Tool.h">
       <Filter>96. ImGuiMgr\Tool\Anim_Tool</Filter>
     </ClInclude>
@@ -517,9 +511,6 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_Tool.cpp">
       <Filter>96. ImGuiMgr\Tool\UI_Tool</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\Cam_Tool.cpp">
-      <Filter>96. ImGuiMgr\Tool\Cam_Tool</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Anim_Tool.cpp">
       <Filter>96. ImGuiMgr\Tool\Anim_Tool</Filter>
