@@ -122,10 +122,11 @@ HRESULT CPlayer::Initialize(void * pArg)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(44.083f, 0.f, 17.580f, 1.f));
 		break;
 	case Client::LEVEL_STAGE_LAST:
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(57.978f, 18.117f, 79.515f, 1.f));
+		m_pNavigationCom->Set_Index(388);
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(41.614f, 29.997f, 79.284f, 1.f));
 		break;
 	case Client::LEVEL_STAGE_LOBBY:
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(34.491, 0.165, 44.676, 1.f));
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(34.491f, 0.165f, 44.676f, 1.f));
 		break;
 	}
 

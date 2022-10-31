@@ -122,6 +122,7 @@ private:
 	_float3					m_vNextLook;
 	_float3					m_ListNextLook[STATE_END];
 	_float3					m_vAttPos;
+	_float3					m_vLocalPos;
 	_bool					m_bPreStateAtt = false;
 
 private:

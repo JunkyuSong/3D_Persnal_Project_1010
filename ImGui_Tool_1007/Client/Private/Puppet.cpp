@@ -42,13 +42,25 @@ HRESULT CPuppet::Initialize(void * pArg)
 	Ready_LimitTime();
 	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(45.f, -25.f, 45.f, 1.f));
-
+	m_vLocalPos = _float3(45.f, -25.f, 45.f);
 	
 	for (int i = 0; i < STATE_END; ++i)
 	{
 		m_ListNextLook[i] = _float3(45.f,-25.f,45.f);
 	}
-	m_ListNextLook[Puppet_AttackF_A] = _float3(34.201f - 45.f, -36.2f + 25.f, 22.8f - 45.f);
+	//플레이어 로컬좌표에서 빼보자 그러면 원하는 좌표가 나오지 않을까 하는데?
+	
+	/*m_ListNextLook[Puppet_AttackF_A] = _float3(34.201f - 45.f, -36.2f + 25.f, 22.8f - 45.f);
+	m_ListNextLook[Puppet_Combo_F_A_Start] = _float3(33.1f- 45.f, -26.2f+ 25.f, 19.f - 45.f);*/
+
+	m_ListNextLook[Puppet_AttackF_A] = _float3(34.201f - 41.614f, -36.2f - 29.997f, 22.8f - 79.284f);
+
+	m_ListNextLook[Puppet_Combo_F_A_Start] = _float3(29.9f- 41.614f, -26.2f - 29.997f, 20.f - 79.284f);
+
+	//플레이어로부터 떨어진 만큼임
+	//즉 이만큼을 플레이어 월드좌표에 더하면 원하는 좌표가 나옴
+	//그걸로 타겟 좌표 삼아서 
+	
 	//로컬의 룩방향 -> 이걸 현재의 회전행렬과 곱해서 월드방향벡터를 만들어준다.
 	//쿠드로 하면 현재 가야할 좌표가 나오고
 
@@ -453,7 +465,6 @@ void CPuppet::RenderGroup()
 		return;
 	
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, m_pParts);
 }
 
 _bool CPuppet::Collision(_float fTimeDelta)
@@ -710,13 +721,17 @@ void CPuppet::Tick_Imgui()
 
 	if (CImGui::Get_Instance()->Button("Start"))
 	{
-		_matrix _WorldMatrix = m_pTransformCom->Get_WorldMatrix();
 		_matrix _RotMatrix = m_pTransformCom->Get_WorldMatrix();
 		_RotMatrix.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
-		XMStoreFloat3(&m_vAttPos, XMVector3TransformCoord(XMLoadFloat3(&m_ListNextLook[Puppet_AttackF_A]), _WorldMatrix)); //좌표
-		XMStoreFloat3(&m_vNextLook, XMVector3Normalize(XMVector3TransformNormal(XMLoadFloat3(&m_ListNextLook[Puppet_AttackF_A]), _RotMatrix)) ); // 방향
-		m_eReserveState = Puppet_AttackF_A;
+		XMStoreFloat3(&m_vAttPos, XMVector3TransformCoord(XMLoadFloat3(&m_ListNextLook[Puppet_Combo_F_A_Start]), _RotMatrix)); //좌표
+		
+		m_eReserveState = Puppet_Combo_F_A_Start;
 		m_eMonsterState = CMonster::ATTACK_ATTACK;
+
+		_vector _vPlayerPos = static_cast<CTransform*>(_pInstance->Get_Player()->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
+		
+		XMStoreFloat3(&m_vAttPos, _vPlayerPos + XMLoadFloat3(&m_vAttPos));
+		XMStoreFloat3(&m_vNextLook, XMVector3Normalize( XMLoadFloat3(&m_vAttPos) - XMLoadFloat3(&m_vLocalPos)));
 	}
 
 	m_pTransformCom->Set_Rotation(XMLoadFloat3(& vRot));
