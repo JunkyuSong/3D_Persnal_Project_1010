@@ -1774,7 +1774,7 @@ HRESULT CPlayer::Ready_Components()
 	/* For.Com_Status */
 	CStatus::STATUS _tStatus;
 	_tStatus.fMaxHp = 200.f;
-	_tStatus.fAttack = 40.f;
+	_tStatus.fAttack = 30.f;
 	_tStatus.fHp = _tStatus.fMaxHp;
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Status"), TEXT("Com_Status"), (CComponent**)&m_pStatusCom, &_tStatus)))
 		return E_FAIL;

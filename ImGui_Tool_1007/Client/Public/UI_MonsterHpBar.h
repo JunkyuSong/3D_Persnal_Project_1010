@@ -20,9 +20,8 @@ private:
 	enum HPBAR { BAR_LEFTEDGE, BAR_BACK, BAR_RIGHTEDGE, BAR_HP, BAR_DISAPPEAR, BAR_END	};
 	struct RECT
 	{
-		_float2		vCenter;
-		_float		fSizeY;
-		_float		fSizeX;
+		_float3		vCenter;
+		_float2		fSize;
 		_float		fAlpha;
 	};
 
@@ -46,6 +45,8 @@ private:
 	class CStatus*			m_pTarget = nullptr;//스테이터스 가져올까ㅇㅇ
 	_float					m_fPreHP;
 	_float					m_fMaxHP;
+
+	_float					m_fBarSize;
 
 	_float4x4				m_ViewMatrix;
 	_float4x4				m_ProjMatrix;

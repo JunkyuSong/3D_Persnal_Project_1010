@@ -28,13 +28,16 @@ HRESULT CUI_MonsterHpBar::Initialize(void * pArg)
 {
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
-	m_pTransCom[BAR_LEFTEDGE]->Set_Scale(XMVectorSet(30.f, 20.f,0.f,1.f));
+
+	m_fBarSize = 12.f;
+
+	m_pTransCom[BAR_LEFTEDGE]->Set_Scale(XMVectorSet(30.f, m_fBarSize,0.f,1.f));
 	m_pTransCom[BAR_LEFTEDGE]->Set_State(CTransform::STATE_POSITION, XMVectorSet(-232.2f, 285.4f,0.f,1.f));
-	m_pTransCom[BAR_BACK]->Set_Scale(XMVectorSet(500.f, 20.f, 0.f, 1.f));
+	m_pTransCom[BAR_BACK]->Set_Scale(XMVectorSet(500.f, m_fBarSize, 0.f, 1.f));
 	m_pTransCom[BAR_BACK]->Set_State(CTransform::STATE_POSITION, XMVectorSet(31.5f, 285.4f, 0.f, 1.f));
-	m_pTransCom[BAR_RIGHTEDGE]->Set_Scale(XMVectorSet(-30.f, 20.f, 0.f, 1.f));
+	m_pTransCom[BAR_RIGHTEDGE]->Set_Scale(XMVectorSet(-30.f, m_fBarSize, 0.f, 1.f));
 	m_pTransCom[BAR_RIGHTEDGE]->Set_State(CTransform::STATE_POSITION, XMVectorSet(281.7f, 285.4f, 0.f, 1.f));
-	m_pTransCom[BAR_HP]->Set_Scale(XMVectorSet(500.f, 16.f, 0.f, 1.f));
+	m_pTransCom[BAR_HP]->Set_Scale(XMVectorSet(500.f, m_fBarSize - 4.f, 0.f, 1.f));
 	m_pTransCom[BAR_HP]->Set_State(CTransform::STATE_POSITION, XMVectorSet(25.f, 285.4f, 0.f, 1.f));
 
 	AUTOINSTANCE(CGameInstance, _pInstance);
@@ -66,9 +69,18 @@ void CUI_MonsterHpBar::LateTick(_float fTimeDelta)
 		//새로운 렉트 추가
 
 		RECT _tRect;
-		m_tRects.push_back(_tRect);
-
+		_tRect.vCenter.z = 0.f;
+		_tRect.vCenter.y = 285.4f;
 		
+		_float _fStartPoint = 25.f - 250.f;
+		_float _fCurHPBar = m_pTarget->Get_Hp() / m_fMaxHP  * 500.f;
+		_float _fPreHPBar = m_fPreHP / m_fMaxHP  * 500.f;
+
+		_tRect.vCenter.x = ((_fStartPoint + _fCurHPBar) +(_fStartPoint + _fPreHPBar)) * 0.5f;
+		_tRect.fAlpha = 1.f;
+		_tRect.fSize.x = _fPreHPBar - _fCurHPBar;
+		_tRect.fSize.y = m_fBarSize - 4.f;
+		m_tRects.push_back(_tRect);
 
 		m_fPreHP = m_pTarget->Get_Hp();
 	}
@@ -77,8 +89,8 @@ void CUI_MonsterHpBar::LateTick(_float fTimeDelta)
 
 	for (list<RECT>::iterator& _tRect = m_tRects.begin(); _tRect != m_tRects.end(); )
 	{
-		_tRect->fSizeY += fTimeDelta*0.05f;
-		_tRect->fAlpha -= fTimeDelta*0.1f;
+		_tRect->fSize.y += fTimeDelta * 30.f;
+		_tRect->fAlpha -= fTimeDelta*1.25f;
 		if (_tRect->fAlpha < 0.f)
 		{
 			_tRect = m_tRects.erase(_tRect);
@@ -100,7 +112,7 @@ HRESULT CUI_MonsterHpBar::Render()
 		return E_FAIL;
 	m_pShaderCom->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4));
 	m_pShaderCom->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4));
-	for (int i = 0; i < BAR_END-1; ++i)
+	for (int i = 0; i < BAR_END-2; ++i)
 	{
 		m_pShaderCom->Set_RawValue("g_WorldMatrix", &m_pTransCom[i]->Get_WorldFloat4x4_TP(), sizeof(_float4x4));
 		
@@ -115,30 +127,38 @@ HRESULT CUI_MonsterHpBar::Render()
 			return E_FAIL;
 	}
 
-	_float _fHpPer = m_pTarget->Get_Hp() / m_fMaxHP;
-	_float _fPreHpPer = m_fPreHP / m_fMaxHP;
+	_float _fHpPer = m_fPreHP / m_fMaxHP;
+	
 
 	m_pShaderCom->Set_RawValue("g_HpPer", &_fHpPer, sizeof(_float));
-	m_pShaderCom->Set_RawValue("g_PreHpPer", &_fPreHpPer, sizeof(_float));
 	m_pShaderCom->Set_RawValue("g_WorldMatrix", &m_pTransCom[BAR_HP]->Get_WorldFloat4x4_TP(), sizeof(_float4x4));
 
 
 	if (FAILED(m_pTextureCom[BAR_HP]->Set_SRV(m_pShaderCom, "g_DiffuseTexture")))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Begin(3)))
+	if (FAILED(m_pShaderCom->Begin(4)))
 		return E_FAIL;
 
 	if (FAILED(m_pVIBufferCom->Render()))
 		return E_FAIL;
 
+	m_pShaderCom_Point->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4));
+	m_pShaderCom_Point->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4));
+
+	if (FAILED(m_pTextureCom[BAR_DISAPPEAR]->Set_SRV(m_pShaderCom_Point, "g_DiffuseTexture")))
+		return E_FAIL;
 
 	for (auto& _tRect : m_tRects)
 	{
-		if (FAILED(m_pShaderCom->Begin(1)))
+		m_pShaderCom_Point->Set_RawValue("g_Center", &_tRect.vCenter, sizeof(_float3));
+		m_pShaderCom_Point->Set_RawValue("g_Size", &_tRect.fSize, sizeof(_float2));
+		m_pShaderCom_Point->Set_RawValue("g_Alpha", &_tRect.fAlpha, sizeof(_float));
+
+		if (FAILED(m_pShaderCom_Point->Begin(1)))
 			return E_FAIL;
 
-		if (FAILED(m_pVIBufferCom->Render()))
+		if (FAILED(m_pVIBufferCom_Point->Render()))
 			return E_FAIL;
 	}
 
@@ -189,6 +209,7 @@ void CUI_MonsterHpBar::Free()
 	}
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
+	Safe_Release(m_pShaderCom_Point);
 	Safe_Release(m_pVIBufferCom);
 	Safe_Release(m_pVIBufferCom_Point);
 	Safe_Release(m_pTarget);
@@ -218,7 +239,7 @@ HRESULT CUI_MonsterHpBar::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Point"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom_Point)))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Point"), TEXT("Com_Shader_Point"), (CComponent**)&m_pShaderCom_Point)))
 		return E_FAIL;
 
 	/* For.Com_VIBuffer */
@@ -239,7 +260,10 @@ HRESULT CUI_MonsterHpBar::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MainUI_HpBar_Edge"), TEXT("Com_Texture_Bar_Rightedge"), (CComponent**)&m_pTextureCom[BAR_RIGHTEDGE])))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MainUI_HpBar_Hp"), TEXT("Com_Texture_Bar_Hp"), (CComponent**)&m_pTextureCom[BAR_HP])))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MainUI_Monster_Disappear"), TEXT("Com_Texture_Bar_Hp"), (CComponent**)&m_pTextureCom[BAR_HP])))
+		return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MainUI_Monster_Disappear"), TEXT("Com_Texture_Bar_Disappear"), (CComponent**)&m_pTextureCom[BAR_DISAPPEAR])))
 		return E_FAIL;
 
 	return S_OK;

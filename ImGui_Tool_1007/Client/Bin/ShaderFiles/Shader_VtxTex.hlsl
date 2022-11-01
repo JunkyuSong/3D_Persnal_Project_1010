@@ -91,6 +91,23 @@ PS_OUT PS_MAIN_HP(PS_IN In)
 	return Out;
 }
 
+PS_OUT PS_MAIN_MONSTERHP(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+
+	if (In.vTexUV.x > g_HpPer)
+	{
+		discard;
+	}
+
+	if (0 >= Out.vColor.a)
+		discard;
+	
+	return Out;
+}
+
 PS_OUT PS_Select(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
@@ -173,5 +190,15 @@ technique11 DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_HP();
+	}
+
+	pass MonsterHpBarPass
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_MONSTERHP();
 	}
 }

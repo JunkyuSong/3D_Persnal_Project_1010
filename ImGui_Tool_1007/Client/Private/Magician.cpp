@@ -634,13 +634,13 @@ void CMagician::CheckLimit()
 	case Client::CMagician::Magician_Idle2:
 		break;
 	case Client::CMagician::Hurt_Short:
-		if (15.f < m_fPlayTime)
+		if (10.f < m_fPlayTime)
 		{
 			CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
 		}
 		break;
 	case Client::CMagician::Hurt_Long:
-		if (15.f < m_fPlayTime)
+		if (10.f < m_fPlayTime)
 		{
 			CCollisionMgr::Get_Instance()->Add_CollisoinList(CCollisionMgr::TYPE_MONSTER_BODY, m_pColliderCom[COLLIDERTYPE_BODY], this);
 		}
@@ -1107,7 +1107,7 @@ _bool CMagician::Collision(_float fTimeDelta)
 			static_cast<CTransform*>(_pTarget->Get_ComponentPtr(TEXT("Com_Transform")))
 			->Get_State(CTransform::STATE_POSITION));
 
-		
+		On_Collider(COLLIDERTYPE_BODY, false);
 		return true;
 	}
 	return false;
